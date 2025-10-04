@@ -21,7 +21,7 @@ Multi-asset trading assistant MCP server for Claude Desktop. Supports Forex, Sto
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/YOUR_USERNAME/TradingViewMCPServer.git
+git clone https://github.com/lev-corrupted/TradingViewMCPServer.git
 cd TradingViewMCPServer
 ```
 
