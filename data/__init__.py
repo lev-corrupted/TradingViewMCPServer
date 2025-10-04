@@ -1,1 +1,0 @@
-"""Data management package for forex historical data."""

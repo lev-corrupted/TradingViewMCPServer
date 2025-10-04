@@ -34,21 +34,8 @@ env/
 *~
 .DS_Store
 
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb
-
-# Backtest results
-backtest_results_*.csv
-*.html
-reports/*.html
-
-# Data cache
-data/csv/*.csv
-
-# MCP Server
-mcp_server_pyproject.toml
-MCP_SERVER_README.md
+# Environment variables
+.env
 
 # Logs
 *.log

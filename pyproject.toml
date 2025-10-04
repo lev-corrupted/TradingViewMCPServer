@@ -1,45 +1,23 @@
 [project]
-name = "backtesttradingviewmcp"
-version = "1.0.0"
-description = "Unified forex backtesting system with TradingView MCP integration for validation and real-time data"
+name = "tradingview-mcp"
+version = "2.0.0"
+description = "TradingView MCP server for Claude - Multi-asset trading assistant supporting Forex, Stocks, Crypto with 20+ technical indicators"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    # Backtesting core
-    "backtesting>=0.6.5",
-    "bokeh>=3.8.0",
-    "jupyter>=1.1.1",
-    "matplotlib>=3.10.6",
-    "numpy>=2.2.6",
-    "pandas>=2.3.3",
-    "pandas-ta>=0.4.71b0",
-    "requests>=2.32.5",
-    "rich>=13.0.0",
-    "scipy>=1.16.2",
-    "seaborn>=0.13.2",
-    "statsmodels>=0.14.5",
-    "ta-lib>=0.6.7",
-    "yfinance>=0.2.66",
-
-    # TradingView MCP server
     "mcp[cli]>=1.12.0",
-    "tradingview-screener>=0.6.4",
-    "tradingview-ta>=3.3.0",
+    "python-dotenv>=1.0.0",
+    "requests>=2.31.0",
 ]
 
 [project.scripts]
-# Backtesting entry points
-backtest = "main:main"
-strategy-manager = "strategy_manager:main"
-
-# MCP server entry point
-tradingview-mcp = "mcp_server.tradingview_mcp.server:main"
+tradingview-mcp = "tradingview_mcp.server:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
 
 [tool.setuptools.package-data]
-mcp_server = ["tradingview_mcp/coinlist/*.txt"]
+tradingview_mcp = ["*.py"]
 
 [tool.uv]
 dev-dependencies = []

@@ -1,213 +1,161 @@
-# BackTestTradingViewMCP
+# TradingViewMCPServer
 
-**Complete forex backtesting system with TradingView integration for validation and real-time market data**
+Multi-asset trading assistant MCP server for Claude Desktop. Supports Forex, Stocks, and Crypto with 20+ technical indicators.
 
----
+## Features
 
-## What This Is
-
-A unified system that combines:
-
-1. **Forex Backtesting Engine** - Test trading strategies with realistic spreads and multi-timeframe support
-2. **TradingView MCP Server** - Real-time market data and technical indicators
-3. **Validation Tools** - Compare Python backtests with TradingView results
-
----
-
-## Quick Start (3 Steps)
-
-```bash
-# 1. Install dependencies
-cd ~/BackTestTradingViewMCP
-uv sync
-
-# 2. Activate environment
-source .venv/bin/activate
-
-# 3. Run interactive strategy manager
-python strategy_manager.py
-```
-
----
-
-## Key Features
-
-### Backtesting System ✨
-
-- **Realistic Spreads**: 1-150 pips based on pair and timeframe
-- **Multi-Timeframe**: Test on 5m, 15m, 30m, 1h, 4h, 1d charts
-- **5 Example Strategies**: MA Crossover, RSI, MACD, Bollinger Bands, Multi-Indicator
-- **Auto-Discovery**: Drop strategies in `strategies/` folder - they auto-appear
-- **Interactive CLI**: Beautiful terminal interface with Rich
-- **Smart Caching**: Downloaded data cached locally
-
-### TradingView Integration 🔗
-
-- **Real-Time Data**: Live prices, volume, technical indicators
-- **Market Screener**: Top gainers, losers, volatile pairs
-- **Validation Tools**: Compare backtest results with TradingView
-- **MCP Server**: Connect Claude Desktop to TradingView data
-
-### Validation & Comparison 🎯
-
-- **Data Accuracy Check**: Verify yfinance vs TradingView prices
-- **Strategy Comparison**: Backtest same strategy in both systems
-- **Difference Analyzer**: Identify discrepancies in results
-
----
-
-## Project Structure
-
-```
-BackTestTradingViewMCP/
-├── strategy_manager.py          # Main interface - START HERE
-├── backtester.py                # Backtesting engine
-├── forex_config.py              # Spread/leverage configuration
-│
-├── strategies/                  # Trading strategies
-│   ├── ma_crossover.py
-│   ├── rsi_strategy.py
-│   ├── macd_strategy.py
-│   ├── bollinger_strategy.py
-│   ├── multi_indicator.py
-│   └── template.py              # Copy this to create new strategies
-│
-├── mcp_server/                  # TradingView MCP server
-│   └── tradingview_mcp/
-│       ├── server.py            # MCP server entry point
-│       └── coinlist/            # Supported assets
-│
-├── tradingview_integration/     # Validation tools
-│   ├── download_tradingview_data.py   # Data comparison
-│   ├── compare_strategies.py          # Backtest comparison
-│   └── analyze_differences.py         # Results analyzer
-│
-├── data/                        # Market data cache
-├── tests/                       # Test scripts
-├── examples/                    # Demo scripts
-└── utils/                       # Helper modules
-```
-
----
+- **Multi-Asset Support**: Forex (22+ pairs), US Stocks, Cryptocurrencies
+- **20+ Technical Indicators**: Volume Profile, Market Profile, VWAP, Fibonacci, Bollinger Bands, MACD, Moving Averages, ATR, Support/Resistance, Pivot Points, Stochastic, ADX, Ichimoku Cloud, and more
+- **Real-time Data**: Live quotes and historical data via Alpha Vantage API
+- **Claude Desktop Integration**: Seamless integration with Claude Desktop via MCP
 
 ## Installation
 
 ### Prerequisites
 
-- macOS / Linux / Windows
-- Python 3.13+
-- UV package manager
+- Python 3.13 or higher
+- Claude Desktop
+- Alpha Vantage API key (free at https://www.alphavantage.co/support/#api-key)
 
 ### Setup
 
+1. Clone the repository:
 ```bash
-# Navigate to project
-cd ~/BackTestTradingViewMCP
-
-# Install all dependencies (backtesting + MCP server)
-uv sync
-
-# Activate environment
-source .venv/bin/activate
-
-# Verify installation
-python tests/test_system.py
+git clone https://github.com/YOUR_USERNAME/TradingViewMCPServer.git
+cd TradingViewMCPServer
 ```
 
----
-
-## Usage
-
-### 1. Backtesting
-
+2. Create virtual environment and install dependencies:
 ```bash
-# Interactive menu (easiest)
-python strategy_manager.py
-
-# Quick test
-python examples/quickstart.py
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -e .
 ```
 
-### 2. TradingView Validation
-
+3. Create `.env` file with your API key:
 ```bash
-# Check data accuracy
-python tradingview_integration/download_tradingview_data.py
-
-# Run backtest for comparison
-python tradingview_integration/compare_strategies.py
-
-# Compare results
-python tradingview_integration/analyze_differences.py
+echo "ALPHA_VANTAGE_API_KEY=your_key_here" > .env
 ```
 
-### 3. MCP Server (for Claude Desktop)
+4. Configure Claude Desktop:
 
-1. Edit config:
-```bash
-nano ~/Library/Application\ Support/Claude/claude_desktop_config.json
-```
+Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
 
-2. Add:
 ```json
 {
   "mcpServers": {
-    "tradingview-data": {
-      "command": "uv",
-      "args": ["run", "python", "mcp_server/tradingview_mcp/server.py"],
-      "cwd": "/Users/levtheswag/BackTestTradingViewMCP"
+    "tradingview": {
+      "command": "/absolute/path/to/TradingViewMCPServer/.venv/bin/python",
+      "args": [
+        "/absolute/path/to/TradingViewMCPServer/tradingview_mcp/server.py",
+        "stdio"
+      ]
     }
   }
 }
 ```
 
-3. Restart Claude Desktop (Cmd+Q, reopen)
+Replace `/absolute/path/to/TradingViewMCPServer` with your actual installation path.
 
----
+5. Restart Claude Desktop
 
-## Creating Strategies
+## Usage
 
-```bash
-# Copy template
-cp strategies/template.py strategies/my_strategy.py
+Ask Claude Desktop natural language questions:
 
-# Edit and test
-python strategy_manager.py
+```
+What's the current price of AAPL?
+Show me Bollinger Bands for TSLA on 1h timeframe
+Calculate Fibonacci levels for BTC
+Get MACD for EURUSD
+Show me support and resistance for NVDA
+What's the volume profile for SPY?
+Give me the Ichimoku Cloud for ETH
+Calculate pivot points for GBPUSD
 ```
 
----
+## Available Tools
 
-## Documentation
+### Price & Market Data
+- `get_price` - Get current price for any asset
+- `get_multiple_prices` - Batch price quotes
+- `list_available_pairs` - List forex pairs
+- `list_supported_assets` - List all supported assets
 
-- **[USER_GUIDE.md](USER_GUIDE.md)** - Complete usage guide
-- **[TRADINGVIEW_SETUP.md](TRADINGVIEW_SETUP.md)** - Integration setup
-- **[tradingview_integration/README.md](tradingview_integration/README.md)** - Validation tools
-- **[PROJECT_NOTES.md](PROJECT_NOTES.md)** - Technical details
+### Technical Analysis
+- `analyze_pair` - Comprehensive analysis
+- `get_trading_recommendation` - Trading signals
+- `calculate_correlation` - Pair correlation
 
----
+### Volume & Profile Analysis
+- `get_volume_profile` - Volume at price levels
+- `get_market_profile` - Market profile with TPO and value areas
+- `get_vwap` - Volume Weighted Average Price
+- `get_volume_nodes` - High/low volume nodes
+- `detect_unfilled_gaps` - Price gaps detection
 
-## Testing
+### Popular Indicators
+- `get_fibonacci_retracement` - Fibonacci levels
+- `get_bollinger_bands` - Bollinger Bands
+- `get_macd` - MACD indicator
+- `get_moving_averages` - Multiple SMAs
+- `get_atr` - Average True Range
+- `get_support_resistance` - Auto-detected levels
+- `get_pivot_points` - Daily pivot points
+- `get_stochastic` - Stochastic oscillator
+- `get_adx` - Trend strength
+- `get_ichimoku_cloud` - Ichimoku Cloud
 
+## Supported Assets
+
+### Forex
+Major pairs, crosses, exotics, and gold (XAUUSD)
+
+### Stocks
+US equities including AAPL, MSFT, GOOGL, AMZN, TSLA, NVDA, META, and more
+
+### Crypto
+BTC, ETH, BNB, XRP, ADA, SOL, and other major cryptocurrencies
+
+## Configuration
+
+### API Rate Limits
+
+Alpha Vantage free tier:
+- 25 requests per day
+- 5 API calls per minute
+
+For higher limits, upgrade to premium API key.
+
+### Timeframes
+
+Supported timeframes: `5m`, `15m`, `30m`, `1h`, `4h`, `1d`
+
+## Troubleshooting
+
+### Claude Desktop Not Connecting
+
+1. Verify config file path is correct
+2. Check Python path in config
+3. Ensure `.env` file exists with valid API key
+4. Restart Claude Desktop
+
+### API Rate Limit Errors
+
+Wait 1 minute between requests or upgrade API key.
+
+### Module Import Errors
+
+Ensure virtual environment is activated and dependencies installed:
 ```bash
-# Run all tests
-python tests/test_system.py
-
-# Test data comparison
-python tradingview_integration/download_tradingview_data.py
+source .venv/bin/activate
+pip install -e .
 ```
 
----
+## License
 
-## What Makes This Different
+MIT License - see LICENSE file for details
 
-1. **Realistic Spreads** - 1-150 pips based on actual market conditions
-2. **TradingView Validation** - Compare backtests (should match within 1-3%)
-3. **Live Market Data** - Real-time TradingView data via MCP
-4. **Multi-Timeframe** - 5m to 1d with automatic spread adjustment
-5. **Auto-Discovery** - Drop strategies in folder, auto-appear in menus
+## Contributing
 
----
-
-**Happy Trading! 📈**
-
-*Backtest with confidence. Validate with precision.*
+Contributions welcome. Please open an issue or submit a pull request.

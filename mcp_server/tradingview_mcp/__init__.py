@@ -1,1 +1,0 @@
-"""TradingView MCP server package."""
