@@ -158,4 +158,30 @@ MIT License - see LICENSE file for details
 
 ## Contributing
 
-Contributions welcome. Please open an issue or submit a pull request.
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+### How to Contribute
+
+- **Bug Reports**: Use the bug report template
+- **Feature Requests**: Use the feature request template
+- **Code Contributions**: Fork, create a branch, and submit a PR
+- **Documentation**: Improvements to README, code comments, or examples
+
+### Contribution Ideas
+
+- New technical indicators (RSI, CCI, Williams %R, etc.)
+- Performance optimizations
+- Additional asset types or markets
+- Better error handling
+- Enhanced documentation
+- Example use cases
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and coding standards.
+
+## Support
+
+For issues or questions:
+1. Check the [Troubleshooting](#troubleshooting) section
+2. Review [CONTRIBUTING.md](CONTRIBUTING.md)
+3. Search existing [GitHub Issues](https://github.com/lev-corrupted/TradingViewMCPServer/issues)
+4. Open a new issue with the appropriate template
