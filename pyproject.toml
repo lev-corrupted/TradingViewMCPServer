@@ -1,9 +1,9 @@
 [project]
 name = "tradingview-mcp"
-version = "2.0.0"
-description = "TradingView MCP server for Claude - Multi-asset trading assistant supporting Forex, Stocks, Crypto with 20+ technical indicators"
+version = "3.0.0"
+description = "TradingView MCP server for Claude - Multi-asset trading assistant with Pine Script development tools supporting Forex, Stocks, Crypto with 20+ technical indicators"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.9"
 dependencies = [
     "mcp[cli]>=1.12.0",
     "python-dotenv>=1.0.0",
