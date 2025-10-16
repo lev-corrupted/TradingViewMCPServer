@@ -83,7 +83,7 @@ class Token:
 
 # Pine Script keywords across all versions
 KEYWORDS = {
-    # v1-v5 common keywords
+    # v1-v6 common keywords
     'if', 'else', 'for', 'while', 'break', 'continue',
     'true', 'false', 'na', 'and', 'or', 'not',
 
@@ -93,14 +93,17 @@ KEYWORDS = {
     # Function/method keywords
     'method', 'export',
 
-    # Import/library (v5)
+    # Import/library (v5+)
     'import', 'as',
 
-    # Type keywords (v5)
+    # Type keywords (v5+)
     'type',
 
     # Control flow
     'switch', 'return',
+
+    # v6 keywords
+    'struct', 'enum',
 }
 
 # Built-in functions and types
@@ -235,12 +238,17 @@ class PineScriptLexer:
         while self.peek() and (self.peek().isalnum() or self.peek() in '_.'):
             ident += self.advance()
 
-        # Check if it's a keyword
-        token_type = TokenType.KEYWORD if ident in KEYWORDS else TokenType.IDENTIFIER
-
-        # Check for boolean literals
+        # Check for boolean literals first
         if ident in ('true', 'false'):
             token_type = TokenType.BOOL
+        # Check for na (special value, treat as identifier not keyword)
+        elif ident == 'na':
+            token_type = TokenType.IDENTIFIER
+        # Check if it's a keyword
+        elif ident in KEYWORDS:
+            token_type = TokenType.KEYWORD
+        else:
+            token_type = TokenType.IDENTIFIER
 
         return Token(token_type, ident, start_line, start_col)
 

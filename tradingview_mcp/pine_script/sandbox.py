@@ -154,7 +154,7 @@ Validation Warnings: {len(validation_result.warnings)}
         """
         templates = {
             "simple": """
-//@version=5
+//@version=6
 indicator("My Indicator", overlay=true)
 
 // Input parameters
@@ -167,8 +167,8 @@ myValue = ta.sma(close, length)
 plot(myValue, color=color.blue, linewidth=2)
 """,
             "strategy": """
-//@version=5
-strategy("My Strategy", overlay=true, initial_capital=10000)
+//@version=6
+strategy("My Strategy", overlay=true, initial_capital=10000, default_qty_type=strategy.fixed, default_qty_value=1)
 
 // Input parameters
 fastLength = input.int(12, "Fast MA Length")
@@ -193,7 +193,7 @@ plot(fastMa, color=color.blue)
 plot(slowMa, color=color.red)
 """,
             "overlay": """
-//@version=5
+//@version=6
 indicator("Support/Resistance", overlay=true)
 
 // Input parameters

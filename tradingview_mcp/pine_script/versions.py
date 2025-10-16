@@ -37,6 +37,10 @@ class VersionDetector:
     """
 
     # Version-specific features
+    V6_ONLY_FEATURES = {
+        'struct', 'enum',
+    }
+
     V5_ONLY_FEATURES = {
         'import', 'export', 'method', 'type',
         'request.security', 'indicator', 'library',
@@ -47,7 +51,7 @@ class VersionDetector:
     }
 
     V3_DEPRECATED = {
-        'study', 'security', 'na',
+        'study', 'security',
     }
 
     # Function name changes across versions
@@ -150,6 +154,15 @@ class VersionDetector:
         """
         code_lower = code.lower()
 
+        # Check for v6 features
+        v6_score = 0
+        for feature in self.V6_ONLY_FEATURES:
+            if re.search(rf'\b{re.escape(feature)}\b', code_lower):
+                v6_score += 1
+
+        if v6_score >= 1:
+            return (6, 0.95, 'syntax')
+
         # Check for v5 features
         v5_score = 0
         for feature in self.V5_ONLY_FEATURES:
@@ -181,8 +194,8 @@ class VersionDetector:
         if v3_score >= 1:
             return (3, 0.7, 'functions')
 
-        # Default to v4 if no clear indicators
-        return (4, 0.5, 'default')
+        # Default to v5 if no clear indicators (v5 is now standard)
+        return (5, 0.5, 'default')
 
     def _find_compatibility_issues(self, code: str, target_version: int) -> List[str]:
         """Find compatibility issues for the detected version"""
@@ -378,6 +391,40 @@ class VersionConverter:
             Markdown-formatted migration guide
         """
         guide = f"# Pine Script Migration Guide: v{from_version} → v{to_version}\n\n"
+
+        if from_version < 6 and to_version >= 6:
+            guide += """
+## Upgrading to Pine Script v6
+
+### Key Changes
+
+1. **New Features**
+   - `struct` keyword for custom data structures
+   - `enum` keyword for enumeration types
+   - Enhanced type system
+   - Improved performance
+
+2. **Best Practices**
+   - Use struct for complex data organization
+   - Leverage enums for state management
+   - Take advantage of improved type inference
+
+### Example
+
+```pine
+//@version=6
+indicator("v6 Example")
+
+// Define a struct
+type TradeData
+    float entry
+    float stop
+    float target
+
+// Create instance
+var myTrade = TradeData.new(close, close * 0.98, close * 1.05)
+```
+"""
 
         if from_version < 5 and to_version >= 5:
             guide += """

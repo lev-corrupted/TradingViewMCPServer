@@ -4,7 +4,9 @@ Comprehensive Pine Script development tools integrated with TradingViewMCPServer
 
 ## Overview
 
-The Pine Script MCP Server provides professional-grade development tools for Pine Script, including real-time syntax validation, intelligent code completion, version detection, code conversion, comprehensive documentation, and a testing sandbox.
+The Pine Script MCP Server provides professional-grade development tools for Pine Script v1-v6, including real-time syntax validation, intelligent code completion, version detection, code conversion, comprehensive documentation, and a testing sandbox.
+
+**Latest Update**: Full Pine Script v6 support with 100+ built-in functions including all ta.*, strategy.*, and plot functions!
 
 ## Features
 
@@ -160,8 +162,9 @@ plot(myMa)
 - Pine Script v1 (legacy)
 - Pine Script v2 (legacy)
 - Pine Script v3 (deprecated)
-- Pine Script v4 (current)
-- Pine Script v5 (latest)
+- Pine Script v4 (stable)
+- Pine Script v5 (current)
+- Pine Script v6 (latest) ⭐ NEW
 
 ### 7. Version Conversion 🔄
 
@@ -190,6 +193,7 @@ convert_pine_version(
 **Supported Migrations:**
 - v3 → v4
 - v4 → v5
+- v5 → v6 ⭐ NEW
 - Auto-detects source version if not specified
 
 **Returns:**

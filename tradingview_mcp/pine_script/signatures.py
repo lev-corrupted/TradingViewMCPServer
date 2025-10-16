@@ -100,11 +100,110 @@ class FunctionSignatureDB:
                 FunctionParameter("trackprice", DataType.BOOL, ParamType.INPUT, optional=True, default_value=False, description="Track price on scale"),
                 FunctionParameter("show_last", DataType.INT, ParamType.INPUT, optional=True, description="Show last N bars"),
                 FunctionParameter("offset", DataType.INT, ParamType.INPUT, optional=True, default_value=0, description="Offset in bars"),
+                FunctionParameter("display", DataType.INT, ParamType.INPUT, optional=True, description="Display mode"),
             ],
             return_type=DataType.ANY,
             version=1,
             description="Plots a series of data on the chart",
             examples=["plot(close)", "plot(close, color=color.red, linewidth=2)"],
+        )
+
+        self.functions["plotshape"] = FunctionSignature(
+            name="plotshape",
+            parameters=[
+                FunctionParameter("series", DataType.BOOL, ParamType.SERIES, description="Series of boolean values"),
+                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Plot title"),
+                FunctionParameter("style", DataType.STRING, ParamType.CONST, optional=True, description="Shape style"),
+                FunctionParameter("location", DataType.STRING, ParamType.CONST, optional=True, description="Location (abovebar, belowbar, etc.)"),
+                FunctionParameter("color", DataType.COLOR, ParamType.SERIES, optional=True, description="Shape color"),
+                FunctionParameter("offset", DataType.INT, ParamType.INPUT, optional=True, default_value=0, description="Offset in bars"),
+                FunctionParameter("text", DataType.STRING, ParamType.CONST, optional=True, description="Text to display"),
+                FunctionParameter("textcolor", DataType.COLOR, ParamType.SERIES, optional=True, description="Text color"),
+                FunctionParameter("size", DataType.STRING, ParamType.CONST, optional=True, description="Shape size"),
+            ],
+            return_type=DataType.ANY,
+            version=1,
+            description="Plots shapes on the chart when condition is true",
+            examples=['plotshape(crossover(close, ma), style=shape.triangleup, location=location.belowbar, color=color.green)'],
+        )
+
+        self.functions["plotchar"] = FunctionSignature(
+            name="plotchar",
+            parameters=[
+                FunctionParameter("series", DataType.BOOL, ParamType.SERIES, description="Series of boolean values"),
+                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Plot title"),
+                FunctionParameter("char", DataType.STRING, ParamType.CONST, optional=True, description="Character to display"),
+                FunctionParameter("location", DataType.STRING, ParamType.CONST, optional=True, description="Location (abovebar, belowbar, etc.)"),
+                FunctionParameter("color", DataType.COLOR, ParamType.SERIES, optional=True, description="Character color"),
+                FunctionParameter("offset", DataType.INT, ParamType.INPUT, optional=True, default_value=0, description="Offset in bars"),
+                FunctionParameter("text", DataType.STRING, ParamType.CONST, optional=True, description="Text to display"),
+                FunctionParameter("textcolor", DataType.COLOR, ParamType.SERIES, optional=True, description="Text color"),
+                FunctionParameter("size", DataType.STRING, ParamType.CONST, optional=True, description="Character size"),
+            ],
+            return_type=DataType.ANY,
+            version=1,
+            description="Plots characters on the chart when condition is true",
+            examples=['plotchar(buySignal, char="B", location=location.belowbar, color=color.green)'],
+        )
+
+        self.functions["plotarrow"] = FunctionSignature(
+            name="plotarrow",
+            parameters=[
+                FunctionParameter("series", DataType.FLOAT, ParamType.SERIES, description="Series of values (positive = up, negative = down)"),
+                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Plot title"),
+                FunctionParameter("colorup", DataType.COLOR, ParamType.SERIES, optional=True, description="Color for up arrows"),
+                FunctionParameter("colordown", DataType.COLOR, ParamType.SERIES, optional=True, description="Color for down arrows"),
+                FunctionParameter("offset", DataType.INT, ParamType.INPUT, optional=True, default_value=0, description="Offset in bars"),
+                FunctionParameter("minheight", DataType.INT, ParamType.INPUT, optional=True, description="Minimum arrow height"),
+                FunctionParameter("maxheight", DataType.INT, ParamType.INPUT, optional=True, description="Maximum arrow height"),
+            ],
+            return_type=DataType.ANY,
+            version=1,
+            description="Plots arrows on the chart",
+            examples=['plotarrow(signal, colorup=color.green, colordown=color.red)'],
+        )
+
+        self.functions["hline"] = FunctionSignature(
+            name="hline",
+            parameters=[
+                FunctionParameter("price", DataType.FLOAT, ParamType.CONST, description="Price level"),
+                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Line title"),
+                FunctionParameter("color", DataType.COLOR, ParamType.CONST, optional=True, description="Line color"),
+                FunctionParameter("linestyle", DataType.STRING, ParamType.CONST, optional=True, description="Line style"),
+                FunctionParameter("linewidth", DataType.INT, ParamType.CONST, optional=True, default_value=1, description="Line width"),
+            ],
+            return_type=DataType.ANY,
+            version=1,
+            description="Plots a horizontal line at a fixed price level",
+            examples=['hline(0, "Zero Line", color=color.gray)'],
+        )
+
+        self.functions["fill"] = FunctionSignature(
+            name="fill",
+            parameters=[
+                FunctionParameter("plot1", DataType.ANY, ParamType.SERIES, description="First plot"),
+                FunctionParameter("plot2", DataType.ANY, ParamType.SERIES, description="Second plot"),
+                FunctionParameter("color", DataType.COLOR, ParamType.SERIES, optional=True, description="Fill color"),
+                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Fill title"),
+                FunctionParameter("transp", DataType.INT, ParamType.INPUT, optional=True, description="Transparency (deprecated, use color.new)"),
+            ],
+            return_type=DataType.ANY,
+            version=1,
+            description="Fills background between two plots",
+            examples=['fill(plot1, plot2, color=color.new(color.blue, 90))'],
+        )
+
+        self.functions["bgcolor"] = FunctionSignature(
+            name="bgcolor",
+            parameters=[
+                FunctionParameter("color", DataType.COLOR, ParamType.SERIES, description="Background color"),
+                FunctionParameter("offset", DataType.INT, ParamType.INPUT, optional=True, default_value=0, description="Offset in bars"),
+                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Background title"),
+            ],
+            return_type=DataType.ANY,
+            version=1,
+            description="Colors the chart background",
+            examples=['bgcolor(close > open ? color.new(color.green, 90) : color.new(color.red, 90))'],
         )
 
         # ===== TECHNICAL ANALYSIS (v5 namespace) =====
@@ -202,6 +301,110 @@ class FunctionSignatureDB:
             version=5,
             description="Bollinger Bands",
             examples=["[middle, upper, lower] = ta.bb(close, 20, 2.0)"],
+        )
+
+        self.functions["ta.crossover"] = FunctionSignature(
+            name="crossover",
+            namespace="ta",
+            parameters=[
+                FunctionParameter("source1", DataType.FLOAT, ParamType.SERIES, description="First series"),
+                FunctionParameter("source2", DataType.FLOAT, ParamType.SERIES, description="Second series"),
+            ],
+            return_type=DataType.BOOL,
+            version=5,
+            description="Returns true when source1 crosses over source2",
+            examples=["ta.crossover(fastMa, slowMa)"],
+        )
+
+        self.functions["ta.crossunder"] = FunctionSignature(
+            name="crossunder",
+            namespace="ta",
+            parameters=[
+                FunctionParameter("source1", DataType.FLOAT, ParamType.SERIES, description="First series"),
+                FunctionParameter("source2", DataType.FLOAT, ParamType.SERIES, description="Second series"),
+            ],
+            return_type=DataType.BOOL,
+            version=5,
+            description="Returns true when source1 crosses under source2",
+            examples=["ta.crossunder(fastMa, slowMa)"],
+        )
+
+        self.functions["ta.cross"] = FunctionSignature(
+            name="cross",
+            namespace="ta",
+            parameters=[
+                FunctionParameter("source1", DataType.FLOAT, ParamType.SERIES, description="First series"),
+                FunctionParameter("source2", DataType.FLOAT, ParamType.SERIES, description="Second series"),
+            ],
+            return_type=DataType.BOOL,
+            version=5,
+            description="Returns true when source1 crosses source2 (either direction)",
+            examples=["ta.cross(close, vwap)"],
+        )
+
+        self.functions["ta.change"] = FunctionSignature(
+            name="change",
+            namespace="ta",
+            parameters=[
+                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source series"),
+                FunctionParameter("length", DataType.INT, ParamType.SIMPLE, optional=True, default_value=1, description="Number of bars"),
+            ],
+            return_type=DataType.FLOAT,
+            version=5,
+            description="Difference between current value and value length bars ago",
+            examples=["ta.change(close)", "ta.change(close, 5)"],
+        )
+
+        self.functions["ta.highest"] = FunctionSignature(
+            name="highest",
+            namespace="ta",
+            parameters=[
+                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source series"),
+                FunctionParameter("length", DataType.INT, ParamType.SIMPLE, description="Number of bars"),
+            ],
+            return_type=DataType.FLOAT,
+            version=5,
+            description="Highest value in the specified number of bars",
+            examples=["ta.highest(high, 20)"],
+        )
+
+        self.functions["ta.lowest"] = FunctionSignature(
+            name="lowest",
+            namespace="ta",
+            parameters=[
+                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source series"),
+                FunctionParameter("length", DataType.INT, ParamType.SIMPLE, description="Number of bars"),
+            ],
+            return_type=DataType.FLOAT,
+            version=5,
+            description="Lowest value in the specified number of bars",
+            examples=["ta.lowest(low, 20)"],
+        )
+
+        self.functions["ta.barssince"] = FunctionSignature(
+            name="barssince",
+            namespace="ta",
+            parameters=[
+                FunctionParameter("condition", DataType.BOOL, ParamType.SERIES, description="Boolean condition"),
+            ],
+            return_type=DataType.INT,
+            version=5,
+            description="Number of bars since condition was true",
+            examples=["ta.barssince(close > open)"],
+        )
+
+        self.functions["ta.valuewhen"] = FunctionSignature(
+            name="valuewhen",
+            namespace="ta",
+            parameters=[
+                FunctionParameter("condition", DataType.BOOL, ParamType.SERIES, description="Boolean condition"),
+                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source value"),
+                FunctionParameter("occurrence", DataType.INT, ParamType.SIMPLE, description="Which occurrence (0 = most recent)"),
+            ],
+            return_type=DataType.FLOAT,
+            version=5,
+            description="Returns value when condition was true at specified occurrence",
+            examples=["ta.valuewhen(ta.cross(close, vwap), close, 0)"],
         )
 
         # ===== MATH FUNCTIONS (v5 namespace) =====
@@ -383,13 +586,115 @@ class FunctionSignatureDB:
                 FunctionParameter("shorttitle", DataType.STRING, ParamType.CONST, optional=True, description="Short title"),
                 FunctionParameter("overlay", DataType.BOOL, ParamType.CONST, optional=True, default_value=False, description="Overlay on chart"),
                 FunctionParameter("initial_capital", DataType.FLOAT, ParamType.CONST, optional=True, default_value=10000, description="Initial capital"),
+                FunctionParameter("default_qty_type", DataType.STRING, ParamType.CONST, optional=True, description="Default quantity type (fixed, cash, percent_of_equity)"),
+                FunctionParameter("default_qty_value", DataType.FLOAT, ParamType.CONST, optional=True, description="Default quantity value"),
+                FunctionParameter("currency", DataType.STRING, ParamType.CONST, optional=True, description="Account currency"),
                 FunctionParameter("commission_type", DataType.STRING, ParamType.CONST, optional=True, description="Commission type"),
                 FunctionParameter("commission_value", DataType.FLOAT, ParamType.CONST, optional=True, description="Commission value"),
+                FunctionParameter("slippage", DataType.INT, ParamType.CONST, optional=True, description="Slippage in ticks"),
+                FunctionParameter("pyramiding", DataType.INT, ParamType.CONST, optional=True, default_value=0, description="Number of pyramid entries"),
+                FunctionParameter("calc_on_order_fills", DataType.BOOL, ParamType.CONST, optional=True, description="Calculate on order fills"),
+                FunctionParameter("calc_on_every_tick", DataType.BOOL, ParamType.CONST, optional=True, description="Calculate on every tick"),
+                FunctionParameter("process_orders_on_close", DataType.BOOL, ParamType.CONST, optional=True, description="Process orders on close"),
+                FunctionParameter("backtest_fill_limits_assumption", DataType.INT, ParamType.CONST, optional=True, description="Backtest fill assumption"),
             ],
             return_type=DataType.ANY,
             version=1,
             description="Strategy declaration",
-            examples=['strategy("My Strategy", overlay=true, initial_capital=10000)'],
+            examples=['strategy("My Strategy", overlay=true, initial_capital=10000, default_qty_type=strategy.fixed)'],
+        )
+
+        self.functions["strategy.entry"] = FunctionSignature(
+            name="entry",
+            namespace="strategy",
+            parameters=[
+                FunctionParameter("id", DataType.STRING, ParamType.CONST, description="Order identifier"),
+                FunctionParameter("direction", DataType.STRING, ParamType.CONST, description="strategy.long or strategy.short"),
+                FunctionParameter("qty", DataType.FLOAT, ParamType.SERIES, optional=True, description="Order quantity"),
+                FunctionParameter("limit", DataType.FLOAT, ParamType.SERIES, optional=True, description="Limit price"),
+                FunctionParameter("stop", DataType.FLOAT, ParamType.SERIES, optional=True, description="Stop price"),
+                FunctionParameter("when", DataType.BOOL, ParamType.SERIES, optional=True, description="Condition"),
+                FunctionParameter("comment", DataType.STRING, ParamType.CONST, optional=True, description="Order comment"),
+            ],
+            return_type=DataType.ANY,
+            version=1,
+            description="Create an entry order",
+            examples=['strategy.entry("Long", strategy.long, when=longCondition)'],
+        )
+
+        self.functions["strategy.exit"] = FunctionSignature(
+            name="exit",
+            namespace="strategy",
+            parameters=[
+                FunctionParameter("id", DataType.STRING, ParamType.CONST, description="Exit order identifier"),
+                FunctionParameter("from_entry", DataType.STRING, ParamType.CONST, optional=True, description="Entry order to exit from"),
+                FunctionParameter("qty", DataType.FLOAT, ParamType.SERIES, optional=True, description="Exit quantity"),
+                FunctionParameter("qty_percent", DataType.FLOAT, ParamType.SERIES, optional=True, description="Exit quantity as percentage"),
+                FunctionParameter("profit", DataType.FLOAT, ParamType.SERIES, optional=True, description="Profit target in ticks"),
+                FunctionParameter("loss", DataType.FLOAT, ParamType.SERIES, optional=True, description="Stop loss in ticks"),
+                FunctionParameter("limit", DataType.FLOAT, ParamType.SERIES, optional=True, description="Limit price"),
+                FunctionParameter("stop", DataType.FLOAT, ParamType.SERIES, optional=True, description="Stop price"),
+                FunctionParameter("when", DataType.BOOL, ParamType.SERIES, optional=True, description="Condition"),
+                FunctionParameter("comment", DataType.STRING, ParamType.CONST, optional=True, description="Order comment"),
+            ],
+            return_type=DataType.ANY,
+            version=1,
+            description="Create an exit order with stop loss and take profit",
+            examples=['strategy.exit("Exit", "Long", profit=100, loss=50)'],
+        )
+
+        self.functions["strategy.close"] = FunctionSignature(
+            name="close",
+            namespace="strategy",
+            parameters=[
+                FunctionParameter("id", DataType.STRING, ParamType.CONST, description="Entry order to close"),
+                FunctionParameter("when", DataType.BOOL, ParamType.SERIES, optional=True, description="Condition"),
+                FunctionParameter("comment", DataType.STRING, ParamType.CONST, optional=True, description="Order comment"),
+                FunctionParameter("qty", DataType.FLOAT, ParamType.SERIES, optional=True, description="Quantity to close"),
+                FunctionParameter("qty_percent", DataType.FLOAT, ParamType.SERIES, optional=True, description="Percentage to close"),
+            ],
+            return_type=DataType.ANY,
+            version=1,
+            description="Close an entry order",
+            examples=['strategy.close("Long", when=exitCondition)'],
+        )
+
+        self.functions["strategy.close_all"] = FunctionSignature(
+            name="close_all",
+            namespace="strategy",
+            parameters=[
+                FunctionParameter("when", DataType.BOOL, ParamType.SERIES, optional=True, description="Condition"),
+                FunctionParameter("comment", DataType.STRING, ParamType.CONST, optional=True, description="Order comment"),
+            ],
+            return_type=DataType.ANY,
+            version=1,
+            description="Close all open positions",
+            examples=['strategy.close_all(when=emergencyExit)'],
+        )
+
+        self.functions["strategy.cancel"] = FunctionSignature(
+            name="cancel",
+            namespace="strategy",
+            parameters=[
+                FunctionParameter("id", DataType.STRING, ParamType.CONST, description="Order identifier to cancel"),
+                FunctionParameter("when", DataType.BOOL, ParamType.SERIES, optional=True, description="Condition"),
+            ],
+            return_type=DataType.ANY,
+            version=1,
+            description="Cancel a specific order",
+            examples=['strategy.cancel("Long")'],
+        )
+
+        self.functions["strategy.cancel_all"] = FunctionSignature(
+            name="cancel_all",
+            namespace="strategy",
+            parameters=[
+                FunctionParameter("when", DataType.BOOL, ParamType.SERIES, optional=True, description="Condition"),
+            ],
+            return_type=DataType.ANY,
+            version=1,
+            description="Cancel all pending orders",
+            examples=['strategy.cancel_all()'],
         )
 
         # ===== STRING FUNCTIONS (v5) =====
