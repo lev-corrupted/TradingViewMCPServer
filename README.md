@@ -1,14 +1,14 @@
 # TradingViewMCPServer
 
-Professional multi-asset trading assistant and Pine Script development server for Claude Desktop. Supports Forex, Stocks, Crypto with 20+ technical indicators plus comprehensive Pine Script development tools.
+Professional multi-asset trading assistant and Pine Script development server for Claude Desktop. Supports Forex, Stocks, Crypto with **25+ technical indicators** plus comprehensive Pine Script development tools.
 
 ## Features
 
 ### Trading & Market Analysis
 
 - **Multi-Asset Support**: Forex (22+ pairs), US Stocks, Cryptocurrencies
-- **20+ Technical Indicators**: Volume Profile, Market Profile, VWAP, Fibonacci, Bollinger Bands, MACD, Moving Averages, ATR, Support/Resistance, Pivot Points, Stochastic, ADX, Ichimoku Cloud, and more
-- **Real-time Data**: Live quotes and historical data via Alpha Vantage API
+- **25+ Technical Indicators**: Volume Profile, Market Profile, VWAP, Fibonacci, Bollinger Bands, MACD, Moving Averages, ATR, Support/Resistance, Pivot Points, Stochastic, **RSI, CCI, Williams %R**, ADX, Ichimoku Cloud, and more
+- **Full Historical Data**: Live quotes and historical data for **all asset types** (Forex, Stocks, Crypto) via Alpha Vantage API
 - **Claude Desktop Integration**: Seamless integration with Claude Desktop via MCP
 
 ### Pine Script Development Tools (NEW in v3.1)
@@ -124,17 +124,26 @@ Give me a Pine Script strategy template
 - `get_volume_nodes` - High/low volume nodes
 - `detect_unfilled_gaps` - Price gaps detection
 
-### Popular Indicators
-- `get_fibonacci_retracement` - Fibonacci levels
-- `get_bollinger_bands` - Bollinger Bands
+### Momentum Indicators (NEW: RSI, CCI, Williams %R)
+- `get_stochastic` - Stochastic oscillator (%K, %D)
+- `get_rsi` - **NEW!** RSI (Relative Strength Index)
+- `get_cci` - **NEW!** CCI (Commodity Channel Index)
+- `get_williams_r` - **NEW!** Williams %R
+
+### Trend Indicators
+- `get_moving_averages` - Multiple SMAs/EMAs
 - `get_macd` - MACD indicator
-- `get_moving_averages` - Multiple SMAs
+- `get_adx` - Average Directional Index (trend strength)
+- `get_ichimoku_cloud` - Ichimoku Cloud
+
+### Volatility Indicators
+- `get_bollinger_bands` - Bollinger Bands
 - `get_atr` - Average True Range
+
+### Support/Resistance
+- `get_fibonacci_retracement` - Fibonacci levels
 - `get_support_resistance` - Auto-detected levels
 - `get_pivot_points` - Daily pivot points
-- `get_stochastic` - Stochastic oscillator
-- `get_adx` - Trend strength
-- `get_ichimoku_cloud` - Ichimoku Cloud
 
 ### Pine Script Development (NEW)
 - `validate_pine_script` - Real-time syntax validation with detailed error reporting (v1-v6 support)

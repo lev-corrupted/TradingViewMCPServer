@@ -373,6 +373,124 @@ class AlphaVantageClient:
 
         return format_error_response(ERROR_NO_DATA, symbol=pair)
 
+    def get_historical_data_stock(
+        self,
+        symbol: str,
+        timeframe: str = "1h",
+        outputsize: str = "compact"
+    ) -> Dict[str, Any]:
+        """
+        Get historical stock data.
+
+        Args:
+            symbol: Stock symbol (e.g., 'AAPL')
+            timeframe: Timeframe ('5m', '15m', '30m', '1h', '4h', '1d')
+            outputsize: 'compact' (100 points) or 'full' (full history)
+
+        Returns:
+            Historical OHLCV data or error
+        """
+        cache_key = f"stock_historical_{symbol}_{timeframe}_{outputsize}"
+        cached = self.cache.get(cache_key)
+        if cached:
+            return cached
+
+        interval = TIMEFRAME_MAP.get(timeframe, "60min")
+
+        if interval in ["5min", "15min", "30min", "60min"]:
+            params = {
+                "function": "TIME_SERIES_INTRADAY",
+                "symbol": symbol,
+                "interval": interval,
+                "outputsize": outputsize,
+            }
+        else:
+            params = {
+                "function": "TIME_SERIES_DAILY",
+                "symbol": symbol,
+                "outputsize": outputsize,
+            }
+
+        data = self._make_request(params)
+
+        if "error" in data:
+            return data
+
+        # Find time series key
+        ts_key = None
+        for key in data.keys():
+            if "Time Series" in key:
+                ts_key = key
+                break
+
+        if ts_key and ts_key in data:
+            result = {"success": True, "data": data[ts_key], "symbol": symbol}
+            self.cache.set(cache_key, result, CACHE_TTL_HISTORICAL)
+            return result
+
+        return format_error_response(ERROR_NO_DATA, symbol=symbol)
+
+    def get_historical_data_crypto(
+        self,
+        symbol: str,
+        timeframe: str = "1h",
+        outputsize: str = "compact"
+    ) -> Dict[str, Any]:
+        """
+        Get historical crypto data.
+
+        Args:
+            symbol: Crypto symbol (e.g., 'BTC', 'ETH')
+            timeframe: Timeframe ('5m', '15m', '30m', '1h', '4h', '1d')
+            outputsize: 'compact' (100 points) or 'full' (full history)
+
+        Returns:
+            Historical OHLCV data or error
+        """
+        cache_key = f"crypto_historical_{symbol}_{timeframe}_{outputsize}"
+        cached = self.cache.get(cache_key)
+        if cached:
+            return cached
+
+        # Remove USD suffix if present
+        crypto_base = symbol.replace('USD', '') if symbol.endswith('USD') else symbol
+
+        interval = TIMEFRAME_MAP.get(timeframe, "60min")
+
+        if interval in ["5min", "15min", "30min", "60min"]:
+            params = {
+                "function": "CRYPTO_INTRADAY",
+                "symbol": crypto_base,
+                "market": "USD",
+                "interval": interval,
+                "outputsize": outputsize,
+            }
+        else:
+            params = {
+                "function": "DIGITAL_CURRENCY_DAILY",
+                "symbol": crypto_base,
+                "market": "USD",
+            }
+
+        data = self._make_request(params)
+
+        if "error" in data:
+            return data
+
+        # Find time series key
+        ts_key = None
+        for key in data.keys():
+            if "Time Series" in key:
+                ts_key = key
+                break
+
+        if ts_key and ts_key in data:
+            result = {"success": True, "data": data[ts_key], "symbol": symbol}
+            self.cache.set(cache_key, result, CACHE_TTL_HISTORICAL)
+            return result
+
+        return format_error_response(ERROR_NO_DATA, symbol=symbol)
+
     def get_stats(self) -> Dict[str, Any]:
         """Get client statistics."""
         return {

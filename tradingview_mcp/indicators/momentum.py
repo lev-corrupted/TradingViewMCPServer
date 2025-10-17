@@ -184,3 +184,107 @@ def calculate_rsi(ohlcv_data: Dict[str, Any], period: int = 14) -> Dict[str, Any
         "signal": signal,
         "interpretation": f"RSI at {rsi:.1f} - {signal}"
     }
+
+
+def calculate_cci(ohlcv_data: Dict[str, Any], period: int = 20) -> Dict[str, Any]:
+    """
+    Calculate Commodity Channel Index (CCI).
+
+    CCI = (Typical Price - SMA of Typical Price) / (0.015 * Mean Deviation)
+    Typical Price = (High + Low + Close) / 3
+
+    Args:
+        ohlcv_data: OHLCV data dictionary
+        period: CCI period (default 20)
+
+    Returns:
+        CCI value and signal
+    """
+    candles = list(ohlcv_data.items())[:period + 10]
+
+    if len(candles) < period:
+        return {"error": ERROR_INSUFFICIENT_DATA}
+
+    # Calculate typical prices
+    typical_prices = []
+    for candle in candles[:period]:
+        high = safe_float(candle[1].get("2. high", 0))
+        low = safe_float(candle[1].get("3. low", 0))
+        close = safe_float(candle[1].get("4. close", 0))
+        typical_price = (high + low + close) / 3
+        typical_prices.append(typical_price)
+
+    # Calculate SMA of typical prices
+    sma_tp = sum(typical_prices) / len(typical_prices)
+
+    # Calculate mean deviation
+    deviations = [abs(tp - sma_tp) for tp in typical_prices]
+    mean_deviation = sum(deviations) / len(deviations)
+
+    # Calculate CCI
+    current_tp = typical_prices[0]
+    if mean_deviation == 0:
+        cci = 0
+    else:
+        cci = (current_tp - sma_tp) / (0.015 * mean_deviation)
+
+    # Determine signal
+    if cci > 100:
+        signal = "OVERBOUGHT"
+    elif cci < -100:
+        signal = "OVERSOLD"
+    else:
+        signal = "NEUTRAL"
+
+    return {
+        "cci": round(cci, 2),
+        "signal": signal,
+        "interpretation": f"CCI at {cci:.1f} - {signal} (>100 overbought, <-100 oversold)"
+    }
+
+
+def calculate_williams_r(ohlcv_data: Dict[str, Any], period: int = 14) -> Dict[str, Any]:
+    """
+    Calculate Williams %R.
+
+    Williams %R = (Highest High - Close) / (Highest High - Lowest Low) * -100
+
+    Args:
+        ohlcv_data: OHLCV data dictionary
+        period: Williams %R period (default 14)
+
+    Returns:
+        Williams %R value and signal
+    """
+    candles = list(ohlcv_data.items())[:period]
+
+    if len(candles) < period:
+        return {"error": ERROR_INSUFFICIENT_DATA}
+
+    # Get highs, lows, and current close
+    highs = [safe_float(c[1].get("2. high", 0)) for c in candles]
+    lows = [safe_float(c[1].get("3. low", 0)) for c in candles]
+    current_close = safe_float(candles[0][1].get("4. close", 0))
+
+    highest_high = max(highs)
+    lowest_low = min(lows)
+
+    # Calculate Williams %R
+    if highest_high == lowest_low:
+        williams_r = -50
+    else:
+        williams_r = ((highest_high - current_close) / (highest_high - lowest_low)) * -100
+
+    # Determine signal
+    if williams_r > -20:
+        signal = "OVERBOUGHT"
+    elif williams_r < -80:
+        signal = "OVERSOLD"
+    else:
+        signal = "NEUTRAL"
+
+    return {
+        "williams_r": round(williams_r, 2),
+        "signal": signal,
+        "interpretation": f"Williams %R at {williams_r:.1f}% - {signal} (>-20 overbought, <-80 oversold)"
+    }

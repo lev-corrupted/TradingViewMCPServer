@@ -71,6 +71,8 @@ from tradingview_mcp.indicators import (
     calculate_stochastic,
     calculate_fibonacci_levels,
     calculate_rsi,
+    calculate_cci,
+    calculate_williams_r,
     calculate_bollinger_bands,
     calculate_atr,
     calculate_vwap,
@@ -179,16 +181,13 @@ def get_historical_data(
 
     logger.info(f"Fetching historical data for {symbol} ({timeframe})")
 
-    # Currently only forex is fully implemented in API client
-    # TODO: Extend API client for stocks and crypto historical data
+    # Route to appropriate API method based on asset type
     if asset_type == 'forex':
         return api_client.get_historical_data_forex(formatted_symbol, timeframe, outputsize)
-    else:
-        return format_error_response(
-            f"Historical data for {asset_type} not yet fully implemented",
-            symbol=symbol,
-            suggestion="Use forex pairs for now, or wait for update"
-        )
+    elif asset_type == 'crypto':
+        return api_client.get_historical_data_crypto(formatted_symbol, timeframe, outputsize)
+    else:  # stock
+        return api_client.get_historical_data_stock(formatted_symbol, timeframe, outputsize)
 
 
 def get_spread(pair: str) -> float:
@@ -662,6 +661,66 @@ def get_rsi(symbol: str, timeframe: str = "1h", period: int = 14) -> dict:
         "symbol": symbol,
         "timeframe": timeframe,
         **rsi
+    }
+
+
+@mcp.tool()
+def get_cci(symbol: str, timeframe: str = "1h", period: int = 20) -> dict:
+    """
+    Calculate CCI (Commodity Channel Index).
+
+    Args:
+        symbol: Symbol (e.g., 'EURUSD', 'AAPL', 'BTC')
+        timeframe: Time interval ('5m', '15m', '1h', '4h', '1d')
+        period: Period for calculation (default 20)
+
+    Returns:
+        CCI value and signal (OVERBOUGHT/OVERSOLD/NEUTRAL)
+    """
+    hist_data = get_historical_data(symbol, timeframe)
+
+    if not hist_data.get("success"):
+        return hist_data
+
+    cci = calculate_cci(hist_data["data"], period)
+
+    if "error" in cci:
+        return cci
+
+    return {
+        "symbol": symbol,
+        "timeframe": timeframe,
+        **cci
+    }
+
+
+@mcp.tool()
+def get_williams_r(symbol: str, timeframe: str = "1h", period: int = 14) -> dict:
+    """
+    Calculate Williams %R.
+
+    Args:
+        symbol: Symbol (e.g., 'EURUSD', 'AAPL', 'BTC')
+        timeframe: Time interval ('5m', '15m', '1h', '4h', '1d')
+        period: Period for calculation (default 14)
+
+    Returns:
+        Williams %R value and signal (OVERBOUGHT/OVERSOLD/NEUTRAL)
+    """
+    hist_data = get_historical_data(symbol, timeframe)
+
+    if not hist_data.get("success"):
+        return hist_data
+
+    williams = calculate_williams_r(hist_data["data"], period)
+
+    if "error" in williams:
+        return williams
+
+    return {
+        "symbol": symbol,
+        "timeframe": timeframe,
+        **williams
     }
 
 
