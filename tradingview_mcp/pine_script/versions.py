@@ -2,7 +2,7 @@
 Pine Script Version Detection and Conversion
 
 Detects Pine Script version from code and provides version conversion utilities.
-Supports Pine Script v1-v5.
+Supports Pine Script v1-v6.
 """
 
 from __future__ import annotations
@@ -194,8 +194,8 @@ class VersionDetector:
         if v3_score >= 1:
             return (3, 0.7, 'functions')
 
-        # Default to v5 if no clear indicators (v5 is now standard)
-        return (5, 0.5, 'default')
+        # Default to v6 if no clear indicators (v6 is latest)
+        return (6, 0.5, 'default')
 
     def _find_compatibility_issues(self, code: str, target_version: int) -> List[str]:
         """Find compatibility issues for the detected version"""
@@ -239,6 +239,12 @@ class VersionDetector:
         """Generate suggestions for improving the code"""
         suggestions = []
 
+        if version < 6:
+            suggestions.append(
+                f"Consider upgrading to Pine Script v6 (latest) for best features and performance. "
+                f"Add '//@version=6' at the top of your script."
+            )
+
         if version < 5:
             suggestions.append(
                 f"Consider upgrading to Pine Script v5 for better features and performance. "
@@ -260,10 +266,16 @@ class VersionDetector:
         if version >= 5:
             # Check if still using old syntax
             if re.search(r'\bstudy\s*\(', code):
-                suggestions.append("Replace 'study()' with 'indicator()' for v5.")
+                suggestions.append("Replace 'study()' with 'indicator()' for v5+.")
 
             if re.search(r'\bsecurity\s*\(', code):
-                suggestions.append("Replace 'security()' with 'request.security()' for v5.")
+                suggestions.append("Replace 'security()' with 'request.security()' for v5+.")
+
+        if version == 6:
+            suggestions.append(
+                "Pine Script v6 supports advanced features like type, enum, and map. "
+                "Use 'type' for custom data structures and 'enum' for state management."
+            )
 
         return suggestions
 
@@ -273,8 +285,9 @@ class VersionConverter:
     Converts Pine Script code between versions.
 
     Currently supports:
-    - v4 -> v5 conversion
     - v3 -> v4 conversion
+    - v4 -> v5 conversion
+    - v5 -> v6 conversion
     """
 
     def __init__(self):
@@ -291,7 +304,7 @@ class VersionConverter:
 
         Args:
             code: Source code
-            target_version: Target version (1-5)
+            target_version: Target version (1-6)
             source_version: Source version (auto-detected if None)
 
         Returns:
@@ -322,6 +335,11 @@ class VersionConverter:
             changes.append(f"Updated version directive to: //@version={target_version}")
 
         # Perform version-specific conversions
+        if source_version < 6 and target_version >= 6:
+            converted_code, v6_changes, v6_warnings = self._convert_to_v6(converted_code)
+            changes.extend(v6_changes)
+            warnings.extend(v6_warnings)
+
         if source_version < 5 and target_version >= 5:
             converted_code, v5_changes, v5_warnings = self._convert_to_v5(converted_code)
             changes.extend(v5_changes)
@@ -358,6 +376,25 @@ class VersionConverter:
             warnings.append(
                 "Manual review needed: 'security()' usage detected. "
                 "Ensure all parameters are correct for 'request.security()'."
+            )
+
+        return converted, changes, warnings
+
+    def _convert_to_v6(self, code: str) -> Tuple[str, List[str], List[str]]:
+        """Convert code to Pine Script v6"""
+        changes = []
+        warnings = []
+
+        converted = code
+
+        # v6 is mostly backward compatible with v5
+        # Main additions are new features (type, enum, map) rather than breaking changes
+
+        # Add informational changes
+        if converted and not any(kw in converted for kw in ['type ', 'enum ', 'map.']):
+            warnings.append(
+                "Pine Script v6 adds support for 'type' (structs), 'enum', and 'map' collections. "
+                "Consider using these new features for better code organization."
             )
 
         return converted, changes, warnings

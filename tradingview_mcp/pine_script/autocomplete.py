@@ -81,54 +81,63 @@ class PineAutocomplete:
 
     def _extract_current_word(self, code: str, cursor_position: int) -> str:
         """Extract the word currently being typed"""
+        # Bounds checking
+        if not code or cursor_position > len(code):
+            return ""
+
+        cursor_position = min(cursor_position, len(code))
         start = cursor_position
 
         # Find start of word
-        while start > 0 and (code[start - 1].isalnum() or code[start - 1] in '_.'):
+        while start > 0 and start <= len(code) and (code[start - 1].isalnum() or code[start - 1] in '_.'):
             start -= 1
 
         return code[start:cursor_position].lower()
 
     def _is_after_dot(self, code: str, cursor_position: int) -> bool:
         """Check if cursor is after a dot (namespace access)"""
-        if cursor_position == 0:
+        if not code or cursor_position == 0 or cursor_position > len(code):
             return False
+
+        cursor_position = min(cursor_position, len(code))
 
         # Look backwards for dot
         i = cursor_position - 1
-        while i >= 0 and code[i] in ' \t':
+        while i >= 0 and i < len(code) and code[i] in ' \t':
             i -= 1
 
-        if i >= 0 and code[i].isalnum():
+        if i >= 0 and i < len(code) and code[i].isalnum():
             # Continue backwards through identifier
-            while i >= 0 and (code[i].isalnum() or code[i] == '_'):
+            while i >= 0 and i < len(code) and (code[i].isalnum() or code[i] == '_'):
                 i -= 1
-            if i >= 0 and code[i] == '.':
+            if i >= 0 and i < len(code) and code[i] == '.':
                 return True
 
         return False
 
     def _get_namespace(self, code: str, cursor_position: int) -> Optional[str]:
         """Get the namespace before the dot"""
-        if cursor_position == 0:
+        if not code or cursor_position == 0 or cursor_position > len(code):
             return None
+
+        cursor_position = min(cursor_position, len(code))
 
         # Look backwards for identifier.
         i = cursor_position - 1
-        while i >= 0 and code[i] in ' \t':
+        while i >= 0 and i < len(code) and code[i] in ' \t':
             i -= 1
 
         # Extract current partial word after dot
-        while i >= 0 and code[i].isalnum():
+        while i >= 0 and i < len(code) and code[i].isalnum():
             i -= 1
 
-        if i < 0 or code[i] != '.':
+        if i < 0 or i >= len(code) or code[i] != '.':
             return None
 
         # Extract namespace before dot
         dot_pos = i
         i -= 1
-        while i >= 0 and (code[i].isalnum() or code[i] == '_'):
+        while i >= 0 and i < len(code) and (code[i].isalnum() or code[i] == '_'):
             i -= 1
 
         namespace = code[i + 1:dot_pos]
@@ -268,26 +277,28 @@ class PineAutocomplete:
 
     def _find_function_context(self, code: str, cursor_position: int) -> Optional[str]:
         """Find which function call the cursor is inside"""
-        if cursor_position == 0:
+        if not code or cursor_position == 0 or cursor_position > len(code):
             return None
+
+        cursor_position = min(cursor_position, len(code))
 
         # Look backwards for opening parenthesis
         paren_count = 0
         i = cursor_position - 1
 
-        while i >= 0:
+        while i >= 0 and i < len(code):
             if code[i] == ')':
                 paren_count += 1
             elif code[i] == '(':
                 if paren_count == 0:
                     # Found the opening paren, now find function name
                     i -= 1
-                    while i >= 0 and code[i] in ' \t':
+                    while i >= 0 and i < len(code) and code[i] in ' \t':
                         i -= 1
 
                     # Extract function name
                     end = i + 1
-                    while i >= 0 and (code[i].isalnum() or code[i] in '_.'):
+                    while i >= 0 and i < len(code) and (code[i].isalnum() or code[i] in '_.'):
                         i -= 1
 
                     func_name = code[i + 1:end]

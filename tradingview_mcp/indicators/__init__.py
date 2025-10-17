@@ -9,6 +9,7 @@ from .trend import (
 from .momentum import (
     calculate_stochastic,
     calculate_fibonacci_levels,
+    calculate_rsi,
 )
 from .volatility import (
     calculate_bollinger_bands,
@@ -32,6 +33,7 @@ __all__ = [
     "calculate_ichimoku",
     "calculate_stochastic",
     "calculate_fibonacci_levels",
+    "calculate_rsi",
     "calculate_bollinger_bands",
     "calculate_atr",
     "calculate_vwap",

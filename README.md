@@ -11,13 +11,14 @@ Professional multi-asset trading assistant and Pine Script development server fo
 - **Real-time Data**: Live quotes and historical data via Alpha Vantage API
 - **Claude Desktop Integration**: Seamless integration with Claude Desktop via MCP
 
-### Pine Script Development Tools (NEW in v3.0)
+### Pine Script Development Tools (NEW in v3.1)
 
+- **Pine Script v6 Support**: Full support for latest Pine Script v6 with type, enum, and map! ⭐
 - **Real-time Syntax Validation**: Comprehensive syntax and semantic error checking with line-by-line feedback
 - **Intelligent Autocomplete**: Context-aware code completion with function signatures and documentation
-- **Live Documentation Access**: Instant access to Pine Script function documentation with examples
-- **Version Detection**: Automatic detection of Pine Script version (v1-v5) with compatibility analysis
-- **Version Conversion**: Automatic code conversion between Pine Script versions (v4→v5, v3→v4)
+- **Live Documentation Access**: Instant access to Pine Script function documentation with examples (110+ functions)
+- **Version Detection**: Automatic detection of Pine Script version (v1-v6) with compatibility analysis
+- **Version Conversion**: Automatic code conversion between Pine Script versions (v3→v4→v5→v6)
 - **Code Testing Sandbox**: Safe testing environment with validation and performance metrics
 - **Error Explanations**: Detailed error descriptions with causes, solutions, and code examples
 - **Code Templates**: Ready-to-use templates for indicators, strategies, and overlays
@@ -136,13 +137,13 @@ Give me a Pine Script strategy template
 - `get_ichimoku_cloud` - Ichimoku Cloud
 
 ### Pine Script Development (NEW)
-- `validate_pine_script` - Real-time syntax validation with detailed error reporting
-- `get_pine_documentation` - Function and topic documentation with examples
+- `validate_pine_script` - Real-time syntax validation with detailed error reporting (v1-v6 support)
+- `get_pine_documentation` - Function and topic documentation with examples (110+ functions)
 - `test_pine_script` - Safe sandbox testing with metrics
 - `explain_pine_error` - Detailed error explanations with solutions
-- `detect_pine_version` - Automatic version detection (v1-v5)
-- `convert_pine_version` - Automatic version conversion
-- `autocomplete_pine` - Intelligent code completion
+- `detect_pine_version` - Automatic version detection (v1-v6)
+- `convert_pine_version` - Automatic version conversion (supports v6!)
+- `autocomplete_pine` - Intelligent code completion (includes v6 features)
 - `get_pine_template` - Ready-to-use code templates
 
 ## Supported Assets
@@ -170,21 +171,37 @@ For higher limits, upgrade to premium API key.
 
 Supported timeframes: `5m`, `15m`, `30m`, `1h`, `4h`, `1d`
 
-## Version 3.0 - Pine Script Integration (Current)
+## Version 3.1 - Pine Script v6 Support (Current) ⭐
 
-Major new release with comprehensive Pine Script development tools:
+Major update with full Pine Script v6 support:
 
 ### New Features
-- **8 Pine Script MCP Tools**: Complete development environment for Pine Script
+- **Pine Script v6**: Full support for the latest Pine Script version
+- **V6 Data Structures**: type (structs), enum, and map collections
+- **110+ Function Signatures**: Enhanced function database including map.* namespace
+- **Enhanced Conversion**: v3→v4→v5→v6 automatic migration
+- **8 Pine Script MCP Tools**: Complete development environment
 - **3000+ Lines of Pine Script Code**: Lexer, parser, validator, and more
-- **Version Support**: Full support for Pine Script v1-v5
+- **Version Support**: Full support for Pine Script v1-v6
 - **Intelligent Analysis**: AST-based parsing and validation
-- **50+ Function Signatures**: Comprehensive built-in function database
-- **Automatic Conversion**: Smart v4→v5 code migration
-- **Context-aware Completion**: Namespace-aware autocomplete
+- **Context-aware Completion**: Namespace-aware autocomplete (ta., math., str., map.)
 - **Error Database**: Detailed explanations for common errors
 
 See [PINE_SCRIPT.md](PINE_SCRIPT.md) for complete Pine Script documentation.
+
+### Architecture
+- **Modular Design**: Clear separation between TradingView analysis and Pine Script tools
+- **Well-Organized Codebase**: Logical grouping by functionality
+- **Unified MCP Server**: Single installation, seamless integration
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed architecture documentation.
+
+## Version 3.0 - Pine Script Integration
+
+Initial Pine Script development tools release:
+- 8 comprehensive MCP tools
+- Support for Pine Script v1-v5
+- Automatic code conversion and validation
 
 ## Version 2.0 Improvements
 

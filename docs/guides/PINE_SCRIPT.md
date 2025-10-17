@@ -6,7 +6,7 @@ Comprehensive Pine Script development tools integrated with TradingViewMCPServer
 
 The Pine Script MCP Server provides professional-grade development tools for Pine Script v1-v6, including real-time syntax validation, intelligent code completion, version detection, code conversion, comprehensive documentation, and a testing sandbox.
 
-**Latest Update**: Full Pine Script v6 support with 100+ built-in functions including all ta.*, strategy.*, and plot functions!
+**Latest Version**: Pine Script v6 (LATEST) with full support for type, enum, map, and 100+ built-in functions including all ta.*, strategy.*, plot.*, and map.* functions!
 
 ## Features
 
@@ -164,7 +164,7 @@ plot(myMa)
 - Pine Script v3 (deprecated)
 - Pine Script v4 (stable)
 - Pine Script v5 (current)
-- Pine Script v6 (latest) ⭐ NEW
+- Pine Script v6 (LATEST) ⭐ **RECOMMENDED**
 
 ### 7. Version Conversion 🔄
 
@@ -193,7 +193,8 @@ convert_pine_version(
 **Supported Migrations:**
 - v3 → v4
 - v4 → v5
-- v5 → v6 ⭐ NEW
+- v5 → v6 ⭐ **NEW**
+- Any version → v6 (recommended)
 - Auto-detects source version if not specified
 
 **Returns:**
@@ -443,9 +444,194 @@ Comprehensive database of 50+ Pine Script built-in functions:
 - **Cause:** Using old v4 function names
 - **Solution:** Update to v5 namespaced functions
 
+## Pine Script v6 Features (NEW!)
+
+Pine Script v6 introduces powerful new features based on official TradingView documentation:
+
+### 1. User-Defined Types (Objects)
+
+User-defined types (UDTs) allow you to create custom data structures. Objects are instances of UDTs.
+
+```pine
+//@version=6
+indicator("UDT Example - Based on Official Docs")
+
+// Define a custom type with the 'type' keyword
+type pivotPoint
+    int x
+    float y
+    string xloc = xloc.bar_time  // Optional default value
+
+// Create instances using .new() method
+foundPoint = pivotPoint.new()  // All fields default/na
+foundPoint = pivotPoint.new(time, high)  // Positional args
+foundPoint = pivotPoint.new(x = time, y = high)  // Named args
+
+// Access fields
+plot(foundPoint.y)
+
+// Copy objects
+copiedPoint = foundPoint.copy()  // Shallow copy
+```
+
+**Key Features:**
+- Use `type` keyword to define UDTs
+- Create instances with `.new()` method
+- Fields can have default values
+- Objects are assigned by reference
+- Use `.copy()` for shallow copying
+
+### 2. Enumerations
+
+Enums represent a predefined set of named values with strict type checking.
+
+```pine
+//@version=6
+indicator("Enum Example - Based on Official Docs")
+
+// Define an enum with optional titles
+enum Signal
+    buy = "Buy signal"
+    sell = "Sell signal"
+    neutral
+
+// Declare and use enum variables
+var Signal currentSignal = Signal.neutral
+
+if close > ta.sma(close, 50)
+    currentSignal := Signal.buy
+else if close < ta.sma(close, 50)
+    currentSignal := Signal.sell
+
+// Get title
+signalText = str.tostring(currentSignal)  // Returns "Buy signal", "Sell signal", or "neutral"
+```
+
+**Key Features:**
+- Use `enum` keyword to define enums
+- Optional titles for each field
+- Strict type checking (can't mix different enums)
+- Can be used as map keys and in collections
+- Use with comparison operators (`==`, `!=`)
+
+### 3. Maps (Key-Value Collections)
+
+Maps store up to 50,000 key-value pairs with unique keys.
+
+```pine
+//@version=6
+indicator("Map Example - Based on Official Docs")
+
+// Create a map (supports up to 50,000 entries)
+var priceMap = map.new<string, float>()
+
+// Add/update key-value pairs
+map.put(priceMap, "high", high)
+map.put(priceMap, "low", low)
+map.put(priceMap, "close", close)
+
+// Retrieve values
+highPrice = map.get(priceMap, "high")
+
+// Check existence
+if map.contains(priceMap, "high")
+    plot(highPrice)
+
+// Iterate over map (maintains insertion order)
+for [key, value] in priceMap
+    log.info(str.format("{0}: {1}", key, value))
+
+// Map operations
+keysArray = map.keys(priceMap)  // Get all keys as array
+valuesArray = map.values(priceMap)  // Get all values as array
+mapSize = map.size(priceMap)  // Get entry count
+
+// Copy and merge maps
+newMap = map.copy(priceMap)  // Shallow copy
+map.put_all(newMap, otherMap)  // Add all from another map
+map.clear(priceMap)  // Remove all entries
+```
+
+**Available Map Functions (13 total):**
+- `map.new<K, V>()` - Create new map
+- `map.put(map, key, value)` - Add/update entry
+- `map.get(map, key)` - Retrieve value
+- `map.contains(map, key)` - Check if key exists
+- `map.remove(map, key)` - Remove entry
+- `map.keys(map)` - Get array of keys
+- `map.values(map)` - Get array of values
+- `map.size(map)` - Get entry count
+- `map.clear(map)` - Remove all entries
+- `map.copy(map)` - Shallow copy
+- `map.put_all(map, from_map)` - Copy all from another map
+
+### 4. Other v6 Features
+
+#### Dynamic Request Calls
+```pine
+//@version=6
+indicator("Dynamic Requests")
+
+// Can now use series string in request.*() calls (inside loops/conditionals)
+for i = 0 to 5
+    symbolName = "AAPL" + str.tostring(i)
+    data = request.security(symbolName, "D", close)
+```
+
+#### New Built-in Variables
+```pine
+//@version=6
+indicator("New v6 Variables")
+
+// Real-time market prices
+bidPrice = bid  // Real-time bid price
+askPrice = ask  // Real-time ask price
+
+// Symbol information
+minContract = syminfo.mincontract  // Minimum contract size
+mainTicker = syminfo.main_tickerid  // Main ticker ID
+mainPeriod = timeframe.main_period  // Main timeframe period
+```
+
+#### Negative Array Indexing
+```pine
+//@version=6
+indicator("Negative Indexing")
+
+var myArray = array.new_float()
+array.push(myArray, close)
+
+// Access from end of array
+lastElement = array.get(myArray, -1)  // Get last element
+secondLast = array.get(myArray, -2)   // Get second to last
+```
+
+#### Boolean Short-Circuit Evaluation
+```pine
+//@version=6
+indicator("Short-Circuit Evaluation")
+
+// 'and' and 'or' now use lazy evaluation for performance
+if expensiveCheck() and cheapCheck()
+    // cheapCheck() only runs if expensiveCheck() is true
+    alert("Both conditions met")
+```
+
+#### Text Formatting
+```pine
+//@version=6
+indicator("Text Formatting", overlay=true)
+
+// Text can now be bold, italic, or both
+label.new(bar_index, high, "Bold Text",
+    textcolor=color.white,
+    text_format_bold=true)
+```
+
 ## Best Practices
 
-1. **Always specify version:** Start scripts with `//@version=5`
+1. **Always specify version:** Start scripts with `//@version=6` (latest)
+2. **Use v6 features:** Leverage type, enum, and map for better code organization
 2. **Use type annotations:** Help catch errors early
 3. **Validate before running:** Use `validate_pine_script` before testing
 4. **Check deprecations:** Update old code to v5
@@ -471,10 +657,13 @@ For issues or questions:
 
 ## Version History
 
-### v3.0.0 (Current)
+### v3.1.0 (Current)
+- **Pine Script v6 Support**: Full support for latest Pine Script version
+- **New V6 Features**: type, enum, map data structures
+- **Enhanced Function Database**: 110+ built-in functions including map.* namespace
 - Complete Pine Script MCP integration
 - 8 comprehensive MCP tools
-- Support for Pine Script v1-v5
+- Support for Pine Script v1-v6
 - Intelligent validation and conversion
 - 3000+ lines of Pine Script tooling code
 

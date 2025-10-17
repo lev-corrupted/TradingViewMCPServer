@@ -22,12 +22,15 @@ from pathlib import Path
 from typing import Dict, List, Any
 
 # Setup logging
+log_dir = Path(__file__).parent.parent / 'logs'
+log_dir.mkdir(exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(sys.stderr),
-        logging.FileHandler(Path(__file__).parent.parent / 'tradingview_mcp.log')
+        logging.FileHandler(log_dir / 'tradingview_mcp.log')
     ]
 )
 logger = logging.getLogger(__name__)
@@ -58,6 +61,7 @@ from tradingview_mcp.utils import (
     detect_asset_type,
     format_error_response,
     format_success_response,
+    validate_api_key,
 )
 from tradingview_mcp.indicators import (
     calculate_moving_averages,
@@ -66,6 +70,7 @@ from tradingview_mcp.indicators import (
     calculate_ichimoku,
     calculate_stochastic,
     calculate_fibonacci_levels,
+    calculate_rsi,
     calculate_bollinger_bands,
     calculate_atr,
     calculate_vwap,
@@ -86,6 +91,16 @@ from tradingview_mcp.pine_script import (
     VersionConverter,
     PineAutocomplete,
 )
+
+# Validate environment setup
+import os
+api_key = os.getenv("ALPHA_VANTAGE_API_KEY")
+if api_key:
+    is_valid, error_msg = validate_api_key(api_key)
+    if not is_valid:
+        logger.warning(f"API key validation warning: {error_msg}")
+else:
+    logger.error("ALPHA_VANTAGE_API_KEY not set. Server will not function properly.")
 
 # Initialize API client
 api_client = AlphaVantageClient()
@@ -112,8 +127,8 @@ mcp = FastMCP(
         "\n\n"
         "PINE SCRIPT SUPPORT: Comprehensive Pine Script development tools including "
         "real-time syntax validation, function documentation, code testing sandbox, "
-        "error explanations, version detection (v1-v5), version conversion, and "
-        "intelligent autocomplete."
+        "error explanations, version detection (v1-v6), version conversion, and "
+        "intelligent autocomplete. Full support for Pine Script v6 with type, enum, and map!"
     ),
 )
 
@@ -620,6 +635,36 @@ def get_stochastic(symbol: str, timeframe: str = "1h", period: int = 14) -> dict
     }
 
 
+@mcp.tool()
+def get_rsi(symbol: str, timeframe: str = "1h", period: int = 14) -> dict:
+    """
+    Calculate RSI (Relative Strength Index).
+
+    Args:
+        symbol: Symbol (e.g., 'EURUSD', 'AAPL', 'BTC')
+        timeframe: Time interval ('5m', '15m', '1h', '4h', '1d')
+        period: Period for calculation (default 14)
+
+    Returns:
+        RSI value and signal (OVERBOUGHT/OVERSOLD/NEUTRAL)
+    """
+    hist_data = get_historical_data(symbol, timeframe)
+
+    if not hist_data.get("success"):
+        return hist_data
+
+    rsi = calculate_rsi(hist_data["data"], period)
+
+    if "error" in rsi:
+        return rsi
+
+    return {
+        "symbol": symbol,
+        "timeframe": timeframe,
+        **rsi
+    }
+
+
 # ===== MCP TOOLS: VOLATILITY INDICATORS =====
 
 @mcp.tool()
@@ -908,7 +953,7 @@ def validate_pine_script(code: str, version: int = None) -> dict:
 
     Args:
         code: Pine Script source code to validate
-        version: Target Pine Script version (1-5). Auto-detected if not provided.
+        version: Target Pine Script version (1-6). Auto-detected if not provided.
 
     Returns:
         Validation result with errors, warnings, and suggestions
@@ -970,8 +1015,8 @@ def get_pine_documentation(function_name: str, version: int = 5) -> dict:
     - Links to official documentation
 
     Args:
-        function_name: Function name (e.g., 'ta.sma', 'plot', 'indicator') or topic
-        version: Pine Script version (default: 5)
+        function_name: Function name (e.g., 'ta.sma', 'plot', 'indicator', 'map.new') or topic
+        version: Pine Script version (default: 5, v6 supported)
 
     Returns:
         Detailed documentation with examples
@@ -1165,7 +1210,7 @@ def convert_pine_version(code: str, target_version: int, source_version: int = N
 
     Args:
         code: Source Pine Script code
-        target_version: Target version (1-5)
+        target_version: Target version (1-6)
         source_version: Source version (auto-detected if not provided)
 
     Returns:

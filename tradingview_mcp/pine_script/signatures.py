@@ -2,7 +2,7 @@
 Pine Script Function Signature Database
 
 Comprehensive database of all Pine Script built-in functions with parameter validation.
-Supports Pine Script v4 and v5.
+Supports Pine Script v4, v5, and v6.
 """
 
 from __future__ import annotations
@@ -34,6 +34,9 @@ class DataType(Enum):
     TABLE = "table"
     ARRAY = "array"
     MATRIX = "matrix"
+    MAP = "map"  # v6
+    ENUM = "enum"  # v6
+    STRUCT = "struct"  # v6
     ANY = "any"
 
 
@@ -750,6 +753,318 @@ class FunctionSignatureDB:
             version=5,
             description="Add element to end of array",
             examples=["array.push(myArray, close)"],
+        )
+
+        # ===== MAP FUNCTIONS (v6) =====
+
+        self.functions["map.new"] = FunctionSignature(
+            name="new",
+            namespace="map",
+            parameters=[
+                FunctionParameter("key_type", DataType.STRING, ParamType.CONST, description="Key type (int, float, string)"),
+                FunctionParameter("value_type", DataType.STRING, ParamType.CONST, description="Value type"),
+            ],
+            return_type=DataType.MAP,
+            version=6,
+            description="Create new map (v6+)",
+            examples=["map.new<string, float>()"],
+        )
+
+        self.functions["map.put"] = FunctionSignature(
+            name="put",
+            namespace="map",
+            parameters=[
+                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to modify"),
+                FunctionParameter("key", DataType.ANY, ParamType.SERIES, description="Key"),
+                FunctionParameter("value", DataType.ANY, ParamType.SERIES, description="Value"),
+            ],
+            return_type=DataType.ANY,
+            version=6,
+            description="Add or update map entry (v6+)",
+            examples=["map.put(myMap, 'key', value)"],
+        )
+
+        self.functions["map.get"] = FunctionSignature(
+            name="get",
+            namespace="map",
+            parameters=[
+                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to query"),
+                FunctionParameter("key", DataType.ANY, ParamType.SERIES, description="Key"),
+            ],
+            return_type=DataType.ANY,
+            version=6,
+            description="Get value from map (v6+)",
+            examples=["map.get(myMap, 'key')"],
+        )
+
+        self.functions["map.contains"] = FunctionSignature(
+            name="contains",
+            namespace="map",
+            parameters=[
+                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to query"),
+                FunctionParameter("key", DataType.ANY, ParamType.SERIES, description="Key to check"),
+            ],
+            return_type=DataType.BOOL,
+            version=6,
+            description="Check if map contains key (v6+)",
+            examples=["map.contains(myMap, 'key')"],
+        )
+
+        self.functions["map.remove"] = FunctionSignature(
+            name="remove",
+            namespace="map",
+            parameters=[
+                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to modify"),
+                FunctionParameter("key", DataType.ANY, ParamType.SERIES, description="Key to remove"),
+            ],
+            return_type=DataType.ANY,
+            version=6,
+            description="Remove entry from map (v6+)",
+            examples=["map.remove(myMap, 'key')"],
+        )
+
+        self.functions["map.keys"] = FunctionSignature(
+            name="keys",
+            namespace="map",
+            parameters=[
+                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to query"),
+            ],
+            return_type=DataType.ARRAY,
+            version=6,
+            description="Get array of all keys (v6+)",
+            examples=["map.keys(myMap)"],
+        )
+
+        self.functions["map.values"] = FunctionSignature(
+            name="values",
+            namespace="map",
+            parameters=[
+                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to query"),
+            ],
+            return_type=DataType.ARRAY,
+            version=6,
+            description="Get array of all values (v6+)",
+            examples=["map.values(myMap)"],
+        )
+
+        self.functions["map.size"] = FunctionSignature(
+            name="size",
+            namespace="map",
+            parameters=[
+                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to query"),
+            ],
+            return_type=DataType.INT,
+            version=6,
+            description="Get number of entries in map (v6+)",
+            examples=["map.size(myMap)"],
+        )
+
+        self.functions["map.clear"] = FunctionSignature(
+            name="clear",
+            namespace="map",
+            parameters=[
+                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to clear"),
+            ],
+            return_type=DataType.ANY,
+            version=6,
+            description="Remove all entries from map (v6+)",
+            examples=["map.clear(myMap)"],
+        )
+
+        self.functions["map.put_all"] = FunctionSignature(
+            name="put_all",
+            namespace="map",
+            parameters=[
+                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Destination map"),
+                FunctionParameter("from_map", DataType.MAP, ParamType.SERIES, description="Source map to copy from"),
+            ],
+            return_type=DataType.ANY,
+            version=6,
+            description="Add all key-value pairs from another map (v6+)",
+            examples=["map.put_all(myMap, otherMap)"],
+        )
+
+        self.functions["map.copy"] = FunctionSignature(
+            name="copy",
+            namespace="map",
+            parameters=[
+                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to copy"),
+            ],
+            return_type=DataType.MAP,
+            version=6,
+            description="Create shallow copy of map (v6+)",
+            examples=["newMap = map.copy(myMap)"],
+        )
+
+        # ===== REQUEST NAMESPACE (v5+) =====
+
+        self.functions["request.security"] = FunctionSignature(
+            name="security",
+            namespace="request",
+            parameters=[
+                FunctionParameter("symbol", DataType.STRING, ParamType.SIMPLE, description="Symbol to request data from"),
+                FunctionParameter("timeframe", DataType.STRING, ParamType.SIMPLE, description="Timeframe of the requested data"),
+                FunctionParameter("expression", DataType.ANY, ParamType.SERIES, description="Expression to evaluate"),
+                FunctionParameter("gaps", DataType.ANY, ParamType.SIMPLE, optional=True, description="Gap filling strategy"),
+                FunctionParameter("lookahead", DataType.ANY, ParamType.SIMPLE, optional=True, description="Lookahead mode"),
+                FunctionParameter("ignore_invalid_symbol", DataType.BOOL, ParamType.SIMPLE, optional=True, description="Ignore invalid symbols"),
+                FunctionParameter("currency", DataType.STRING, ParamType.SIMPLE, optional=True, description="Currency conversion"),
+            ],
+            return_type=DataType.ANY,
+            version=5,
+            description="Request data from another symbol or timeframe (v5+). Replaces security() from v4.",
+            examples=[
+                "dailyHigh = request.security(syminfo.tickerid, 'D', high)",
+                "btcPrice = request.security('BINANCE:BTCUSDT', timeframe.period, close)"
+            ],
+        )
+
+        self.functions["request.dividends"] = FunctionSignature(
+            name="dividends",
+            namespace="request",
+            parameters=[
+                FunctionParameter("ticker", DataType.STRING, ParamType.SIMPLE, description="Stock ticker"),
+                FunctionParameter("field", DataType.STRING, ParamType.SIMPLE, description="Dividend field to request"),
+                FunctionParameter("gaps", DataType.ANY, ParamType.SIMPLE, optional=True, description="Gap filling strategy"),
+                FunctionParameter("lookahead", DataType.ANY, ParamType.SIMPLE, optional=True, description="Lookahead mode"),
+                FunctionParameter("ignore_invalid_symbol", DataType.BOOL, ParamType.SIMPLE, optional=True, description="Ignore invalid symbols"),
+            ],
+            return_type=DataType.FLOAT,
+            version=5,
+            description="Request dividend data for a stock (v5+)",
+            examples=["divAmount = request.dividends(syminfo.tickerid, dividends.gross)"],
+        )
+
+        self.functions["request.earnings"] = FunctionSignature(
+            name="earnings",
+            namespace="request",
+            parameters=[
+                FunctionParameter("ticker", DataType.STRING, ParamType.SIMPLE, description="Stock ticker"),
+                FunctionParameter("field", DataType.STRING, ParamType.SIMPLE, description="Earnings field to request"),
+                FunctionParameter("gaps", DataType.ANY, ParamType.SIMPLE, optional=True, description="Gap filling strategy"),
+                FunctionParameter("lookahead", DataType.ANY, ParamType.SIMPLE, optional=True, description="Lookahead mode"),
+                FunctionParameter("ignore_invalid_symbol", DataType.BOOL, ParamType.SIMPLE, optional=True, description="Ignore invalid symbols"),
+            ],
+            return_type=DataType.FLOAT,
+            version=5,
+            description="Request earnings data for a stock (v5+)",
+            examples=["eps = request.earnings(syminfo.tickerid, earnings.actual)"],
+        )
+
+        self.functions["request.splits"] = FunctionSignature(
+            name="splits",
+            namespace="request",
+            parameters=[
+                FunctionParameter("ticker", DataType.STRING, ParamType.SIMPLE, description="Stock ticker"),
+                FunctionParameter("field", DataType.STRING, ParamType.SIMPLE, description="Split field to request"),
+                FunctionParameter("gaps", DataType.ANY, ParamType.SIMPLE, optional=True, description="Gap filling strategy"),
+                FunctionParameter("lookahead", DataType.ANY, ParamType.SIMPLE, optional=True, description="Lookahead mode"),
+                FunctionParameter("ignore_invalid_symbol", DataType.BOOL, ParamType.SIMPLE, optional=True, description="Ignore invalid symbols"),
+            ],
+            return_type=DataType.FLOAT,
+            version=5,
+            description="Request stock split data (v5+)",
+            examples=["splitRatio = request.splits(syminfo.tickerid, splits.denominator)"],
+        )
+
+        self.functions["request.quandl"] = FunctionSignature(
+            name="quandl",
+            namespace="request",
+            parameters=[
+                FunctionParameter("ticker", DataType.STRING, ParamType.SIMPLE, description="Quandl ticker"),
+                FunctionParameter("gaps", DataType.ANY, ParamType.SIMPLE, optional=True, description="Gap filling strategy"),
+                FunctionParameter("index", DataType.INT, ParamType.SIMPLE, optional=True, description="Column index"),
+            ],
+            return_type=DataType.FLOAT,
+            version=5,
+            description="Request data from Quandl (v5+)",
+            examples=["goldData = request.quandl('LBMA/GOLD')"],
+        )
+
+        self.functions["request.financial"] = FunctionSignature(
+            name="financial",
+            namespace="request",
+            parameters=[
+                FunctionParameter("symbol", DataType.STRING, ParamType.SIMPLE, description="Symbol"),
+                FunctionParameter("field", DataType.STRING, ParamType.SIMPLE, description="Financial metric"),
+                FunctionParameter("period", DataType.STRING, ParamType.SIMPLE, description="Reporting period"),
+                FunctionParameter("gaps", DataType.ANY, ParamType.SIMPLE, optional=True, description="Gap filling strategy"),
+            ],
+            return_type=DataType.FLOAT,
+            version=5,
+            description="Request financial data (v5+)",
+            examples=["revenue = request.financial(syminfo.tickerid, financial.revenue, 'FQ')"],
+        )
+
+        self.functions["request.economic"] = FunctionSignature(
+            name="economic",
+            namespace="request",
+            parameters=[
+                FunctionParameter("country", DataType.STRING, ParamType.SIMPLE, description="Country code"),
+                FunctionParameter("field", DataType.STRING, ParamType.SIMPLE, description="Economic indicator"),
+                FunctionParameter("gaps", DataType.ANY, ParamType.SIMPLE, optional=True, description="Gap filling strategy"),
+            ],
+            return_type=DataType.FLOAT,
+            version=5,
+            description="Request economic data (v5+)",
+            examples=["gdp = request.economic('US', 'GDP')"],
+        )
+
+        self.functions["request.currency_rate"] = FunctionSignature(
+            name="currency_rate",
+            namespace="request",
+            parameters=[
+                FunctionParameter("from", DataType.STRING, ParamType.SIMPLE, description="From currency"),
+                FunctionParameter("to", DataType.STRING, ParamType.SIMPLE, description="To currency"),
+            ],
+            return_type=DataType.FLOAT,
+            version=5,
+            description="Get currency conversion rate (v5+)",
+            examples=["eurToUsd = request.currency_rate('EUR', 'USD')"],
+        )
+
+        # ===== TYPE DEFINITION KEYWORDS (v6) =====
+
+        self.functions["type"] = FunctionSignature(
+            name="type",
+            parameters=[
+                FunctionParameter("name", DataType.STRING, ParamType.CONST, description="Type name"),
+            ],
+            return_type=DataType.STRUCT,
+            version=6,
+            description="Define custom type (User-Defined Type/UDT) - v6+. Create instances with .new() method.",
+            examples=[
+                """type pivotPoint
+    int x
+    float y
+    string xloc = xloc.bar_time
+
+// Create instance
+foundPoint = pivotPoint.new()
+foundPoint = pivotPoint.new(time, high)
+foundPoint = pivotPoint.new(x = time, y = high)"""
+            ],
+        )
+
+        self.functions["enum"] = FunctionSignature(
+            name="enum",
+            parameters=[
+                FunctionParameter("name", DataType.STRING, ParamType.CONST, description="Enum name"),
+            ],
+            return_type=DataType.ENUM,
+            version=6,
+            description="Define enumeration type - v6+. Fields can have optional titles.",
+            examples=[
+                """enum Signal
+    buy = "Buy signal"
+    sell = "Sell signal"
+    neutral
+
+// Usage
+var Signal currentSignal = Signal.neutral
+if close > open
+    currentSignal := Signal.buy"""
+            ],
         )
 
     def get_function(self, name: str) -> Optional[FunctionSignature]:
