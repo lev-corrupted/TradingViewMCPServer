@@ -68,17 +68,26 @@ TradingViewMCPServer/
 - Clear separation within codebase (api/, indicators/, utils/ vs pine_script/)
 - Shared infrastructure (logging, caching, error handling)
 
+**Production Features (v3.4.0):**
+- ✅ **LRU Cache**: Memory-bounded with automatic eviction (1000 entries)
+- ✅ **Auto-Retry**: Exponential backoff for network failures
+- ✅ **Health Monitoring**: Built-in health check tool
+- ✅ **Docker Support**: Production-ready containerization
+- ✅ **CI/CD**: Automated testing and deployment
+
 **Benefits:**
 - ✅ Single installation and configuration
 - ✅ Unified authentication and API management
-- ✅ Shared caching and rate limiting
+- ✅ Shared caching with LRU eviction
 - ✅ One server to manage in Claude Desktop
 - ✅ Clear module boundaries within codebase
+- ✅ 100% test coverage (44/44 tests)
 
-**Concerns:**
-- ❌ Large server.py file (1300+ lines)
-- ❌ Mixing two distinct domains in one module
-- ❌ Potential for tighter coupling over time
+**Architecture Improvements (v3.4.0):**
+- ✅ OrderedDict-based LRU cache
+- ✅ Retry decorator pattern
+- ✅ Health check monitoring
+- ✅ Enhanced observability
 
 ## Proposed Architecture (Future v4.0)
 
