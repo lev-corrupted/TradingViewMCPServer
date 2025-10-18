@@ -1,7 +1,7 @@
 [project]
 name = "tradingview-mcp"
-version = "3.1.0"
-description = "TradingView MCP server for Claude - Multi-asset trading assistant with Pine Script v6 development tools supporting Forex, Stocks, Crypto with 20+ technical indicators"
+version = "3.3.0"
+description = "TradingView MCP server for Claude - Multi-asset trading assistant with Pine Script v6 development tools supporting Forex, Stocks, Crypto with 25+ technical indicators"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [

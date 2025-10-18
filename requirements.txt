@@ -1,0 +1,10 @@
+# Runtime dependencies for TradingView MCP Server
+
+# MCP Framework
+mcp[cli]>=1.12.0
+
+# Environment configuration
+python-dotenv>=1.0.0
+
+# HTTP requests
+requests>=2.31.0

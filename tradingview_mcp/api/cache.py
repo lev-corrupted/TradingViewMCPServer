@@ -1,9 +1,10 @@
-"""Simple in-memory cache with TTL support."""
+"""Simple in-memory cache with TTL and LRU eviction support."""
 
 import time
 import logging
 from typing import Optional, Any, Dict
 from dataclasses import dataclass
+from collections import OrderedDict
 
 logger = logging.getLogger(__name__)
 
@@ -17,16 +18,24 @@ class CacheEntry:
 
 class ResponseCache:
     """
-    Simple in-memory cache with TTL (Time To Live).
+    In-memory cache with TTL (Time To Live) and LRU eviction.
 
     This cache helps reduce API calls by storing responses temporarily.
+    When cache reaches max_size, least recently used entries are evicted.
     """
 
-    def __init__(self):
-        """Initialize empty cache."""
-        self._cache: Dict[str, CacheEntry] = {}
+    def __init__(self, max_size: int = 1000):
+        """
+        Initialize cache with maximum size limit.
+
+        Args:
+            max_size: Maximum number of entries (default: 1000)
+        """
+        self._cache: OrderedDict[str, CacheEntry] = OrderedDict()
+        self._max_size = max_size
         self._hits = 0
         self._misses = 0
+        self._evictions = 0
 
     def get(self, key: str) -> Optional[Any]:
         """
@@ -53,21 +62,30 @@ class ResponseCache:
             logger.debug(f"Cache expired: {key}")
             return None
 
+        # Move to end to mark as recently used (LRU)
+        self._cache.move_to_end(key)
         self._hits += 1
         logger.debug(f"Cache hit: {key}")
         return entry.value
 
     def set(self, key: str, value: Any, ttl: int) -> None:
         """
-        Store value in cache with TTL.
+        Store value in cache with TTL. Evicts LRU entry if at capacity.
 
         Args:
             key: Cache key
             value: Value to cache
             ttl: Time to live in seconds
         """
+        # Evict oldest entries if at capacity and key is new
+        if key not in self._cache and len(self._cache) >= self._max_size:
+            evicted_key, _ = self._cache.popitem(last=False)
+            self._evictions += 1
+            logger.debug(f"Cache evicted LRU entry: {evicted_key}")
+
         expires_at = time.time() + ttl
         self._cache[key] = CacheEntry(value=value, expires_at=expires_at)
+        self._cache.move_to_end(key)  # Mark as recently used
         logger.debug(f"Cache set: {key} (TTL: {ttl}s)")
 
     def invalidate(self, key: str) -> None:
@@ -119,7 +137,10 @@ class ResponseCache:
 
         return {
             "size": len(self._cache),
+            "max_size": self._max_size,
             "hits": self._hits,
             "misses": self._misses,
-            "hit_rate": f"{hit_rate:.1f}%"
+            "evictions": self._evictions,
+            "hit_rate": f"{hit_rate:.1f}%",
+            "utilization": f"{len(self._cache) / self._max_size * 100:.1f}%"
         }

@@ -20,8 +20,7 @@ class TestPineScriptValidator:
     def test_valid_v5_code(self):
         """Test validation of valid Pine Script v5 code"""
         validator = PineScriptValidator()
-        code = """
-//@version=5
+        code = """//@version=5
 indicator("Test")
 myMa = ta.sma(close, 20)
 plot(myMa)

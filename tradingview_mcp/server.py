@@ -195,6 +195,41 @@ def get_spread(pair: str) -> float:
     return TYPICAL_SPREADS.get(pair, DEFAULT_SPREAD)
 
 
+# ===== MCP TOOLS: SERVER MANAGEMENT =====
+
+@mcp.tool()
+def health_check() -> dict:
+    """
+    Check server health and API connectivity status.
+
+    Returns:
+        Server health information including version, cache stats, and API status
+    """
+    # Check API key configuration
+    api_key_configured = bool(api_client.api_key)
+
+    # Get cache statistics
+    cache_stats = api_client.cache.get_stats()
+
+    # Server version (from pyproject.toml)
+    version = "3.3.0"
+
+    return {
+        "status": "healthy" if api_key_configured else "degraded",
+        "version": version,
+        "api_key_configured": api_key_configured,
+        "cache": {
+            "size": cache_stats["size"],
+            "max_size": cache_stats["max_size"],
+            "hit_rate": cache_stats["hit_rate"],
+            "utilization": cache_stats["utilization"],
+            "evictions": cache_stats["evictions"]
+        },
+        "total_api_calls": api_client._total_calls,
+        "warnings": [] if api_key_configured else ["API key not configured - server will not function properly"]
+    }
+
+
 # ===== MCP TOOLS: MARKET DATA =====
 
 @mcp.tool()

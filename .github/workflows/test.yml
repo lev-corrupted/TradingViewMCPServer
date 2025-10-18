@@ -1,0 +1,77 @@
+name: Tests and Code Quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    name: Test Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install -r requirements-dev.txt
+
+      - name: Run tests with pytest
+        run: |
+          pytest --cov=tradingview_mcp --cov-report=xml --cov-report=term
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+
+  lint:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install -r requirements-dev.txt
+
+      - name: Check code formatting with black
+        run: |
+          black --check tradingview_mcp/
+
+      - name: Check import sorting with isort
+        run: |
+          isort --check-only tradingview_mcp/
+
+      - name: Lint with flake8
+        run: |
+          flake8 tradingview_mcp/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 tradingview_mcp/ --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
+
+      - name: Type check with mypy
+        run: |
+          mypy tradingview_mcp/ --ignore-missing-imports || true

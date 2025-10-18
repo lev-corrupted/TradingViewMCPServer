@@ -1,4 +1,4 @@
-"""Alpha Vantage API client with rate limiting and caching."""
+"""Alpha Vantage API client with rate limiting, caching, and retry logic."""
 
 import os
 import time
@@ -8,6 +8,7 @@ from collections import deque
 from datetime import datetime
 
 import requests
+from requests.exceptions import RequestException, Timeout, ConnectionError
 
 from ..config import (
     API_REQUEST_TIMEOUT,
@@ -25,6 +26,41 @@ from ..utils.asset_detector import format_pair_for_alpha_vantage
 from .cache import ResponseCache
 
 logger = logging.getLogger(__name__)
+
+
+def retry_with_exponential_backoff(max_retries: int = 3, base_delay: float = 1.0):
+    """
+    Decorator for retrying functions with exponential backoff.
+
+    Args:
+        max_retries: Maximum number of retry attempts
+        base_delay: Base delay in seconds (doubles each retry)
+    """
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            retries = 0
+            while retries < max_retries:
+                try:
+                    return func(*args, **kwargs)
+                except (Timeout, ConnectionError) as e:
+                    retries += 1
+                    if retries >= max_retries:
+                        logger.error(f"Max retries ({max_retries}) reached for {func.__name__}")
+                        raise
+
+                    delay = base_delay * (2 ** (retries - 1))
+                    logger.warning(
+                        f"Request failed (attempt {retries}/{max_retries}): {e}. "
+                        f"Retrying in {delay}s..."
+                    )
+                    time.sleep(delay)
+                except RequestException as e:
+                    # Don't retry on other request exceptions (4xx errors, etc.)
+                    logger.error(f"Request failed with non-retryable error: {e}")
+                    raise
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
 
 
 class RateLimiter:
@@ -98,9 +134,10 @@ class AlphaVantageClient:
         )
         self._total_calls = 0
 
+    @retry_with_exponential_backoff(max_retries=3, base_delay=2.0)
     def _make_request(self, params: Dict[str, str]) -> Dict[str, Any]:
         """
-        Make HTTP request to Alpha Vantage API with rate limiting.
+        Make HTTP request to Alpha Vantage API with rate limiting and retry logic.
 
         Args:
             params: Request parameters
@@ -109,7 +146,7 @@ class AlphaVantageClient:
             JSON response data
 
         Raises:
-            Exception: If request fails
+            Exception: If request fails after retries
         """
         # Check rate limit
         if not self.rate_limiter.can_proceed():

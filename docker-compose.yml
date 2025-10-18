@@ -1,0 +1,17 @@
+# TradingView MCP Server - Docker Compose
+version: '3.8'
+
+services:
+  tradingview-mcp:
+    build: .
+    container_name: tradingview-mcp-server
+    env_file:
+      - .env
+    volumes:
+      # Mount logs directory for persistence
+      - ./logs:/app/logs
+      # Mount strategies directory for user scripts
+      - ./TradingViewPineStrats:/app/TradingViewPineStrats
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
