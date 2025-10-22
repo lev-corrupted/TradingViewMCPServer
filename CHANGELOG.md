@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.4.1] - 2025-10-22
+
+### 🔧 Bug Fixes & Improvements
+
+This patch release fixes CI/CD issues and improves repository organization.
+
+#### Fixed
+- **Python Version Requirements**: Updated to Python 3.10+ (was incorrectly set to 3.9+)
+  - MCP SDK requires Python 3.10+, causing CI/CD dependency resolution failures
+  - Updated `pyproject.toml`, GitHub Actions workflow, and all documentation
+  - CI/CD now tests on Python 3.10, 3.11, 3.12 (removed 3.9)
+
+- **Code Formatting**: Fixed all black and isort formatting issues
+  - Reformatted 26 Python files with black
+  - Fixed import sorting with isort (black-compatible profile)
+  - Added `[tool.isort]` and `[tool.black]` configuration to `pyproject.toml`
+  - CI/CD code quality checks now pass
+
+#### Improved
+- **Repository Organization**: Cleaned up file structure
+  - Moved improvement docs to `docs/releases/` (IMPROVEMENTS_*.md, RELEASE_CHECKLIST.md)
+  - Moved `GITHUB_REPO_INFO.md` to `docs/`
+  - Moved `TradingViewPineStrats/` to `examples/pine-scripts/`
+  - Removed `.DS_Store` files
+  - Cleaner root directory with only essential project files
+
+- **Documentation**: Fixed all broken links after reorganization
+  - Updated CHANGELOG.md references
+  - Updated docs/GITHUB_REPO_INFO.md paths
+  - Updated docs/PROJECT_SUMMARY.md structure
+  - Updated examples/pine-scripts/README.md
+  - Added comprehensive "Repository Structure" section to README.md
+
+#### Changed
+- Python requirement: `>=3.9` → `>=3.10`
+- CI/CD test matrix: `[3.9, 3.10, 3.11, 3.12]` → `[3.10, 3.11, 3.12]`
+- All version badges and documentation updated to reflect Python 3.10+
+
+### ⚠️ Breaking Changes
+
+**None!** This is a backward-compatible patch release. Users already on Python 3.10+ will see no changes.
+
+### 📊 Impact
+
+- ✅ CI/CD pipeline now passes all checks
+- ✅ Repository is cleaner and better organized
+- ✅ All documentation links work correctly
+- ✅ Code follows consistent formatting standards
+
+---
+
 ## [3.4.0] - 2025-10-18
 
 ### 🎉 Major Release - Production Ready

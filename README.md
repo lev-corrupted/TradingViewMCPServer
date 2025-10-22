@@ -6,7 +6,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://hub.docker.com)
-[![Version](https://img.shields.io/badge/version-3.4.0-green.svg)](https://github.com/lev-corrupted/TradingViewMCPServer/releases)
+[![Version](https://img.shields.io/badge/version-3.4.1-green.svg)](https://github.com/lev-corrupted/TradingViewMCPServer/releases)
 
 Professional trading assistant supporting **Forex, Stocks, and Crypto** with **25+ technical indicators**, **Pine Script v6 development tools**, and **production-grade reliability**.
 
