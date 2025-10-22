@@ -14,37 +14,109 @@ RATE_LIMIT_CALLS_PER_DAY = 25  # Alpha Vantage free tier daily limit
 # ==== Asset Lists ====
 FOREX_PAIRS = [
     # Majors
-    'EURUSD', 'GBPUSD', 'USDJPY', 'USDCHF', 'AUDUSD', 'USDCAD', 'NZDUSD',
+    "EURUSD",
+    "GBPUSD",
+    "USDJPY",
+    "USDCHF",
+    "AUDUSD",
+    "USDCAD",
+    "NZDUSD",
     # Crosses
-    'GBPJPY', 'EURJPY', 'AUDJPY', 'NZDJPY', 'EURGBP', 'EURAUD', 'EURCHF',
-    'GBPAUD', 'GBPCAD', 'AUDCAD',
+    "GBPJPY",
+    "EURJPY",
+    "AUDJPY",
+    "NZDJPY",
+    "EURGBP",
+    "EURAUD",
+    "EURCHF",
+    "GBPAUD",
+    "GBPCAD",
+    "AUDCAD",
     # Exotics
-    'USDTRY', 'USDZAR', 'USDMXN', 'USDBRL',
+    "USDTRY",
+    "USDZAR",
+    "USDMXN",
+    "USDBRL",
     # Commodities
-    'XAUUSD'
+    "XAUUSD",
 ]
 
 POPULAR_STOCKS = [
-    'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META', 'BRK.B',
-    'V', 'JPM', 'JNJ', 'WMT', 'PG', 'MA', 'DIS', 'HD', 'BAC', 'NFLX',
-    'CSCO', 'ADBE', 'CRM', 'INTC', 'AMD', 'PYPL', 'NKE', 'ORCL',
-    'SPY', 'QQQ', 'IWM', 'DIA'  # ETFs
+    "AAPL",
+    "MSFT",
+    "GOOGL",
+    "AMZN",
+    "TSLA",
+    "NVDA",
+    "META",
+    "BRK.B",
+    "V",
+    "JPM",
+    "JNJ",
+    "WMT",
+    "PG",
+    "MA",
+    "DIS",
+    "HD",
+    "BAC",
+    "NFLX",
+    "CSCO",
+    "ADBE",
+    "CRM",
+    "INTC",
+    "AMD",
+    "PYPL",
+    "NKE",
+    "ORCL",
+    "SPY",
+    "QQQ",
+    "IWM",
+    "DIA",  # ETFs
 ]
 
 CRYPTO_SYMBOLS = [
-    'BTC', 'ETH', 'BNB', 'XRP', 'ADA', 'DOGE', 'SOL', 'MATIC',
-    'DOT', 'AVAX', 'LINK', 'UNI', 'LTC', 'ATOM', 'XLM', 'ALGO'
+    "BTC",
+    "ETH",
+    "BNB",
+    "XRP",
+    "ADA",
+    "DOGE",
+    "SOL",
+    "MATIC",
+    "DOT",
+    "AVAX",
+    "LINK",
+    "UNI",
+    "LTC",
+    "ATOM",
+    "XLM",
+    "ALGO",
 ]
 
 # ==== Typical Spreads (pips) ====
 TYPICAL_SPREADS: Dict[str, float] = {
-    'EURUSD': 1.5, 'GBPUSD': 2.0, 'USDJPY': 1.5, 'USDCHF': 2.0,
-    'AUDUSD': 2.0, 'USDCAD': 2.5, 'NZDUSD': 3.0,
-    'GBPJPY': 5.0, 'EURJPY': 3.0, 'AUDJPY': 4.0, 'NZDJPY': 5.0,
-    'EURGBP': 2.5, 'EURAUD': 4.0, 'EURCHF': 3.0,
-    'GBPAUD': 6.0, 'GBPCAD': 5.0, 'AUDCAD': 4.0,
-    'USDTRY': 30.0, 'USDZAR': 50.0, 'USDMXN': 40.0, 'USDBRL': 60.0,
-    'XAUUSD': 0.50
+    "EURUSD": 1.5,
+    "GBPUSD": 2.0,
+    "USDJPY": 1.5,
+    "USDCHF": 2.0,
+    "AUDUSD": 2.0,
+    "USDCAD": 2.5,
+    "NZDUSD": 3.0,
+    "GBPJPY": 5.0,
+    "EURJPY": 3.0,
+    "AUDJPY": 4.0,
+    "NZDJPY": 5.0,
+    "EURGBP": 2.5,
+    "EURAUD": 4.0,
+    "EURCHF": 3.0,
+    "GBPAUD": 6.0,
+    "GBPCAD": 5.0,
+    "AUDCAD": 4.0,
+    "USDTRY": 30.0,
+    "USDZAR": 50.0,
+    "USDMXN": 40.0,
+    "USDBRL": 60.0,
+    "XAUUSD": 0.50,
 }
 DEFAULT_SPREAD = 3.0
 
@@ -107,19 +179,19 @@ TIMEFRAME_MAP = {
 }
 
 # ==== Risk Classifications ====
-HIGH_RISK_PAIRS = ['USDTRY', 'USDZAR', 'USDMXN', 'USDBRL']
-MAJOR_PAIRS = ['EURUSD', 'GBPUSD', 'USDJPY', 'USDCHF', 'AUDUSD', 'USDCAD', 'NZDUSD']
+HIGH_RISK_PAIRS = ["USDTRY", "USDZAR", "USDMXN", "USDBRL"]
+MAJOR_PAIRS = ["EURUSD", "GBPUSD", "USDJPY", "USDCHF", "AUDUSD", "USDCAD", "NZDUSD"]
 
 # ==== Known Correlations ====
 # Correlation coefficient between -1 and 1
 KNOWN_CORRELATIONS: Dict[tuple[str, str], float] = {
-    ('EURUSD', 'GBPUSD'): 0.85,
-    ('EURUSD', 'USDCHF'): -0.90,
-    ('AUDUSD', 'NZDUSD'): 0.95,
-    ('GBPUSD', 'EURGBP'): -0.70,
-    ('EURUSD', 'USDJPY'): -0.65,
-    ('GBPUSD', 'USDJPY'): -0.60,
-    ('AUDUSD', 'XAUUSD'): 0.75,
+    ("EURUSD", "GBPUSD"): 0.85,
+    ("EURUSD", "USDCHF"): -0.90,
+    ("AUDUSD", "NZDUSD"): 0.95,
+    ("GBPUSD", "EURGBP"): -0.70,
+    ("EURUSD", "USDJPY"): -0.65,
+    ("GBPUSD", "USDJPY"): -0.60,
+    ("AUDUSD", "XAUUSD"): 0.75,
 }
 
 # ==== Data Limits ====

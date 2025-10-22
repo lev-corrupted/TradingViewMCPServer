@@ -6,13 +6,14 @@ Provides detailed, human-readable explanations for Pine Script errors.
 
 from __future__ import annotations
 
-from typing import Optional, Dict, List
 from dataclasses import dataclass
+from typing import Dict, List, Optional
 
 
 @dataclass
 class ErrorExplanation:
     """Detailed explanation of an error"""
+
     error_code: str
     title: str
     description: str
@@ -47,14 +48,14 @@ class ErrorExplainer:
                 "Incorrect statement structure",
             ],
             solutions=[
-                "Check for matching parentheses: ( ), brackets: [ ], and quotes: \" \"",
+                'Check for matching parentheses: ( ), brackets: [ ], and quotes: " "',
                 "Verify operator syntax (e.g., == for equality, not =)",
                 "Ensure proper statement structure (assignments, function calls, etc.)",
                 "Look for typos or special characters in the wrong place",
             ],
             examples=[
                 "// Incorrect\nplot(close\n\n// Correct\nplot(close)",
-                '// Incorrect\nif close = 10\n\n// Correct\nif close == 10',
+                "// Incorrect\nif close = 10\n\n// Correct\nif close == 10",
             ],
             related_docs=[
                 "https://www.tradingview.com/pine-script-docs/language/Syntax",
@@ -103,7 +104,7 @@ class ErrorExplainer:
                 "Check function availability in Pine Script docs",
             ],
             examples=[
-                "// Add version directive\n//@version=5\nindicator(\"My Indicator\")\nmyRsi = ta.rsi(close, 14)",
+                '// Add version directive\n//@version=5\nindicator("My Indicator")\nmyRsi = ta.rsi(close, 14)',
             ],
             related_docs=[
                 "https://www.tradingview.com/pine-script-docs/language/Migration_guide",
@@ -151,7 +152,7 @@ class ErrorExplainer:
                 "Consider upgrading to Pine Script v5",
             ],
             examples=[
-                "// Deprecated (v4)\nstudy(\"My Indicator\")\nmyMa = sma(close, 20)\n\n// Modern (v5)\nindicator(\"My Indicator\")\nmyMa = ta.sma(close, 20)",
+                '// Deprecated (v4)\nstudy("My Indicator")\nmyMa = sma(close, 20)\n\n// Modern (v5)\nindicator("My Indicator")\nmyMa = ta.sma(close, 20)',
             ],
             related_docs=[
                 "https://www.tradingview.com/pine-script-docs/language/Migration_guide",

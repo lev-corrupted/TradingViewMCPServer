@@ -19,19 +19,19 @@ from __future__ import annotations
 import logging
 import sys
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 # Setup logging
-log_dir = Path(__file__).parent.parent / 'logs'
+log_dir = Path(__file__).parent.parent / "logs"
 log_dir.mkdir(exist_ok=True)
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
         logging.StreamHandler(sys.stderr),
-        logging.FileHandler(log_dir / 'tradingview_mcp.log')
-    ]
+        logging.FileHandler(log_dir / "tradingview_mcp.log"),
+    ],
 )
 logger = logging.getLogger(__name__)
 
@@ -39,23 +39,56 @@ logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from mcp.server.fastmcp import FastMCP
 from dotenv import load_dotenv
+from mcp.server.fastmcp import FastMCP
 
 # Load environment variables
 load_dotenv(PROJECT_ROOT / ".env")
 
+# Validate environment setup
+import os
+
 # Import our refactored modules
 from tradingview_mcp.api import AlphaVantageClient
 from tradingview_mcp.config import (
-    FOREX_PAIRS,
-    POPULAR_STOCKS,
     CRYPTO_SYMBOLS,
-    TYPICAL_SPREADS,
     DEFAULT_SPREAD,
+    FOREX_PAIRS,
     HIGH_RISK_PAIRS,
-    MAJOR_PAIRS,
     KNOWN_CORRELATIONS,
+    MAJOR_PAIRS,
+    POPULAR_STOCKS,
+    TYPICAL_SPREADS,
+)
+from tradingview_mcp.indicators import (
+    calculate_adx,
+    calculate_atr,
+    calculate_bollinger_bands,
+    calculate_cci,
+    calculate_fibonacci_levels,
+    calculate_ichimoku,
+    calculate_macd,
+    calculate_market_profile,
+    calculate_moving_averages,
+    calculate_pivot_points,
+    calculate_rsi,
+    calculate_stochastic,
+    calculate_volume_profile,
+    calculate_vwap,
+    calculate_williams_r,
+    detect_gaps,
+    detect_support_resistance,
+)
+
+# Import Pine Script modules
+from tradingview_mcp.pine_script import (
+    ErrorExplainer,
+    PineAutocomplete,
+    PineDocumentation,
+    PineSandbox,
+    PineScriptValidator,
+    VersionConverter,
+    VersionDetector,
 )
 from tradingview_mcp.utils import (
     detect_asset_type,
@@ -63,39 +96,7 @@ from tradingview_mcp.utils import (
     format_success_response,
     validate_api_key,
 )
-from tradingview_mcp.indicators import (
-    calculate_moving_averages,
-    calculate_macd,
-    calculate_adx,
-    calculate_ichimoku,
-    calculate_stochastic,
-    calculate_fibonacci_levels,
-    calculate_rsi,
-    calculate_cci,
-    calculate_williams_r,
-    calculate_bollinger_bands,
-    calculate_atr,
-    calculate_vwap,
-    calculate_volume_profile,
-    calculate_market_profile,
-    detect_support_resistance,
-    calculate_pivot_points,
-    detect_gaps,
-)
 
-# Import Pine Script modules
-from tradingview_mcp.pine_script import (
-    PineScriptValidator,
-    PineDocumentation,
-    PineSandbox,
-    ErrorExplainer,
-    VersionDetector,
-    VersionConverter,
-    PineAutocomplete,
-)
-
-# Validate environment setup
-import os
 api_key = os.getenv("ALPHA_VANTAGE_API_KEY")
 if api_key:
     is_valid, error_msg = validate_api_key(api_key)
@@ -139,6 +140,7 @@ logger.info("TradingView MCP Server initialized")
 
 # ===== HELPER FUNCTIONS =====
 
+
 def get_quote(symbol: str) -> Dict[str, Any]:
     """
     Universal quote fetcher for all asset types.
@@ -153,18 +155,16 @@ def get_quote(symbol: str) -> Dict[str, Any]:
 
     logger.info(f"Fetching quote for {symbol} (type: {asset_type})")
 
-    if asset_type == 'forex':
+    if asset_type == "forex":
         return api_client.get_forex_quote(formatted_symbol)
-    elif asset_type == 'crypto':
+    elif asset_type == "crypto":
         return api_client.get_crypto_quote(formatted_symbol)
     else:  # stock
         return api_client.get_stock_quote(formatted_symbol)
 
 
 def get_historical_data(
-    symbol: str,
-    timeframe: str = "1h",
-    outputsize: str = "compact"
+    symbol: str, timeframe: str = "1h", outputsize: str = "compact"
 ) -> Dict[str, Any]:
     """
     Get historical data for any asset type.
@@ -182,12 +182,18 @@ def get_historical_data(
     logger.info(f"Fetching historical data for {symbol} ({timeframe})")
 
     # Route to appropriate API method based on asset type
-    if asset_type == 'forex':
-        return api_client.get_historical_data_forex(formatted_symbol, timeframe, outputsize)
-    elif asset_type == 'crypto':
-        return api_client.get_historical_data_crypto(formatted_symbol, timeframe, outputsize)
+    if asset_type == "forex":
+        return api_client.get_historical_data_forex(
+            formatted_symbol, timeframe, outputsize
+        )
+    elif asset_type == "crypto":
+        return api_client.get_historical_data_crypto(
+            formatted_symbol, timeframe, outputsize
+        )
     else:  # stock
-        return api_client.get_historical_data_stock(formatted_symbol, timeframe, outputsize)
+        return api_client.get_historical_data_stock(
+            formatted_symbol, timeframe, outputsize
+        )
 
 
 def get_spread(pair: str) -> float:
@@ -196,6 +202,7 @@ def get_spread(pair: str) -> float:
 
 
 # ===== MCP TOOLS: SERVER MANAGEMENT =====
+
 
 @mcp.tool()
 def health_check() -> dict:
@@ -223,14 +230,19 @@ def health_check() -> dict:
             "max_size": cache_stats["max_size"],
             "hit_rate": cache_stats["hit_rate"],
             "utilization": cache_stats["utilization"],
-            "evictions": cache_stats["evictions"]
+            "evictions": cache_stats["evictions"],
         },
         "total_api_calls": api_client._total_calls,
-        "warnings": [] if api_key_configured else ["API key not configured - server will not function properly"]
+        "warnings": (
+            []
+            if api_key_configured
+            else ["API key not configured - server will not function properly"]
+        ),
     }
 
 
 # ===== MCP TOOLS: MARKET DATA =====
+
 
 @mcp.tool()
 def get_price(symbol: str) -> dict:
@@ -255,8 +267,11 @@ def get_price(symbol: str) -> dict:
         "bid": quote.get("bid"),
         "ask": quote.get("ask"),
         "timestamp": quote.get("timestamp"),
-        **{k: v for k, v in quote.items()
-           if k not in ["symbol", "asset_type", "price", "bid", "ask", "timestamp"]}
+        **{
+            k: v
+            for k, v in quote.items()
+            if k not in ["symbol", "asset_type", "price", "bid", "ask", "timestamp"]
+        },
     }
 
 
@@ -286,10 +301,13 @@ def list_available_pairs() -> dict:
         Dictionary with majors, crosses, exotics, and commodities
     """
     majors = [p for p in MAJOR_PAIRS if p in FOREX_PAIRS]
-    exotics = ['USDTRY', 'USDZAR', 'USDMXN', 'USDBRL']
-    commodities = ['XAUUSD']
-    crosses = [p for p in FOREX_PAIRS
-               if p not in majors and p not in exotics and p not in commodities]
+    exotics = ["USDTRY", "USDZAR", "USDMXN", "USDBRL"]
+    commodities = ["XAUUSD"]
+    crosses = [
+        p
+        for p in FOREX_PAIRS
+        if p not in majors and p not in exotics and p not in commodities
+    ]
 
     return {
         "total_pairs": len(FOREX_PAIRS),
@@ -297,7 +315,7 @@ def list_available_pairs() -> dict:
         "crosses": crosses,
         "exotics": exotics,
         "commodities": commodities,
-        "all_pairs": FOREX_PAIRS
+        "all_pairs": FOREX_PAIRS,
     }
 
 
@@ -315,23 +333,24 @@ def list_supported_assets() -> dict:
             "majors": FOREX_PAIRS[:7],
             "crosses": FOREX_PAIRS[7:16],
             "exotics": FOREX_PAIRS[16:20],
-            "commodities": ['XAUUSD']
+            "commodities": ["XAUUSD"],
         },
         "stocks": {
             "count": len(POPULAR_STOCKS),
             "popular": POPULAR_STOCKS[:20],
-            "etfs": ['SPY', 'QQQ', 'IWM', 'DIA']
+            "etfs": ["SPY", "QQQ", "IWM", "DIA"],
         },
         "crypto": {
             "count": len(CRYPTO_SYMBOLS),
             "major": CRYPTO_SYMBOLS[:8],
-            "altcoins": CRYPTO_SYMBOLS[8:]
+            "altcoins": CRYPTO_SYMBOLS[8:],
         },
-        "note": "Any valid symbol can be queried - these are just popular examples"
+        "note": "Any valid symbol can be queried - these are just popular examples",
     }
 
 
 # ===== MCP TOOLS: TECHNICAL ANALYSIS =====
+
 
 @mcp.tool()
 def analyze_pair(symbol: str, timeframe: str = "1h") -> dict:
@@ -364,7 +383,7 @@ def analyze_pair(symbol: str, timeframe: str = "1h") -> dict:
             "bid": quote["bid"],
             "ask": quote["ask"],
             "timestamp": quote["timestamp"],
-            "note": "Limited analysis - historical data unavailable"
+            "note": "Limited analysis - historical data unavailable",
         }
 
     # Calculate indicators
@@ -385,9 +404,9 @@ def analyze_pair(symbol: str, timeframe: str = "1h") -> dict:
             recommendation = "BUY"
 
     # Risk classification
-    if asset_type == 'forex' and symbol in HIGH_RISK_PAIRS:
+    if asset_type == "forex" and symbol in HIGH_RISK_PAIRS:
         risk_level = "HIGH"
-    elif asset_type == 'forex' and symbol in MAJOR_PAIRS:
+    elif asset_type == "forex" and symbol in MAJOR_PAIRS:
         risk_level = "LOW"
     else:
         risk_level = "MEDIUM"
@@ -404,7 +423,7 @@ def analyze_pair(symbol: str, timeframe: str = "1h") -> dict:
         "bollinger_bands": bb,
         "signals": signals,
         "recommendation": recommendation,
-        "risk_level": risk_level
+        "risk_level": risk_level,
     }
 
 
@@ -425,8 +444,9 @@ def calculate_correlation(pair1: str, pair2: str, period: int = 30) -> dict:
     pair2 = pair2.upper().replace("/", "").replace("_", "")
 
     # Check known correlations
-    correlation = (KNOWN_CORRELATIONS.get((pair1, pair2)) or
-                   KNOWN_CORRELATIONS.get((pair2, pair1)))
+    correlation = KNOWN_CORRELATIONS.get((pair1, pair2)) or KNOWN_CORRELATIONS.get(
+        (pair2, pair1)
+    )
 
     if correlation is None:
         correlation = 0.0  # Unknown correlation
@@ -444,7 +464,9 @@ def calculate_correlation(pair1: str, pair2: str, period: int = 30) -> dict:
     else:
         strength = "VERY WEAK"
 
-    relationship = "POSITIVE" if correlation > 0 else "NEGATIVE" if correlation < 0 else "NEUTRAL"
+    relationship = (
+        "POSITIVE" if correlation > 0 else "NEGATIVE" if correlation < 0 else "NEUTRAL"
+    )
 
     return {
         "pair1": pair1,
@@ -453,11 +475,12 @@ def calculate_correlation(pair1: str, pair2: str, period: int = 30) -> dict:
         "strength": strength,
         "relationship": relationship,
         "period_days": period,
-        "interpretation": f"{pair1} and {pair2} have a {strength} {relationship} correlation ({correlation:.2f})"
+        "interpretation": f"{pair1} and {pair2} have a {strength} {relationship} correlation ({correlation:.2f})",
     }
 
 
 # ===== MCP TOOLS: FIBONACCI & PIVOT POINTS =====
+
 
 @mcp.tool()
 def get_fibonacci_retracement(symbol: str, timeframe: str = "1h") -> dict:
@@ -485,7 +508,7 @@ def get_fibonacci_retracement(symbol: str, timeframe: str = "1h") -> dict:
         "symbol": symbol,
         "timeframe": timeframe,
         "levels": levels,
-        "interpretation": "Key retracement levels where price may find support/resistance"
+        "interpretation": "Key retracement levels where price may find support/resistance",
     }
 
 
@@ -511,14 +534,11 @@ def get_pivot_points(symbol: str, timeframe: str = "1h") -> dict:
     if "error" in pivots:
         return pivots
 
-    return {
-        "symbol": symbol,
-        "timeframe": timeframe,
-        **pivots
-    }
+    return {"symbol": symbol, "timeframe": timeframe, **pivots}
 
 
 # ===== MCP TOOLS: TREND INDICATORS =====
+
 
 @mcp.tool()
 def get_moving_averages(symbol: str, timeframe: str = "1h") -> dict:
@@ -543,7 +563,7 @@ def get_moving_averages(symbol: str, timeframe: str = "1h") -> dict:
         "symbol": symbol,
         "timeframe": timeframe,
         **mas,
-        "interpretation": "Compare current price to MA levels to identify trend direction"
+        "interpretation": "Compare current price to MA levels to identify trend direction",
     }
 
 
@@ -573,7 +593,7 @@ def get_macd(symbol: str, timeframe: str = "1h") -> dict:
         "symbol": symbol,
         "timeframe": timeframe,
         **macd,
-        "interpretation": f"MACD is {macd['signal']}. Histogram: {macd['histogram']:.5f}"
+        "interpretation": f"MACD is {macd['signal']}. Histogram: {macd['histogram']:.5f}",
     }
 
 
@@ -604,7 +624,7 @@ def get_adx(symbol: str, timeframe: str = "1h", period: int = 14) -> dict:
         "symbol": symbol,
         "timeframe": timeframe,
         **adx,
-        "interpretation": f"Trend strength is {adx['trend_strength']} (ADX: {adx['adx']:.1f})"
+        "interpretation": f"Trend strength is {adx['trend_strength']} (ADX: {adx['adx']:.1f})",
     }
 
 
@@ -630,14 +650,11 @@ def get_ichimoku_cloud(symbol: str, timeframe: str = "1h") -> dict:
     if "error" in ichimoku:
         return ichimoku
 
-    return {
-        "symbol": symbol,
-        "timeframe": timeframe,
-        **ichimoku
-    }
+    return {"symbol": symbol, "timeframe": timeframe, **ichimoku}
 
 
 # ===== MCP TOOLS: MOMENTUM INDICATORS =====
+
 
 @mcp.tool()
 def get_stochastic(symbol: str, timeframe: str = "1h", period: int = 14) -> dict:
@@ -662,11 +679,7 @@ def get_stochastic(symbol: str, timeframe: str = "1h", period: int = 14) -> dict
     if "error" in stoch:
         return stoch
 
-    return {
-        "symbol": symbol,
-        "timeframe": timeframe,
-        **stoch
-    }
+    return {"symbol": symbol, "timeframe": timeframe, **stoch}
 
 
 @mcp.tool()
@@ -692,11 +705,7 @@ def get_rsi(symbol: str, timeframe: str = "1h", period: int = 14) -> dict:
     if "error" in rsi:
         return rsi
 
-    return {
-        "symbol": symbol,
-        "timeframe": timeframe,
-        **rsi
-    }
+    return {"symbol": symbol, "timeframe": timeframe, **rsi}
 
 
 @mcp.tool()
@@ -722,11 +731,7 @@ def get_cci(symbol: str, timeframe: str = "1h", period: int = 20) -> dict:
     if "error" in cci:
         return cci
 
-    return {
-        "symbol": symbol,
-        "timeframe": timeframe,
-        **cci
-    }
+    return {"symbol": symbol, "timeframe": timeframe, **cci}
 
 
 @mcp.tool()
@@ -752,14 +757,11 @@ def get_williams_r(symbol: str, timeframe: str = "1h", period: int = 14) -> dict
     if "error" in williams:
         return williams
 
-    return {
-        "symbol": symbol,
-        "timeframe": timeframe,
-        **williams
-    }
+    return {"symbol": symbol, "timeframe": timeframe, **williams}
 
 
 # ===== MCP TOOLS: VOLATILITY INDICATORS =====
+
 
 @mcp.tool()
 def get_bollinger_bands(symbol: str, timeframe: str = "1h", period: int = 20) -> dict:
@@ -784,11 +786,7 @@ def get_bollinger_bands(symbol: str, timeframe: str = "1h", period: int = 20) ->
     if "error" in bb:
         return bb
 
-    return {
-        "symbol": symbol,
-        "timeframe": timeframe,
-        **bb
-    }
+    return {"symbol": symbol, "timeframe": timeframe, **bb}
 
 
 @mcp.tool()
@@ -814,14 +812,11 @@ def get_atr(symbol: str, timeframe: str = "1h", period: int = 14) -> dict:
     if "error" in atr:
         return atr
 
-    return {
-        "symbol": symbol,
-        "timeframe": timeframe,
-        **atr
-    }
+    return {"symbol": symbol, "timeframe": timeframe, **atr}
 
 
 # ===== MCP TOOLS: VOLUME INDICATORS =====
+
 
 @mcp.tool()
 def get_vwap(symbol: str, timeframe: str = "1h") -> dict:
@@ -858,12 +853,14 @@ def get_vwap(symbol: str, timeframe: str = "1h") -> dict:
         "deviation_percent": round(deviation, 2),
         "signal": "ABOVE_VWAP" if current_price > vwap else "BELOW_VWAP",
         "interpretation": f"Price is {abs(deviation):.2f}% {'above' if deviation > 0 else 'below'} VWAP. "
-                         f"{'Bullish' if deviation > 0 else 'Bearish'} pressure indicated."
+        f"{'Bullish' if deviation > 0 else 'Bearish'} pressure indicated.",
     }
 
 
 @mcp.tool()
-def get_volume_profile(symbol: str, timeframe: str = "1h", num_levels: int = 20) -> dict:
+def get_volume_profile(
+    symbol: str, timeframe: str = "1h", num_levels: int = 20
+) -> dict:
     """
     Get volume profile analysis.
 
@@ -890,7 +887,7 @@ def get_volume_profile(symbol: str, timeframe: str = "1h", num_levels: int = 20)
         "timeframe": timeframe,
         **profile,
         "interpretation": f"POC at {profile['poc']:.5f} shows highest traded volume. "
-                         f"High volume nodes indicate support/resistance zones."
+        f"High volume nodes indicate support/resistance zones.",
     }
 
 
@@ -916,14 +913,11 @@ def get_market_profile(symbol: str, timeframe: str = "1h") -> dict:
     if "error" in profile:
         return profile
 
-    return {
-        "symbol": symbol,
-        "timeframe": timeframe,
-        **profile
-    }
+    return {"symbol": symbol, "timeframe": timeframe, **profile}
 
 
 # ===== MCP TOOLS: SUPPORT/RESISTANCE =====
+
 
 @mcp.tool()
 def get_support_resistance(symbol: str, timeframe: str = "1h") -> dict:
@@ -944,11 +938,7 @@ def get_support_resistance(symbol: str, timeframe: str = "1h") -> dict:
 
     sr = detect_support_resistance(hist_data["data"])
 
-    return {
-        "symbol": symbol,
-        "timeframe": timeframe,
-        **sr
-    }
+    return {"symbol": symbol, "timeframe": timeframe, **sr}
 
 
 @mcp.tool()
@@ -990,11 +980,12 @@ def detect_unfilled_gaps(symbol: str, timeframe: str = "1h") -> dict:
         "total_gaps": len(gaps),
         "unfilled_gaps": len(unfilled_gaps),
         "gaps": unfilled_gaps[:10],  # Return top 10
-        "interpretation": f"Found {len(unfilled_gaps)} unfilled gaps. These often act as magnets for price action."
+        "interpretation": f"Found {len(unfilled_gaps)} unfilled gaps. These often act as magnets for price action.",
     }
 
 
 # ===== MCP TOOLS: SYSTEM =====
+
 
 @mcp.tool()
 def get_server_stats() -> dict:
@@ -1004,13 +995,11 @@ def get_server_stats() -> dict:
     Returns:
         Server statistics
     """
-    return {
-        "status": "online",
-        **api_client.get_stats()
-    }
+    return {"status": "online", **api_client.get_stats()}
 
 
 # ===== MCP RESOURCES =====
+
 
 @mcp.resource("forex://pairs")
 def list_forex_pairs() -> str:
@@ -1019,19 +1008,20 @@ def list_forex_pairs() -> str:
 
     output = "📊 Available Forex Pairs\n\n"
     output += f"**Major Pairs ({len(pairs_data['majors'])}):**\n"
-    output += ", ".join(pairs_data['majors']) + "\n\n"
+    output += ", ".join(pairs_data["majors"]) + "\n\n"
     output += f"**Cross Pairs ({len(pairs_data['crosses'])}):**\n"
-    output += ", ".join(pairs_data['crosses']) + "\n\n"
+    output += ", ".join(pairs_data["crosses"]) + "\n\n"
     output += f"**Exotic Pairs ({len(pairs_data['exotics'])}):**\n"
-    output += ", ".join(pairs_data['exotics']) + "\n\n"
+    output += ", ".join(pairs_data["exotics"]) + "\n\n"
     output += f"**Commodities ({len(pairs_data['commodities'])}):**\n"
-    output += ", ".join(pairs_data['commodities']) + "\n\n"
+    output += ", ".join(pairs_data["commodities"]) + "\n\n"
     output += f"**Total:** {pairs_data['total_pairs']} pairs available"
 
     return output
 
 
 # ===== PINE SCRIPT MCP TOOLS =====
+
 
 @mcp.tool()
 def validate_pine_script(code: str, version: int = None) -> dict:
@@ -1088,7 +1078,7 @@ def validate_pine_script(code: str, version: int = None) -> dict:
                 for info in result.info
             ],
             "summary": f"Validation {'passed' if result.valid else 'failed'} - "
-                       f"{len(result.errors)} errors, {len(result.warnings)} warnings",
+            f"{len(result.errors)} errors, {len(result.warnings)} warnings",
         }
     except Exception as e:
         logger.error(f"Pine Script validation error: {e}")
@@ -1152,7 +1142,7 @@ def get_pine_documentation(function_name: str, version: int = 5) -> dict:
 
         return format_error_response(
             f"Documentation for '{function_name}' not found",
-            suggestion="Check function name spelling or try searching"
+            suggestion="Check function name spelling or try searching",
         )
 
     except Exception as e:
@@ -1278,7 +1268,7 @@ def detect_pine_version(code: str) -> dict:
             "deprecated_features": version_info.deprecated_features,
             "suggestions": version_info.suggestions,
             "summary": f"Detected Pine Script v{version_info.version} "
-                       f"(confidence: {version_info.confidence:.0%}, from: {version_info.detected_from})",
+            f"(confidence: {version_info.confidence:.0%}, from: {version_info.detected_from})",
         }
 
     except Exception as e:
@@ -1287,7 +1277,9 @@ def detect_pine_version(code: str) -> dict:
 
 
 @mcp.tool()
-def convert_pine_version(code: str, target_version: int, source_version: int = None) -> dict:
+def convert_pine_version(
+    code: str, target_version: int, source_version: int = None
+) -> dict:
     """
     Convert Pine Script code between versions.
 
@@ -1326,7 +1318,7 @@ def convert_pine_version(code: str, target_version: int, source_version: int = N
             "changes_made": changes,
             "warnings": warnings,
             "summary": f"Converted from v{source_version or '?'} to v{target_version} - "
-                       f"{len(changes)} changes made",
+            f"{len(changes)} changes made",
         }
 
     except Exception as e:
@@ -1410,24 +1402,26 @@ def get_pine_template(template_type: str = "simple") -> dict:
     except Exception as e:
         logger.error(f"Pine template error: {e}")
         return format_error_response(
-            str(e),
-            suggestion="Use 'simple', 'strategy', or 'overlay'"
+            str(e), suggestion="Use 'simple', 'strategy', or 'overlay'"
         )
 
 
 # ===== MAIN =====
 
+
 def main():
     """Run the TradingView MCP server."""
     import argparse
 
-    parser = argparse.ArgumentParser(description="TradingView Trading Assistant MCP Server")
+    parser = argparse.ArgumentParser(
+        description="TradingView Trading Assistant MCP Server"
+    )
     parser.add_argument(
         "transport",
         choices=["stdio", "streamable-http"],
         default="stdio",
         nargs="?",
-        help="Transport method (default: stdio)"
+        help="Transport method (default: stdio)",
     )
     args = parser.parse_args()
 

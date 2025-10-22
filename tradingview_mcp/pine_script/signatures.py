@@ -8,12 +8,13 @@ Supports Pine Script v4, v5, and v6.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional, Dict, Any, Set
 from enum import Enum
+from typing import Any, Dict, List, Optional, Set
 
 
 class ParamType(Enum):
     """Parameter type qualifiers"""
+
     SERIES = "series"
     SIMPLE = "simple"
     CONST = "const"
@@ -23,6 +24,7 @@ class ParamType(Enum):
 
 class DataType(Enum):
     """Data types in Pine Script"""
+
     INT = "int"
     FLOAT = "float"
     BOOL = "bool"
@@ -43,6 +45,7 @@ class DataType(Enum):
 @dataclass
 class FunctionParameter:
     """Represents a function parameter"""
+
     name: str
     data_type: DataType
     param_type: ParamType = ParamType.SERIES
@@ -54,6 +57,7 @@ class FunctionParameter:
 @dataclass
 class FunctionSignature:
     """Represents a complete function signature"""
+
     name: str
     parameters: List[FunctionParameter]
     return_type: DataType
@@ -95,15 +99,71 @@ class FunctionSignatureDB:
         self.functions["plot"] = FunctionSignature(
             name="plot",
             parameters=[
-                FunctionParameter("series", DataType.FLOAT, ParamType.SERIES, description="Series of values to plot"),
-                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Plot title"),
-                FunctionParameter("color", DataType.COLOR, ParamType.SERIES, optional=True, description="Plot color"),
-                FunctionParameter("linewidth", DataType.INT, ParamType.INPUT, optional=True, default_value=1, description="Line width"),
-                FunctionParameter("style", DataType.INT, ParamType.INPUT, optional=True, description="Plot style"),
-                FunctionParameter("trackprice", DataType.BOOL, ParamType.INPUT, optional=True, default_value=False, description="Track price on scale"),
-                FunctionParameter("show_last", DataType.INT, ParamType.INPUT, optional=True, description="Show last N bars"),
-                FunctionParameter("offset", DataType.INT, ParamType.INPUT, optional=True, default_value=0, description="Offset in bars"),
-                FunctionParameter("display", DataType.INT, ParamType.INPUT, optional=True, description="Display mode"),
+                FunctionParameter(
+                    "series",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Series of values to plot",
+                ),
+                FunctionParameter(
+                    "title",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Plot title",
+                ),
+                FunctionParameter(
+                    "color",
+                    DataType.COLOR,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Plot color",
+                ),
+                FunctionParameter(
+                    "linewidth",
+                    DataType.INT,
+                    ParamType.INPUT,
+                    optional=True,
+                    default_value=1,
+                    description="Line width",
+                ),
+                FunctionParameter(
+                    "style",
+                    DataType.INT,
+                    ParamType.INPUT,
+                    optional=True,
+                    description="Plot style",
+                ),
+                FunctionParameter(
+                    "trackprice",
+                    DataType.BOOL,
+                    ParamType.INPUT,
+                    optional=True,
+                    default_value=False,
+                    description="Track price on scale",
+                ),
+                FunctionParameter(
+                    "show_last",
+                    DataType.INT,
+                    ParamType.INPUT,
+                    optional=True,
+                    description="Show last N bars",
+                ),
+                FunctionParameter(
+                    "offset",
+                    DataType.INT,
+                    ParamType.INPUT,
+                    optional=True,
+                    default_value=0,
+                    description="Offset in bars",
+                ),
+                FunctionParameter(
+                    "display",
+                    DataType.INT,
+                    ParamType.INPUT,
+                    optional=True,
+                    description="Display mode",
+                ),
             ],
             return_type=DataType.ANY,
             version=1,
@@ -114,66 +174,247 @@ class FunctionSignatureDB:
         self.functions["plotshape"] = FunctionSignature(
             name="plotshape",
             parameters=[
-                FunctionParameter("series", DataType.BOOL, ParamType.SERIES, description="Series of boolean values"),
-                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Plot title"),
-                FunctionParameter("style", DataType.STRING, ParamType.CONST, optional=True, description="Shape style"),
-                FunctionParameter("location", DataType.STRING, ParamType.CONST, optional=True, description="Location (abovebar, belowbar, etc.)"),
-                FunctionParameter("color", DataType.COLOR, ParamType.SERIES, optional=True, description="Shape color"),
-                FunctionParameter("offset", DataType.INT, ParamType.INPUT, optional=True, default_value=0, description="Offset in bars"),
-                FunctionParameter("text", DataType.STRING, ParamType.CONST, optional=True, description="Text to display"),
-                FunctionParameter("textcolor", DataType.COLOR, ParamType.SERIES, optional=True, description="Text color"),
-                FunctionParameter("size", DataType.STRING, ParamType.CONST, optional=True, description="Shape size"),
+                FunctionParameter(
+                    "series",
+                    DataType.BOOL,
+                    ParamType.SERIES,
+                    description="Series of boolean values",
+                ),
+                FunctionParameter(
+                    "title",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Plot title",
+                ),
+                FunctionParameter(
+                    "style",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Shape style",
+                ),
+                FunctionParameter(
+                    "location",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Location (abovebar, belowbar, etc.)",
+                ),
+                FunctionParameter(
+                    "color",
+                    DataType.COLOR,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Shape color",
+                ),
+                FunctionParameter(
+                    "offset",
+                    DataType.INT,
+                    ParamType.INPUT,
+                    optional=True,
+                    default_value=0,
+                    description="Offset in bars",
+                ),
+                FunctionParameter(
+                    "text",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Text to display",
+                ),
+                FunctionParameter(
+                    "textcolor",
+                    DataType.COLOR,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Text color",
+                ),
+                FunctionParameter(
+                    "size",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Shape size",
+                ),
             ],
             return_type=DataType.ANY,
             version=1,
             description="Plots shapes on the chart when condition is true",
-            examples=['plotshape(crossover(close, ma), style=shape.triangleup, location=location.belowbar, color=color.green)'],
+            examples=[
+                "plotshape(crossover(close, ma), style=shape.triangleup, location=location.belowbar, color=color.green)"
+            ],
         )
 
         self.functions["plotchar"] = FunctionSignature(
             name="plotchar",
             parameters=[
-                FunctionParameter("series", DataType.BOOL, ParamType.SERIES, description="Series of boolean values"),
-                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Plot title"),
-                FunctionParameter("char", DataType.STRING, ParamType.CONST, optional=True, description="Character to display"),
-                FunctionParameter("location", DataType.STRING, ParamType.CONST, optional=True, description="Location (abovebar, belowbar, etc.)"),
-                FunctionParameter("color", DataType.COLOR, ParamType.SERIES, optional=True, description="Character color"),
-                FunctionParameter("offset", DataType.INT, ParamType.INPUT, optional=True, default_value=0, description="Offset in bars"),
-                FunctionParameter("text", DataType.STRING, ParamType.CONST, optional=True, description="Text to display"),
-                FunctionParameter("textcolor", DataType.COLOR, ParamType.SERIES, optional=True, description="Text color"),
-                FunctionParameter("size", DataType.STRING, ParamType.CONST, optional=True, description="Character size"),
+                FunctionParameter(
+                    "series",
+                    DataType.BOOL,
+                    ParamType.SERIES,
+                    description="Series of boolean values",
+                ),
+                FunctionParameter(
+                    "title",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Plot title",
+                ),
+                FunctionParameter(
+                    "char",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Character to display",
+                ),
+                FunctionParameter(
+                    "location",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Location (abovebar, belowbar, etc.)",
+                ),
+                FunctionParameter(
+                    "color",
+                    DataType.COLOR,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Character color",
+                ),
+                FunctionParameter(
+                    "offset",
+                    DataType.INT,
+                    ParamType.INPUT,
+                    optional=True,
+                    default_value=0,
+                    description="Offset in bars",
+                ),
+                FunctionParameter(
+                    "text",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Text to display",
+                ),
+                FunctionParameter(
+                    "textcolor",
+                    DataType.COLOR,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Text color",
+                ),
+                FunctionParameter(
+                    "size",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Character size",
+                ),
             ],
             return_type=DataType.ANY,
             version=1,
             description="Plots characters on the chart when condition is true",
-            examples=['plotchar(buySignal, char="B", location=location.belowbar, color=color.green)'],
+            examples=[
+                'plotchar(buySignal, char="B", location=location.belowbar, color=color.green)'
+            ],
         )
 
         self.functions["plotarrow"] = FunctionSignature(
             name="plotarrow",
             parameters=[
-                FunctionParameter("series", DataType.FLOAT, ParamType.SERIES, description="Series of values (positive = up, negative = down)"),
-                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Plot title"),
-                FunctionParameter("colorup", DataType.COLOR, ParamType.SERIES, optional=True, description="Color for up arrows"),
-                FunctionParameter("colordown", DataType.COLOR, ParamType.SERIES, optional=True, description="Color for down arrows"),
-                FunctionParameter("offset", DataType.INT, ParamType.INPUT, optional=True, default_value=0, description="Offset in bars"),
-                FunctionParameter("minheight", DataType.INT, ParamType.INPUT, optional=True, description="Minimum arrow height"),
-                FunctionParameter("maxheight", DataType.INT, ParamType.INPUT, optional=True, description="Maximum arrow height"),
+                FunctionParameter(
+                    "series",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Series of values (positive = up, negative = down)",
+                ),
+                FunctionParameter(
+                    "title",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Plot title",
+                ),
+                FunctionParameter(
+                    "colorup",
+                    DataType.COLOR,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Color for up arrows",
+                ),
+                FunctionParameter(
+                    "colordown",
+                    DataType.COLOR,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Color for down arrows",
+                ),
+                FunctionParameter(
+                    "offset",
+                    DataType.INT,
+                    ParamType.INPUT,
+                    optional=True,
+                    default_value=0,
+                    description="Offset in bars",
+                ),
+                FunctionParameter(
+                    "minheight",
+                    DataType.INT,
+                    ParamType.INPUT,
+                    optional=True,
+                    description="Minimum arrow height",
+                ),
+                FunctionParameter(
+                    "maxheight",
+                    DataType.INT,
+                    ParamType.INPUT,
+                    optional=True,
+                    description="Maximum arrow height",
+                ),
             ],
             return_type=DataType.ANY,
             version=1,
             description="Plots arrows on the chart",
-            examples=['plotarrow(signal, colorup=color.green, colordown=color.red)'],
+            examples=["plotarrow(signal, colorup=color.green, colordown=color.red)"],
         )
 
         self.functions["hline"] = FunctionSignature(
             name="hline",
             parameters=[
-                FunctionParameter("price", DataType.FLOAT, ParamType.CONST, description="Price level"),
-                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Line title"),
-                FunctionParameter("color", DataType.COLOR, ParamType.CONST, optional=True, description="Line color"),
-                FunctionParameter("linestyle", DataType.STRING, ParamType.CONST, optional=True, description="Line style"),
-                FunctionParameter("linewidth", DataType.INT, ParamType.CONST, optional=True, default_value=1, description="Line width"),
+                FunctionParameter(
+                    "price", DataType.FLOAT, ParamType.CONST, description="Price level"
+                ),
+                FunctionParameter(
+                    "title",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Line title",
+                ),
+                FunctionParameter(
+                    "color",
+                    DataType.COLOR,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Line color",
+                ),
+                FunctionParameter(
+                    "linestyle",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Line style",
+                ),
+                FunctionParameter(
+                    "linewidth",
+                    DataType.INT,
+                    ParamType.CONST,
+                    optional=True,
+                    default_value=1,
+                    description="Line width",
+                ),
             ],
             return_type=DataType.ANY,
             version=1,
@@ -184,29 +425,71 @@ class FunctionSignatureDB:
         self.functions["fill"] = FunctionSignature(
             name="fill",
             parameters=[
-                FunctionParameter("plot1", DataType.ANY, ParamType.SERIES, description="First plot"),
-                FunctionParameter("plot2", DataType.ANY, ParamType.SERIES, description="Second plot"),
-                FunctionParameter("color", DataType.COLOR, ParamType.SERIES, optional=True, description="Fill color"),
-                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Fill title"),
-                FunctionParameter("transp", DataType.INT, ParamType.INPUT, optional=True, description="Transparency (deprecated, use color.new)"),
+                FunctionParameter(
+                    "plot1", DataType.ANY, ParamType.SERIES, description="First plot"
+                ),
+                FunctionParameter(
+                    "plot2", DataType.ANY, ParamType.SERIES, description="Second plot"
+                ),
+                FunctionParameter(
+                    "color",
+                    DataType.COLOR,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Fill color",
+                ),
+                FunctionParameter(
+                    "title",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Fill title",
+                ),
+                FunctionParameter(
+                    "transp",
+                    DataType.INT,
+                    ParamType.INPUT,
+                    optional=True,
+                    description="Transparency (deprecated, use color.new)",
+                ),
             ],
             return_type=DataType.ANY,
             version=1,
             description="Fills background between two plots",
-            examples=['fill(plot1, plot2, color=color.new(color.blue, 90))'],
+            examples=["fill(plot1, plot2, color=color.new(color.blue, 90))"],
         )
 
         self.functions["bgcolor"] = FunctionSignature(
             name="bgcolor",
             parameters=[
-                FunctionParameter("color", DataType.COLOR, ParamType.SERIES, description="Background color"),
-                FunctionParameter("offset", DataType.INT, ParamType.INPUT, optional=True, default_value=0, description="Offset in bars"),
-                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Background title"),
+                FunctionParameter(
+                    "color",
+                    DataType.COLOR,
+                    ParamType.SERIES,
+                    description="Background color",
+                ),
+                FunctionParameter(
+                    "offset",
+                    DataType.INT,
+                    ParamType.INPUT,
+                    optional=True,
+                    default_value=0,
+                    description="Offset in bars",
+                ),
+                FunctionParameter(
+                    "title",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Background title",
+                ),
             ],
             return_type=DataType.ANY,
             version=1,
             description="Colors the chart background",
-            examples=['bgcolor(close > open ? color.new(color.green, 90) : color.new(color.red, 90))'],
+            examples=[
+                "bgcolor(close > open ? color.new(color.green, 90) : color.new(color.red, 90))"
+            ],
         )
 
         # ===== TECHNICAL ANALYSIS (v5 namespace) =====
@@ -215,8 +498,18 @@ class FunctionSignatureDB:
             name="sma",
             namespace="ta",
             parameters=[
-                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source series"),
-                FunctionParameter("length", DataType.INT, ParamType.SIMPLE, description="Number of bars"),
+                FunctionParameter(
+                    "source",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Source series",
+                ),
+                FunctionParameter(
+                    "length",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    description="Number of bars",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -228,8 +521,18 @@ class FunctionSignatureDB:
             name="ema",
             namespace="ta",
             parameters=[
-                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source series"),
-                FunctionParameter("length", DataType.INT, ParamType.SIMPLE, description="Number of bars"),
+                FunctionParameter(
+                    "source",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Source series",
+                ),
+                FunctionParameter(
+                    "length",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    description="Number of bars",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -241,8 +544,18 @@ class FunctionSignatureDB:
             name="rsi",
             namespace="ta",
             parameters=[
-                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source series"),
-                FunctionParameter("length", DataType.INT, ParamType.SIMPLE, description="Number of bars"),
+                FunctionParameter(
+                    "source",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Source series",
+                ),
+                FunctionParameter(
+                    "length",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    description="Number of bars",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -254,10 +567,24 @@ class FunctionSignatureDB:
             name="macd",
             namespace="ta",
             parameters=[
-                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source series"),
-                FunctionParameter("fast", DataType.INT, ParamType.SIMPLE, description="Fast length"),
-                FunctionParameter("slow", DataType.INT, ParamType.SIMPLE, description="Slow length"),
-                FunctionParameter("signal", DataType.INT, ParamType.SIMPLE, description="Signal length"),
+                FunctionParameter(
+                    "source",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Source series",
+                ),
+                FunctionParameter(
+                    "fast", DataType.INT, ParamType.SIMPLE, description="Fast length"
+                ),
+                FunctionParameter(
+                    "slow", DataType.INT, ParamType.SIMPLE, description="Slow length"
+                ),
+                FunctionParameter(
+                    "signal",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    description="Signal length",
+                ),
             ],
             return_type=DataType.ANY,  # Returns tuple
             version=5,
@@ -269,10 +596,24 @@ class FunctionSignatureDB:
             name="stoch",
             namespace="ta",
             parameters=[
-                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source series"),
-                FunctionParameter("high", DataType.FLOAT, ParamType.SERIES, description="High series"),
-                FunctionParameter("low", DataType.FLOAT, ParamType.SERIES, description="Low series"),
-                FunctionParameter("length", DataType.INT, ParamType.SIMPLE, description="Number of bars"),
+                FunctionParameter(
+                    "source",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Source series",
+                ),
+                FunctionParameter(
+                    "high", DataType.FLOAT, ParamType.SERIES, description="High series"
+                ),
+                FunctionParameter(
+                    "low", DataType.FLOAT, ParamType.SERIES, description="Low series"
+                ),
+                FunctionParameter(
+                    "length",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    description="Number of bars",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -284,7 +625,12 @@ class FunctionSignatureDB:
             name="atr",
             namespace="ta",
             parameters=[
-                FunctionParameter("length", DataType.INT, ParamType.SIMPLE, description="Number of bars"),
+                FunctionParameter(
+                    "length",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    description="Number of bars",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -296,9 +642,24 @@ class FunctionSignatureDB:
             name="bb",
             namespace="ta",
             parameters=[
-                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source series"),
-                FunctionParameter("length", DataType.INT, ParamType.SIMPLE, description="Number of bars"),
-                FunctionParameter("mult", DataType.FLOAT, ParamType.SIMPLE, description="Standard deviation multiplier"),
+                FunctionParameter(
+                    "source",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Source series",
+                ),
+                FunctionParameter(
+                    "length",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    description="Number of bars",
+                ),
+                FunctionParameter(
+                    "mult",
+                    DataType.FLOAT,
+                    ParamType.SIMPLE,
+                    description="Standard deviation multiplier",
+                ),
             ],
             return_type=DataType.ANY,  # Returns tuple
             version=5,
@@ -310,8 +671,18 @@ class FunctionSignatureDB:
             name="crossover",
             namespace="ta",
             parameters=[
-                FunctionParameter("source1", DataType.FLOAT, ParamType.SERIES, description="First series"),
-                FunctionParameter("source2", DataType.FLOAT, ParamType.SERIES, description="Second series"),
+                FunctionParameter(
+                    "source1",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="First series",
+                ),
+                FunctionParameter(
+                    "source2",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Second series",
+                ),
             ],
             return_type=DataType.BOOL,
             version=5,
@@ -323,8 +694,18 @@ class FunctionSignatureDB:
             name="crossunder",
             namespace="ta",
             parameters=[
-                FunctionParameter("source1", DataType.FLOAT, ParamType.SERIES, description="First series"),
-                FunctionParameter("source2", DataType.FLOAT, ParamType.SERIES, description="Second series"),
+                FunctionParameter(
+                    "source1",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="First series",
+                ),
+                FunctionParameter(
+                    "source2",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Second series",
+                ),
             ],
             return_type=DataType.BOOL,
             version=5,
@@ -336,8 +717,18 @@ class FunctionSignatureDB:
             name="cross",
             namespace="ta",
             parameters=[
-                FunctionParameter("source1", DataType.FLOAT, ParamType.SERIES, description="First series"),
-                FunctionParameter("source2", DataType.FLOAT, ParamType.SERIES, description="Second series"),
+                FunctionParameter(
+                    "source1",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="First series",
+                ),
+                FunctionParameter(
+                    "source2",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Second series",
+                ),
             ],
             return_type=DataType.BOOL,
             version=5,
@@ -349,8 +740,20 @@ class FunctionSignatureDB:
             name="change",
             namespace="ta",
             parameters=[
-                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source series"),
-                FunctionParameter("length", DataType.INT, ParamType.SIMPLE, optional=True, default_value=1, description="Number of bars"),
+                FunctionParameter(
+                    "source",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Source series",
+                ),
+                FunctionParameter(
+                    "length",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    default_value=1,
+                    description="Number of bars",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -362,8 +765,18 @@ class FunctionSignatureDB:
             name="highest",
             namespace="ta",
             parameters=[
-                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source series"),
-                FunctionParameter("length", DataType.INT, ParamType.SIMPLE, description="Number of bars"),
+                FunctionParameter(
+                    "source",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Source series",
+                ),
+                FunctionParameter(
+                    "length",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    description="Number of bars",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -375,8 +788,18 @@ class FunctionSignatureDB:
             name="lowest",
             namespace="ta",
             parameters=[
-                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source series"),
-                FunctionParameter("length", DataType.INT, ParamType.SIMPLE, description="Number of bars"),
+                FunctionParameter(
+                    "source",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Source series",
+                ),
+                FunctionParameter(
+                    "length",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    description="Number of bars",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -388,7 +811,12 @@ class FunctionSignatureDB:
             name="barssince",
             namespace="ta",
             parameters=[
-                FunctionParameter("condition", DataType.BOOL, ParamType.SERIES, description="Boolean condition"),
+                FunctionParameter(
+                    "condition",
+                    DataType.BOOL,
+                    ParamType.SERIES,
+                    description="Boolean condition",
+                ),
             ],
             return_type=DataType.INT,
             version=5,
@@ -400,9 +828,24 @@ class FunctionSignatureDB:
             name="valuewhen",
             namespace="ta",
             parameters=[
-                FunctionParameter("condition", DataType.BOOL, ParamType.SERIES, description="Boolean condition"),
-                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source value"),
-                FunctionParameter("occurrence", DataType.INT, ParamType.SIMPLE, description="Which occurrence (0 = most recent)"),
+                FunctionParameter(
+                    "condition",
+                    DataType.BOOL,
+                    ParamType.SERIES,
+                    description="Boolean condition",
+                ),
+                FunctionParameter(
+                    "source",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Source value",
+                ),
+                FunctionParameter(
+                    "occurrence",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    description="Which occurrence (0 = most recent)",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -416,7 +859,9 @@ class FunctionSignatureDB:
             name="abs",
             namespace="math",
             parameters=[
-                FunctionParameter("x", DataType.FLOAT, ParamType.SERIES, description="Value"),
+                FunctionParameter(
+                    "x", DataType.FLOAT, ParamType.SERIES, description="Value"
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -428,8 +873,12 @@ class FunctionSignatureDB:
             name="max",
             namespace="math",
             parameters=[
-                FunctionParameter("x", DataType.FLOAT, ParamType.SERIES, description="First value"),
-                FunctionParameter("y", DataType.FLOAT, ParamType.SERIES, description="Second value"),
+                FunctionParameter(
+                    "x", DataType.FLOAT, ParamType.SERIES, description="First value"
+                ),
+                FunctionParameter(
+                    "y", DataType.FLOAT, ParamType.SERIES, description="Second value"
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -441,8 +890,12 @@ class FunctionSignatureDB:
             name="min",
             namespace="math",
             parameters=[
-                FunctionParameter("x", DataType.FLOAT, ParamType.SERIES, description="First value"),
-                FunctionParameter("y", DataType.FLOAT, ParamType.SERIES, description="Second value"),
+                FunctionParameter(
+                    "x", DataType.FLOAT, ParamType.SERIES, description="First value"
+                ),
+                FunctionParameter(
+                    "y", DataType.FLOAT, ParamType.SERIES, description="Second value"
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -454,8 +907,17 @@ class FunctionSignatureDB:
             name="round",
             namespace="math",
             parameters=[
-                FunctionParameter("x", DataType.FLOAT, ParamType.SERIES, description="Value to round"),
-                FunctionParameter("precision", DataType.INT, ParamType.SIMPLE, optional=True, default_value=0, description="Decimal places"),
+                FunctionParameter(
+                    "x", DataType.FLOAT, ParamType.SERIES, description="Value to round"
+                ),
+                FunctionParameter(
+                    "precision",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    default_value=0,
+                    description="Decimal places",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -469,11 +931,38 @@ class FunctionSignatureDB:
             name="int",
             namespace="input",
             parameters=[
-                FunctionParameter("defval", DataType.INT, ParamType.CONST, description="Default value"),
-                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Input title"),
-                FunctionParameter("minval", DataType.INT, ParamType.CONST, optional=True, description="Minimum value"),
-                FunctionParameter("maxval", DataType.INT, ParamType.CONST, optional=True, description="Maximum value"),
-                FunctionParameter("step", DataType.INT, ParamType.CONST, optional=True, default_value=1, description="Step size"),
+                FunctionParameter(
+                    "defval", DataType.INT, ParamType.CONST, description="Default value"
+                ),
+                FunctionParameter(
+                    "title",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Input title",
+                ),
+                FunctionParameter(
+                    "minval",
+                    DataType.INT,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Minimum value",
+                ),
+                FunctionParameter(
+                    "maxval",
+                    DataType.INT,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Maximum value",
+                ),
+                FunctionParameter(
+                    "step",
+                    DataType.INT,
+                    ParamType.CONST,
+                    optional=True,
+                    default_value=1,
+                    description="Step size",
+                ),
             ],
             return_type=DataType.INT,
             version=4,
@@ -485,11 +974,40 @@ class FunctionSignatureDB:
             name="float",
             namespace="input",
             parameters=[
-                FunctionParameter("defval", DataType.FLOAT, ParamType.CONST, description="Default value"),
-                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Input title"),
-                FunctionParameter("minval", DataType.FLOAT, ParamType.CONST, optional=True, description="Minimum value"),
-                FunctionParameter("maxval", DataType.FLOAT, ParamType.CONST, optional=True, description="Maximum value"),
-                FunctionParameter("step", DataType.FLOAT, ParamType.CONST, optional=True, description="Step size"),
+                FunctionParameter(
+                    "defval",
+                    DataType.FLOAT,
+                    ParamType.CONST,
+                    description="Default value",
+                ),
+                FunctionParameter(
+                    "title",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Input title",
+                ),
+                FunctionParameter(
+                    "minval",
+                    DataType.FLOAT,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Minimum value",
+                ),
+                FunctionParameter(
+                    "maxval",
+                    DataType.FLOAT,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Maximum value",
+                ),
+                FunctionParameter(
+                    "step",
+                    DataType.FLOAT,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Step size",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=4,
@@ -501,8 +1019,19 @@ class FunctionSignatureDB:
             name="bool",
             namespace="input",
             parameters=[
-                FunctionParameter("defval", DataType.BOOL, ParamType.CONST, description="Default value"),
-                FunctionParameter("title", DataType.STRING, ParamType.CONST, optional=True, description="Input title"),
+                FunctionParameter(
+                    "defval",
+                    DataType.BOOL,
+                    ParamType.CONST,
+                    description="Default value",
+                ),
+                FunctionParameter(
+                    "title",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Input title",
+                ),
             ],
             return_type=DataType.BOOL,
             version=4,
@@ -515,8 +1044,18 @@ class FunctionSignatureDB:
         self.functions["sma"] = FunctionSignature(
             name="sma",
             parameters=[
-                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source series"),
-                FunctionParameter("length", DataType.INT, ParamType.SIMPLE, description="Number of bars"),
+                FunctionParameter(
+                    "source",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Source series",
+                ),
+                FunctionParameter(
+                    "length",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    description="Number of bars",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=4,
@@ -528,8 +1067,18 @@ class FunctionSignatureDB:
         self.functions["ema"] = FunctionSignature(
             name="ema",
             parameters=[
-                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source series"),
-                FunctionParameter("length", DataType.INT, ParamType.SIMPLE, description="Number of bars"),
+                FunctionParameter(
+                    "source",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Source series",
+                ),
+                FunctionParameter(
+                    "length",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    description="Number of bars",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=4,
@@ -541,8 +1090,18 @@ class FunctionSignatureDB:
         self.functions["rsi"] = FunctionSignature(
             name="rsi",
             parameters=[
-                FunctionParameter("source", DataType.FLOAT, ParamType.SERIES, description="Source series"),
-                FunctionParameter("length", DataType.INT, ParamType.SIMPLE, description="Number of bars"),
+                FunctionParameter(
+                    "source",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    description="Source series",
+                ),
+                FunctionParameter(
+                    "length",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    description="Number of bars",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=4,
@@ -554,9 +1113,27 @@ class FunctionSignatureDB:
         self.functions["study"] = FunctionSignature(
             name="study",
             parameters=[
-                FunctionParameter("title", DataType.STRING, ParamType.CONST, description="Indicator title"),
-                FunctionParameter("shorttitle", DataType.STRING, ParamType.CONST, optional=True, description="Short title"),
-                FunctionParameter("overlay", DataType.BOOL, ParamType.CONST, optional=True, default_value=False, description="Overlay on chart"),
+                FunctionParameter(
+                    "title",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    description="Indicator title",
+                ),
+                FunctionParameter(
+                    "shorttitle",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Short title",
+                ),
+                FunctionParameter(
+                    "overlay",
+                    DataType.BOOL,
+                    ParamType.CONST,
+                    optional=True,
+                    default_value=False,
+                    description="Overlay on chart",
+                ),
             ],
             return_type=DataType.ANY,
             version=3,
@@ -568,11 +1145,41 @@ class FunctionSignatureDB:
         self.functions["indicator"] = FunctionSignature(
             name="indicator",
             parameters=[
-                FunctionParameter("title", DataType.STRING, ParamType.CONST, description="Indicator title"),
-                FunctionParameter("shorttitle", DataType.STRING, ParamType.CONST, optional=True, description="Short title"),
-                FunctionParameter("overlay", DataType.BOOL, ParamType.CONST, optional=True, default_value=False, description="Overlay on chart"),
-                FunctionParameter("format", DataType.STRING, ParamType.CONST, optional=True, description="Price format"),
-                FunctionParameter("precision", DataType.INT, ParamType.CONST, optional=True, description="Decimal precision"),
+                FunctionParameter(
+                    "title",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    description="Indicator title",
+                ),
+                FunctionParameter(
+                    "shorttitle",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Short title",
+                ),
+                FunctionParameter(
+                    "overlay",
+                    DataType.BOOL,
+                    ParamType.CONST,
+                    optional=True,
+                    default_value=False,
+                    description="Overlay on chart",
+                ),
+                FunctionParameter(
+                    "format",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Price format",
+                ),
+                FunctionParameter(
+                    "precision",
+                    DataType.INT,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Decimal precision",
+                ),
             ],
             return_type=DataType.ANY,
             version=5,
@@ -585,39 +1192,173 @@ class FunctionSignatureDB:
         self.functions["strategy"] = FunctionSignature(
             name="strategy",
             parameters=[
-                FunctionParameter("title", DataType.STRING, ParamType.CONST, description="Strategy title"),
-                FunctionParameter("shorttitle", DataType.STRING, ParamType.CONST, optional=True, description="Short title"),
-                FunctionParameter("overlay", DataType.BOOL, ParamType.CONST, optional=True, default_value=False, description="Overlay on chart"),
-                FunctionParameter("initial_capital", DataType.FLOAT, ParamType.CONST, optional=True, default_value=10000, description="Initial capital"),
-                FunctionParameter("default_qty_type", DataType.STRING, ParamType.CONST, optional=True, description="Default quantity type (fixed, cash, percent_of_equity)"),
-                FunctionParameter("default_qty_value", DataType.FLOAT, ParamType.CONST, optional=True, description="Default quantity value"),
-                FunctionParameter("currency", DataType.STRING, ParamType.CONST, optional=True, description="Account currency"),
-                FunctionParameter("commission_type", DataType.STRING, ParamType.CONST, optional=True, description="Commission type"),
-                FunctionParameter("commission_value", DataType.FLOAT, ParamType.CONST, optional=True, description="Commission value"),
-                FunctionParameter("slippage", DataType.INT, ParamType.CONST, optional=True, description="Slippage in ticks"),
-                FunctionParameter("pyramiding", DataType.INT, ParamType.CONST, optional=True, default_value=0, description="Number of pyramid entries"),
-                FunctionParameter("calc_on_order_fills", DataType.BOOL, ParamType.CONST, optional=True, description="Calculate on order fills"),
-                FunctionParameter("calc_on_every_tick", DataType.BOOL, ParamType.CONST, optional=True, description="Calculate on every tick"),
-                FunctionParameter("process_orders_on_close", DataType.BOOL, ParamType.CONST, optional=True, description="Process orders on close"),
-                FunctionParameter("backtest_fill_limits_assumption", DataType.INT, ParamType.CONST, optional=True, description="Backtest fill assumption"),
+                FunctionParameter(
+                    "title",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    description="Strategy title",
+                ),
+                FunctionParameter(
+                    "shorttitle",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Short title",
+                ),
+                FunctionParameter(
+                    "overlay",
+                    DataType.BOOL,
+                    ParamType.CONST,
+                    optional=True,
+                    default_value=False,
+                    description="Overlay on chart",
+                ),
+                FunctionParameter(
+                    "initial_capital",
+                    DataType.FLOAT,
+                    ParamType.CONST,
+                    optional=True,
+                    default_value=10000,
+                    description="Initial capital",
+                ),
+                FunctionParameter(
+                    "default_qty_type",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Default quantity type (fixed, cash, percent_of_equity)",
+                ),
+                FunctionParameter(
+                    "default_qty_value",
+                    DataType.FLOAT,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Default quantity value",
+                ),
+                FunctionParameter(
+                    "currency",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Account currency",
+                ),
+                FunctionParameter(
+                    "commission_type",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Commission type",
+                ),
+                FunctionParameter(
+                    "commission_value",
+                    DataType.FLOAT,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Commission value",
+                ),
+                FunctionParameter(
+                    "slippage",
+                    DataType.INT,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Slippage in ticks",
+                ),
+                FunctionParameter(
+                    "pyramiding",
+                    DataType.INT,
+                    ParamType.CONST,
+                    optional=True,
+                    default_value=0,
+                    description="Number of pyramid entries",
+                ),
+                FunctionParameter(
+                    "calc_on_order_fills",
+                    DataType.BOOL,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Calculate on order fills",
+                ),
+                FunctionParameter(
+                    "calc_on_every_tick",
+                    DataType.BOOL,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Calculate on every tick",
+                ),
+                FunctionParameter(
+                    "process_orders_on_close",
+                    DataType.BOOL,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Process orders on close",
+                ),
+                FunctionParameter(
+                    "backtest_fill_limits_assumption",
+                    DataType.INT,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Backtest fill assumption",
+                ),
             ],
             return_type=DataType.ANY,
             version=1,
             description="Strategy declaration",
-            examples=['strategy("My Strategy", overlay=true, initial_capital=10000, default_qty_type=strategy.fixed)'],
+            examples=[
+                'strategy("My Strategy", overlay=true, initial_capital=10000, default_qty_type=strategy.fixed)'
+            ],
         )
 
         self.functions["strategy.entry"] = FunctionSignature(
             name="entry",
             namespace="strategy",
             parameters=[
-                FunctionParameter("id", DataType.STRING, ParamType.CONST, description="Order identifier"),
-                FunctionParameter("direction", DataType.STRING, ParamType.CONST, description="strategy.long or strategy.short"),
-                FunctionParameter("qty", DataType.FLOAT, ParamType.SERIES, optional=True, description="Order quantity"),
-                FunctionParameter("limit", DataType.FLOAT, ParamType.SERIES, optional=True, description="Limit price"),
-                FunctionParameter("stop", DataType.FLOAT, ParamType.SERIES, optional=True, description="Stop price"),
-                FunctionParameter("when", DataType.BOOL, ParamType.SERIES, optional=True, description="Condition"),
-                FunctionParameter("comment", DataType.STRING, ParamType.CONST, optional=True, description="Order comment"),
+                FunctionParameter(
+                    "id",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    description="Order identifier",
+                ),
+                FunctionParameter(
+                    "direction",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    description="strategy.long or strategy.short",
+                ),
+                FunctionParameter(
+                    "qty",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Order quantity",
+                ),
+                FunctionParameter(
+                    "limit",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Limit price",
+                ),
+                FunctionParameter(
+                    "stop",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Stop price",
+                ),
+                FunctionParameter(
+                    "when",
+                    DataType.BOOL,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Condition",
+                ),
+                FunctionParameter(
+                    "comment",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Order comment",
+                ),
             ],
             return_type=DataType.ANY,
             version=1,
@@ -629,16 +1370,75 @@ class FunctionSignatureDB:
             name="exit",
             namespace="strategy",
             parameters=[
-                FunctionParameter("id", DataType.STRING, ParamType.CONST, description="Exit order identifier"),
-                FunctionParameter("from_entry", DataType.STRING, ParamType.CONST, optional=True, description="Entry order to exit from"),
-                FunctionParameter("qty", DataType.FLOAT, ParamType.SERIES, optional=True, description="Exit quantity"),
-                FunctionParameter("qty_percent", DataType.FLOAT, ParamType.SERIES, optional=True, description="Exit quantity as percentage"),
-                FunctionParameter("profit", DataType.FLOAT, ParamType.SERIES, optional=True, description="Profit target in ticks"),
-                FunctionParameter("loss", DataType.FLOAT, ParamType.SERIES, optional=True, description="Stop loss in ticks"),
-                FunctionParameter("limit", DataType.FLOAT, ParamType.SERIES, optional=True, description="Limit price"),
-                FunctionParameter("stop", DataType.FLOAT, ParamType.SERIES, optional=True, description="Stop price"),
-                FunctionParameter("when", DataType.BOOL, ParamType.SERIES, optional=True, description="Condition"),
-                FunctionParameter("comment", DataType.STRING, ParamType.CONST, optional=True, description="Order comment"),
+                FunctionParameter(
+                    "id",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    description="Exit order identifier",
+                ),
+                FunctionParameter(
+                    "from_entry",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Entry order to exit from",
+                ),
+                FunctionParameter(
+                    "qty",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Exit quantity",
+                ),
+                FunctionParameter(
+                    "qty_percent",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Exit quantity as percentage",
+                ),
+                FunctionParameter(
+                    "profit",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Profit target in ticks",
+                ),
+                FunctionParameter(
+                    "loss",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Stop loss in ticks",
+                ),
+                FunctionParameter(
+                    "limit",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Limit price",
+                ),
+                FunctionParameter(
+                    "stop",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Stop price",
+                ),
+                FunctionParameter(
+                    "when",
+                    DataType.BOOL,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Condition",
+                ),
+                FunctionParameter(
+                    "comment",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Order comment",
+                ),
             ],
             return_type=DataType.ANY,
             version=1,
@@ -650,11 +1450,40 @@ class FunctionSignatureDB:
             name="close",
             namespace="strategy",
             parameters=[
-                FunctionParameter("id", DataType.STRING, ParamType.CONST, description="Entry order to close"),
-                FunctionParameter("when", DataType.BOOL, ParamType.SERIES, optional=True, description="Condition"),
-                FunctionParameter("comment", DataType.STRING, ParamType.CONST, optional=True, description="Order comment"),
-                FunctionParameter("qty", DataType.FLOAT, ParamType.SERIES, optional=True, description="Quantity to close"),
-                FunctionParameter("qty_percent", DataType.FLOAT, ParamType.SERIES, optional=True, description="Percentage to close"),
+                FunctionParameter(
+                    "id",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    description="Entry order to close",
+                ),
+                FunctionParameter(
+                    "when",
+                    DataType.BOOL,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Condition",
+                ),
+                FunctionParameter(
+                    "comment",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Order comment",
+                ),
+                FunctionParameter(
+                    "qty",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Quantity to close",
+                ),
+                FunctionParameter(
+                    "qty_percent",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Percentage to close",
+                ),
             ],
             return_type=DataType.ANY,
             version=1,
@@ -666,21 +1495,44 @@ class FunctionSignatureDB:
             name="close_all",
             namespace="strategy",
             parameters=[
-                FunctionParameter("when", DataType.BOOL, ParamType.SERIES, optional=True, description="Condition"),
-                FunctionParameter("comment", DataType.STRING, ParamType.CONST, optional=True, description="Order comment"),
+                FunctionParameter(
+                    "when",
+                    DataType.BOOL,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Condition",
+                ),
+                FunctionParameter(
+                    "comment",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Order comment",
+                ),
             ],
             return_type=DataType.ANY,
             version=1,
             description="Close all open positions",
-            examples=['strategy.close_all(when=emergencyExit)'],
+            examples=["strategy.close_all(when=emergencyExit)"],
         )
 
         self.functions["strategy.cancel"] = FunctionSignature(
             name="cancel",
             namespace="strategy",
             parameters=[
-                FunctionParameter("id", DataType.STRING, ParamType.CONST, description="Order identifier to cancel"),
-                FunctionParameter("when", DataType.BOOL, ParamType.SERIES, optional=True, description="Condition"),
+                FunctionParameter(
+                    "id",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    description="Order identifier to cancel",
+                ),
+                FunctionParameter(
+                    "when",
+                    DataType.BOOL,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Condition",
+                ),
             ],
             return_type=DataType.ANY,
             version=1,
@@ -692,12 +1544,18 @@ class FunctionSignatureDB:
             name="cancel_all",
             namespace="strategy",
             parameters=[
-                FunctionParameter("when", DataType.BOOL, ParamType.SERIES, optional=True, description="Condition"),
+                FunctionParameter(
+                    "when",
+                    DataType.BOOL,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Condition",
+                ),
             ],
             return_type=DataType.ANY,
             version=1,
             description="Cancel all pending orders",
-            examples=['strategy.cancel_all()'],
+            examples=["strategy.cancel_all()"],
         )
 
         # ===== STRING FUNCTIONS (v5) =====
@@ -706,8 +1564,19 @@ class FunctionSignatureDB:
             name="tostring",
             namespace="str",
             parameters=[
-                FunctionParameter("value", DataType.ANY, ParamType.SERIES, description="Value to convert"),
-                FunctionParameter("format", DataType.STRING, ParamType.CONST, optional=True, description="Format string"),
+                FunctionParameter(
+                    "value",
+                    DataType.ANY,
+                    ParamType.SERIES,
+                    description="Value to convert",
+                ),
+                FunctionParameter(
+                    "format",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    optional=True,
+                    description="Format string",
+                ),
             ],
             return_type=DataType.STRING,
             version=5,
@@ -719,7 +1588,12 @@ class FunctionSignatureDB:
             name="tonumber",
             namespace="str",
             parameters=[
-                FunctionParameter("string", DataType.STRING, ParamType.SERIES, description="String to convert"),
+                FunctionParameter(
+                    "string",
+                    DataType.STRING,
+                    ParamType.SERIES,
+                    description="String to convert",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -733,8 +1607,21 @@ class FunctionSignatureDB:
             name="new_float",
             namespace="array",
             parameters=[
-                FunctionParameter("size", DataType.INT, ParamType.SIMPLE, optional=True, default_value=0, description="Array size"),
-                FunctionParameter("initial_value", DataType.FLOAT, ParamType.SERIES, optional=True, description="Initial value"),
+                FunctionParameter(
+                    "size",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    default_value=0,
+                    description="Array size",
+                ),
+                FunctionParameter(
+                    "initial_value",
+                    DataType.FLOAT,
+                    ParamType.SERIES,
+                    optional=True,
+                    description="Initial value",
+                ),
             ],
             return_type=DataType.ARRAY,
             version=5,
@@ -746,8 +1633,15 @@ class FunctionSignatureDB:
             name="push",
             namespace="array",
             parameters=[
-                FunctionParameter("array", DataType.ARRAY, ParamType.SERIES, description="Array to modify"),
-                FunctionParameter("value", DataType.ANY, ParamType.SERIES, description="Value to add"),
+                FunctionParameter(
+                    "array",
+                    DataType.ARRAY,
+                    ParamType.SERIES,
+                    description="Array to modify",
+                ),
+                FunctionParameter(
+                    "value", DataType.ANY, ParamType.SERIES, description="Value to add"
+                ),
             ],
             return_type=DataType.ANY,
             version=5,
@@ -761,8 +1655,18 @@ class FunctionSignatureDB:
             name="new",
             namespace="map",
             parameters=[
-                FunctionParameter("key_type", DataType.STRING, ParamType.CONST, description="Key type (int, float, string)"),
-                FunctionParameter("value_type", DataType.STRING, ParamType.CONST, description="Value type"),
+                FunctionParameter(
+                    "key_type",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    description="Key type (int, float, string)",
+                ),
+                FunctionParameter(
+                    "value_type",
+                    DataType.STRING,
+                    ParamType.CONST,
+                    description="Value type",
+                ),
             ],
             return_type=DataType.MAP,
             version=6,
@@ -774,9 +1678,15 @@ class FunctionSignatureDB:
             name="put",
             namespace="map",
             parameters=[
-                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to modify"),
-                FunctionParameter("key", DataType.ANY, ParamType.SERIES, description="Key"),
-                FunctionParameter("value", DataType.ANY, ParamType.SERIES, description="Value"),
+                FunctionParameter(
+                    "map", DataType.MAP, ParamType.SERIES, description="Map to modify"
+                ),
+                FunctionParameter(
+                    "key", DataType.ANY, ParamType.SERIES, description="Key"
+                ),
+                FunctionParameter(
+                    "value", DataType.ANY, ParamType.SERIES, description="Value"
+                ),
             ],
             return_type=DataType.ANY,
             version=6,
@@ -788,8 +1698,12 @@ class FunctionSignatureDB:
             name="get",
             namespace="map",
             parameters=[
-                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to query"),
-                FunctionParameter("key", DataType.ANY, ParamType.SERIES, description="Key"),
+                FunctionParameter(
+                    "map", DataType.MAP, ParamType.SERIES, description="Map to query"
+                ),
+                FunctionParameter(
+                    "key", DataType.ANY, ParamType.SERIES, description="Key"
+                ),
             ],
             return_type=DataType.ANY,
             version=6,
@@ -801,8 +1715,12 @@ class FunctionSignatureDB:
             name="contains",
             namespace="map",
             parameters=[
-                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to query"),
-                FunctionParameter("key", DataType.ANY, ParamType.SERIES, description="Key to check"),
+                FunctionParameter(
+                    "map", DataType.MAP, ParamType.SERIES, description="Map to query"
+                ),
+                FunctionParameter(
+                    "key", DataType.ANY, ParamType.SERIES, description="Key to check"
+                ),
             ],
             return_type=DataType.BOOL,
             version=6,
@@ -814,8 +1732,12 @@ class FunctionSignatureDB:
             name="remove",
             namespace="map",
             parameters=[
-                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to modify"),
-                FunctionParameter("key", DataType.ANY, ParamType.SERIES, description="Key to remove"),
+                FunctionParameter(
+                    "map", DataType.MAP, ParamType.SERIES, description="Map to modify"
+                ),
+                FunctionParameter(
+                    "key", DataType.ANY, ParamType.SERIES, description="Key to remove"
+                ),
             ],
             return_type=DataType.ANY,
             version=6,
@@ -827,7 +1749,9 @@ class FunctionSignatureDB:
             name="keys",
             namespace="map",
             parameters=[
-                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to query"),
+                FunctionParameter(
+                    "map", DataType.MAP, ParamType.SERIES, description="Map to query"
+                ),
             ],
             return_type=DataType.ARRAY,
             version=6,
@@ -839,7 +1763,9 @@ class FunctionSignatureDB:
             name="values",
             namespace="map",
             parameters=[
-                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to query"),
+                FunctionParameter(
+                    "map", DataType.MAP, ParamType.SERIES, description="Map to query"
+                ),
             ],
             return_type=DataType.ARRAY,
             version=6,
@@ -851,7 +1777,9 @@ class FunctionSignatureDB:
             name="size",
             namespace="map",
             parameters=[
-                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to query"),
+                FunctionParameter(
+                    "map", DataType.MAP, ParamType.SERIES, description="Map to query"
+                ),
             ],
             return_type=DataType.INT,
             version=6,
@@ -863,7 +1791,9 @@ class FunctionSignatureDB:
             name="clear",
             namespace="map",
             parameters=[
-                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to clear"),
+                FunctionParameter(
+                    "map", DataType.MAP, ParamType.SERIES, description="Map to clear"
+                ),
             ],
             return_type=DataType.ANY,
             version=6,
@@ -875,8 +1805,15 @@ class FunctionSignatureDB:
             name="put_all",
             namespace="map",
             parameters=[
-                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Destination map"),
-                FunctionParameter("from_map", DataType.MAP, ParamType.SERIES, description="Source map to copy from"),
+                FunctionParameter(
+                    "map", DataType.MAP, ParamType.SERIES, description="Destination map"
+                ),
+                FunctionParameter(
+                    "from_map",
+                    DataType.MAP,
+                    ParamType.SERIES,
+                    description="Source map to copy from",
+                ),
             ],
             return_type=DataType.ANY,
             version=6,
@@ -888,7 +1825,9 @@ class FunctionSignatureDB:
             name="copy",
             namespace="map",
             parameters=[
-                FunctionParameter("map", DataType.MAP, ParamType.SERIES, description="Map to copy"),
+                FunctionParameter(
+                    "map", DataType.MAP, ParamType.SERIES, description="Map to copy"
+                ),
             ],
             return_type=DataType.MAP,
             version=6,
@@ -902,20 +1841,59 @@ class FunctionSignatureDB:
             name="security",
             namespace="request",
             parameters=[
-                FunctionParameter("symbol", DataType.STRING, ParamType.SIMPLE, description="Symbol to request data from"),
-                FunctionParameter("timeframe", DataType.STRING, ParamType.SIMPLE, description="Timeframe of the requested data"),
-                FunctionParameter("expression", DataType.ANY, ParamType.SERIES, description="Expression to evaluate"),
-                FunctionParameter("gaps", DataType.ANY, ParamType.SIMPLE, optional=True, description="Gap filling strategy"),
-                FunctionParameter("lookahead", DataType.ANY, ParamType.SIMPLE, optional=True, description="Lookahead mode"),
-                FunctionParameter("ignore_invalid_symbol", DataType.BOOL, ParamType.SIMPLE, optional=True, description="Ignore invalid symbols"),
-                FunctionParameter("currency", DataType.STRING, ParamType.SIMPLE, optional=True, description="Currency conversion"),
+                FunctionParameter(
+                    "symbol",
+                    DataType.STRING,
+                    ParamType.SIMPLE,
+                    description="Symbol to request data from",
+                ),
+                FunctionParameter(
+                    "timeframe",
+                    DataType.STRING,
+                    ParamType.SIMPLE,
+                    description="Timeframe of the requested data",
+                ),
+                FunctionParameter(
+                    "expression",
+                    DataType.ANY,
+                    ParamType.SERIES,
+                    description="Expression to evaluate",
+                ),
+                FunctionParameter(
+                    "gaps",
+                    DataType.ANY,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Gap filling strategy",
+                ),
+                FunctionParameter(
+                    "lookahead",
+                    DataType.ANY,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Lookahead mode",
+                ),
+                FunctionParameter(
+                    "ignore_invalid_symbol",
+                    DataType.BOOL,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Ignore invalid symbols",
+                ),
+                FunctionParameter(
+                    "currency",
+                    DataType.STRING,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Currency conversion",
+                ),
             ],
             return_type=DataType.ANY,
             version=5,
             description="Request data from another symbol or timeframe (v5+). Replaces security() from v4.",
             examples=[
                 "dailyHigh = request.security(syminfo.tickerid, 'D', high)",
-                "btcPrice = request.security('BINANCE:BTCUSDT', timeframe.period, close)"
+                "btcPrice = request.security('BINANCE:BTCUSDT', timeframe.period, close)",
             ],
         )
 
@@ -923,27 +1901,85 @@ class FunctionSignatureDB:
             name="dividends",
             namespace="request",
             parameters=[
-                FunctionParameter("ticker", DataType.STRING, ParamType.SIMPLE, description="Stock ticker"),
-                FunctionParameter("field", DataType.STRING, ParamType.SIMPLE, description="Dividend field to request"),
-                FunctionParameter("gaps", DataType.ANY, ParamType.SIMPLE, optional=True, description="Gap filling strategy"),
-                FunctionParameter("lookahead", DataType.ANY, ParamType.SIMPLE, optional=True, description="Lookahead mode"),
-                FunctionParameter("ignore_invalid_symbol", DataType.BOOL, ParamType.SIMPLE, optional=True, description="Ignore invalid symbols"),
+                FunctionParameter(
+                    "ticker",
+                    DataType.STRING,
+                    ParamType.SIMPLE,
+                    description="Stock ticker",
+                ),
+                FunctionParameter(
+                    "field",
+                    DataType.STRING,
+                    ParamType.SIMPLE,
+                    description="Dividend field to request",
+                ),
+                FunctionParameter(
+                    "gaps",
+                    DataType.ANY,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Gap filling strategy",
+                ),
+                FunctionParameter(
+                    "lookahead",
+                    DataType.ANY,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Lookahead mode",
+                ),
+                FunctionParameter(
+                    "ignore_invalid_symbol",
+                    DataType.BOOL,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Ignore invalid symbols",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
             description="Request dividend data for a stock (v5+)",
-            examples=["divAmount = request.dividends(syminfo.tickerid, dividends.gross)"],
+            examples=[
+                "divAmount = request.dividends(syminfo.tickerid, dividends.gross)"
+            ],
         )
 
         self.functions["request.earnings"] = FunctionSignature(
             name="earnings",
             namespace="request",
             parameters=[
-                FunctionParameter("ticker", DataType.STRING, ParamType.SIMPLE, description="Stock ticker"),
-                FunctionParameter("field", DataType.STRING, ParamType.SIMPLE, description="Earnings field to request"),
-                FunctionParameter("gaps", DataType.ANY, ParamType.SIMPLE, optional=True, description="Gap filling strategy"),
-                FunctionParameter("lookahead", DataType.ANY, ParamType.SIMPLE, optional=True, description="Lookahead mode"),
-                FunctionParameter("ignore_invalid_symbol", DataType.BOOL, ParamType.SIMPLE, optional=True, description="Ignore invalid symbols"),
+                FunctionParameter(
+                    "ticker",
+                    DataType.STRING,
+                    ParamType.SIMPLE,
+                    description="Stock ticker",
+                ),
+                FunctionParameter(
+                    "field",
+                    DataType.STRING,
+                    ParamType.SIMPLE,
+                    description="Earnings field to request",
+                ),
+                FunctionParameter(
+                    "gaps",
+                    DataType.ANY,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Gap filling strategy",
+                ),
+                FunctionParameter(
+                    "lookahead",
+                    DataType.ANY,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Lookahead mode",
+                ),
+                FunctionParameter(
+                    "ignore_invalid_symbol",
+                    DataType.BOOL,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Ignore invalid symbols",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -955,25 +1991,72 @@ class FunctionSignatureDB:
             name="splits",
             namespace="request",
             parameters=[
-                FunctionParameter("ticker", DataType.STRING, ParamType.SIMPLE, description="Stock ticker"),
-                FunctionParameter("field", DataType.STRING, ParamType.SIMPLE, description="Split field to request"),
-                FunctionParameter("gaps", DataType.ANY, ParamType.SIMPLE, optional=True, description="Gap filling strategy"),
-                FunctionParameter("lookahead", DataType.ANY, ParamType.SIMPLE, optional=True, description="Lookahead mode"),
-                FunctionParameter("ignore_invalid_symbol", DataType.BOOL, ParamType.SIMPLE, optional=True, description="Ignore invalid symbols"),
+                FunctionParameter(
+                    "ticker",
+                    DataType.STRING,
+                    ParamType.SIMPLE,
+                    description="Stock ticker",
+                ),
+                FunctionParameter(
+                    "field",
+                    DataType.STRING,
+                    ParamType.SIMPLE,
+                    description="Split field to request",
+                ),
+                FunctionParameter(
+                    "gaps",
+                    DataType.ANY,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Gap filling strategy",
+                ),
+                FunctionParameter(
+                    "lookahead",
+                    DataType.ANY,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Lookahead mode",
+                ),
+                FunctionParameter(
+                    "ignore_invalid_symbol",
+                    DataType.BOOL,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Ignore invalid symbols",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
             description="Request stock split data (v5+)",
-            examples=["splitRatio = request.splits(syminfo.tickerid, splits.denominator)"],
+            examples=[
+                "splitRatio = request.splits(syminfo.tickerid, splits.denominator)"
+            ],
         )
 
         self.functions["request.quandl"] = FunctionSignature(
             name="quandl",
             namespace="request",
             parameters=[
-                FunctionParameter("ticker", DataType.STRING, ParamType.SIMPLE, description="Quandl ticker"),
-                FunctionParameter("gaps", DataType.ANY, ParamType.SIMPLE, optional=True, description="Gap filling strategy"),
-                FunctionParameter("index", DataType.INT, ParamType.SIMPLE, optional=True, description="Column index"),
+                FunctionParameter(
+                    "ticker",
+                    DataType.STRING,
+                    ParamType.SIMPLE,
+                    description="Quandl ticker",
+                ),
+                FunctionParameter(
+                    "gaps",
+                    DataType.ANY,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Gap filling strategy",
+                ),
+                FunctionParameter(
+                    "index",
+                    DataType.INT,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Column index",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -985,24 +2068,60 @@ class FunctionSignatureDB:
             name="financial",
             namespace="request",
             parameters=[
-                FunctionParameter("symbol", DataType.STRING, ParamType.SIMPLE, description="Symbol"),
-                FunctionParameter("field", DataType.STRING, ParamType.SIMPLE, description="Financial metric"),
-                FunctionParameter("period", DataType.STRING, ParamType.SIMPLE, description="Reporting period"),
-                FunctionParameter("gaps", DataType.ANY, ParamType.SIMPLE, optional=True, description="Gap filling strategy"),
+                FunctionParameter(
+                    "symbol", DataType.STRING, ParamType.SIMPLE, description="Symbol"
+                ),
+                FunctionParameter(
+                    "field",
+                    DataType.STRING,
+                    ParamType.SIMPLE,
+                    description="Financial metric",
+                ),
+                FunctionParameter(
+                    "period",
+                    DataType.STRING,
+                    ParamType.SIMPLE,
+                    description="Reporting period",
+                ),
+                FunctionParameter(
+                    "gaps",
+                    DataType.ANY,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Gap filling strategy",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
             description="Request financial data (v5+)",
-            examples=["revenue = request.financial(syminfo.tickerid, financial.revenue, 'FQ')"],
+            examples=[
+                "revenue = request.financial(syminfo.tickerid, financial.revenue, 'FQ')"
+            ],
         )
 
         self.functions["request.economic"] = FunctionSignature(
             name="economic",
             namespace="request",
             parameters=[
-                FunctionParameter("country", DataType.STRING, ParamType.SIMPLE, description="Country code"),
-                FunctionParameter("field", DataType.STRING, ParamType.SIMPLE, description="Economic indicator"),
-                FunctionParameter("gaps", DataType.ANY, ParamType.SIMPLE, optional=True, description="Gap filling strategy"),
+                FunctionParameter(
+                    "country",
+                    DataType.STRING,
+                    ParamType.SIMPLE,
+                    description="Country code",
+                ),
+                FunctionParameter(
+                    "field",
+                    DataType.STRING,
+                    ParamType.SIMPLE,
+                    description="Economic indicator",
+                ),
+                FunctionParameter(
+                    "gaps",
+                    DataType.ANY,
+                    ParamType.SIMPLE,
+                    optional=True,
+                    description="Gap filling strategy",
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -1014,8 +2133,15 @@ class FunctionSignatureDB:
             name="currency_rate",
             namespace="request",
             parameters=[
-                FunctionParameter("from", DataType.STRING, ParamType.SIMPLE, description="From currency"),
-                FunctionParameter("to", DataType.STRING, ParamType.SIMPLE, description="To currency"),
+                FunctionParameter(
+                    "from",
+                    DataType.STRING,
+                    ParamType.SIMPLE,
+                    description="From currency",
+                ),
+                FunctionParameter(
+                    "to", DataType.STRING, ParamType.SIMPLE, description="To currency"
+                ),
             ],
             return_type=DataType.FLOAT,
             version=5,
@@ -1028,7 +2154,9 @@ class FunctionSignatureDB:
         self.functions["type"] = FunctionSignature(
             name="type",
             parameters=[
-                FunctionParameter("name", DataType.STRING, ParamType.CONST, description="Type name"),
+                FunctionParameter(
+                    "name", DataType.STRING, ParamType.CONST, description="Type name"
+                ),
             ],
             return_type=DataType.STRUCT,
             version=6,
@@ -1049,7 +2177,9 @@ foundPoint = pivotPoint.new(x = time, y = high)"""
         self.functions["enum"] = FunctionSignature(
             name="enum",
             parameters=[
-                FunctionParameter("name", DataType.STRING, ParamType.CONST, description="Enum name"),
+                FunctionParameter(
+                    "name", DataType.STRING, ParamType.CONST, description="Enum name"
+                ),
             ],
             return_type=DataType.ENUM,
             version=6,
@@ -1073,16 +2203,14 @@ if close > open
 
     def get_all_functions(self, version: int = 5) -> List[FunctionSignature]:
         """Get all functions available in a specific version"""
-        return [
-            func for func in self.functions.values()
-            if func.version <= version
-        ]
+        return [func for func in self.functions.values() if func.version <= version]
 
     def search_functions(self, query: str) -> List[FunctionSignature]:
         """Search for functions by name or description"""
         query_lower = query.lower()
         return [
-            func for func in self.functions.values()
+            func
+            for func in self.functions.values()
             if query_lower in func.name.lower()
             or query_lower in func.description.lower()
             or (func.namespace and query_lower in func.namespace.lower())
@@ -1163,7 +2291,11 @@ if close > open
         help_text += "**Parameters:**\n"
         for param in func.parameters:
             optional_str = " (optional)" if param.optional else ""
-            default_str = f", default: {param.default_value}" if param.default_value is not None else ""
+            default_str = (
+                f", default: {param.default_value}"
+                if param.default_value is not None
+                else ""
+            )
             help_text += f"- `{param.name}` ({param.data_type.value}){optional_str}{default_str}: {param.description}\n"
 
         help_text += f"\n**Returns:** {func.return_type.value}\n"

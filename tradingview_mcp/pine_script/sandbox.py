@@ -6,9 +6,9 @@ Provides a safe environment for testing Pine Script code.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Optional, Dict, Any, List
 import time
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
 from .validator import PineScriptValidator
 
@@ -16,6 +16,7 @@ from .validator import PineScriptValidator
 @dataclass
 class TestResult:
     """Result of code execution test"""
+
     success: bool
     output: Optional[str]
     errors: List[str]
@@ -86,7 +87,7 @@ class PineSandbox:
         try:
             # Collect metrics
             metrics = {
-                "lines_of_code": len(code.split('\n')),
+                "lines_of_code": len(code.split("\n")),
                 "validation_time": time.time() - start_time,
                 "symbol": symbol,
                 "timeframe": timeframe,

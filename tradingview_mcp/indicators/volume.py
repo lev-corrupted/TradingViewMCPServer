@@ -1,21 +1,23 @@
 """Volume-based technical indicators."""
 
-from typing import Dict, Any, List
 import logging
+from typing import Any, Dict, List
 
 from ..config import (
+    ERROR_INSUFFICIENT_DATA,
+    MARKET_PROFILE_CANDLES,
+    RECENT_CANDLES_FOR_ANALYSIS,
     VOLUME_PROFILE_LEVELS,
     VOLUME_PROFILE_VALUE_AREA,
-    RECENT_CANDLES_FOR_ANALYSIS,
-    MARKET_PROFILE_CANDLES,
-    ERROR_INSUFFICIENT_DATA,
 )
-from ..utils.formatters import safe_float, round_price
+from ..utils.formatters import round_price, safe_float
 
 logger = logging.getLogger(__name__)
 
 
-def calculate_vwap(ohlcv_data: Dict[str, Any], num_candles: int = RECENT_CANDLES_FOR_ANALYSIS) -> float:
+def calculate_vwap(
+    ohlcv_data: Dict[str, Any], num_candles: int = RECENT_CANDLES_FOR_ANALYSIS
+) -> float:
     """
     Calculate VWAP (Volume Weighted Average Price).
 
@@ -53,8 +55,7 @@ def calculate_vwap(ohlcv_data: Dict[str, Any], num_candles: int = RECENT_CANDLES
 
 
 def calculate_volume_profile(
-    ohlcv_data: Dict[str, Any],
-    num_levels: int = VOLUME_PROFILE_LEVELS
+    ohlcv_data: Dict[str, Any], num_levels: int = VOLUME_PROFILE_LEVELS
 ) -> Dict[str, Any]:
     """
     Calculate volume profile (volume at price levels).
@@ -86,7 +87,9 @@ def calculate_volume_profile(
     prices = [pv["price"] for pv in price_volume]
     min_price = min(prices)
     max_price = max(prices)
-    price_step = (max_price - min_price) / num_levels if max_price > min_price else 0.0001
+    price_step = (
+        (max_price - min_price) / num_levels if max_price > min_price else 0.0001
+    )
 
     # Create price levels and distribute volume
     levels: Dict[float, float] = {}
@@ -109,8 +112,12 @@ def calculate_volume_profile(
 
     # Find high and low volume nodes
     sorted_levels = sorted(levels.items(), key=lambda x: x[1], reverse=True)
-    high_volume_nodes = [{"price": p, "volume": round(v, 2)} for p, v in sorted_levels[:3]]
-    low_volume_nodes = [{"price": p, "volume": round(v, 2)} for p, v in sorted_levels[-3:]]
+    high_volume_nodes = [
+        {"price": p, "volume": round(v, 2)} for p, v in sorted_levels[:3]
+    ]
+    low_volume_nodes = [
+        {"price": p, "volume": round(v, 2)} for p, v in sorted_levels[-3:]
+    ]
 
     return {
         "poc": poc_price,
@@ -118,7 +125,7 @@ def calculate_volume_profile(
         "low_volume_nodes": low_volume_nodes,
         "price_levels": {str(k): round(v, 2) for k, v in levels.items()},
         "min_price": min_price,
-        "max_price": max_price
+        "max_price": max_price,
     }
 
 
@@ -184,12 +191,9 @@ def calculate_market_profile(ohlcv_data: Dict[str, Any]) -> Dict[str, Any]:
         "value_area_high": vah,
         "value_area_low": val,
         "tpo_count": len(tpo_count),
-        "profile_range": {
-            "high": max(tpo_count.keys()),
-            "low": min(tpo_count.keys())
-        },
+        "profile_range": {"high": max(tpo_count.keys()), "low": min(tpo_count.keys())},
         "interpretation": f"POC at {poc:.5f}. Value area: {val:.5f} to {vah:.5f}. "
-                         f"Price typically trades 70% of time within value area."
+        f"Price typically trades 70% of time within value area.",
     }
 
 
@@ -240,5 +244,5 @@ def calculate_obv(ohlcv_data: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "obv": round(obv, 2),
         "trend": trend,
-        "interpretation": f"OBV is {trend} - {'bullish' if trend == 'RISING' else 'bearish' if trend == 'FALLING' else 'neutral'} volume pressure"
+        "interpretation": f"OBV is {trend} - {'bullish' if trend == 'RISING' else 'bearish' if trend == 'FALLING' else 'neutral'} volume pressure",
     }

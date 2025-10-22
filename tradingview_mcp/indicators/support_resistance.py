@@ -1,14 +1,14 @@
 """Support and resistance detection indicators."""
 
-from typing import Dict, Any, List
 import logging
+from typing import Any, Dict, List
 
 from ..config import (
-    RECENT_CANDLES_FOR_ANALYSIS,
-    GAPS_DETECTION_CANDLES,
     ERROR_INSUFFICIENT_DATA,
+    GAPS_DETECTION_CANDLES,
+    RECENT_CANDLES_FOR_ANALYSIS,
 )
-from ..utils.formatters import safe_float, round_price
+from ..utils.formatters import round_price, safe_float
 
 logger = logging.getLogger(__name__)
 
@@ -37,13 +37,21 @@ def detect_support_resistance(ohlcv_data: Dict[str, Any]) -> Dict[str, Any]:
     # Find local maxima and minima (requires at least 2 candles on each side)
     for i in range(2, len(candles) - 2):
         # Resistance: local maximum
-        if (highs[i] > highs[i-1] and highs[i] > highs[i-2] and
-            highs[i] > highs[i+1] and highs[i] > highs[i+2]):
+        if (
+            highs[i] > highs[i - 1]
+            and highs[i] > highs[i - 2]
+            and highs[i] > highs[i + 1]
+            and highs[i] > highs[i + 2]
+        ):
             resistance_levels.append(highs[i])
 
         # Support: local minimum
-        if (lows[i] < lows[i-1] and lows[i] < lows[i-2] and
-            lows[i] < lows[i+1] and lows[i] < lows[i+2]):
+        if (
+            lows[i] < lows[i - 1]
+            and lows[i] < lows[i - 2]
+            and lows[i] < lows[i + 1]
+            and lows[i] < lows[i + 2]
+        ):
             support_levels.append(lows[i])
 
     # Remove duplicates and sort
@@ -56,7 +64,7 @@ def detect_support_resistance(ohlcv_data: Dict[str, Any]) -> Dict[str, Any]:
         "resistance_levels": [round_price(r) for r in resistance_levels],
         "support_levels": [round_price(s) for s in support_levels],
         "current_price": round_price(current_price),
-        "interpretation": "Key levels where price has historically reversed or consolidated"
+        "interpretation": "Key levels where price has historically reversed or consolidated",
     }
 
 
@@ -104,7 +112,7 @@ def calculate_pivot_points(ohlcv_data: Dict[str, Any]) -> Dict[str, Any]:
         "support_1": round_price(s1),
         "support_2": round_price(s2),
         "support_3": round_price(s3),
-        "interpretation": "Pivot points for today's trading - R1/S1 are primary, R2/S2 secondary targets"
+        "interpretation": "Pivot points for today's trading - R1/S1 are primary, R2/S2 secondary targets",
     }
 
 
@@ -144,7 +152,7 @@ def calculate_fibonacci_pivot_points(ohlcv_data: Dict[str, Any]) -> Dict[str, An
         "support_1": round_price(s1),
         "support_2": round_price(s2),
         "support_3": round_price(s3),
-        "type": "Fibonacci"
+        "type": "Fibonacci",
     }
 
 
@@ -170,7 +178,7 @@ def detect_gaps(ohlcv_data: Dict[str, Any]) -> List[Dict[str, Any]]:
 
     for i in range(1, len(candles)):
         current_time, current = candles[i]
-        prev_time, prev = candles[i-1]
+        prev_time, prev = candles[i - 1]
 
         current_low = safe_float(current.get("3. low", 0))
         current_high = safe_float(current.get("2. high", 0))
@@ -180,31 +188,37 @@ def detect_gaps(ohlcv_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         # Gap up: current low > previous high
         if current_low > prev_high:
             gap_size = current_low - prev_high
-            gaps.append({
-                "type": "gap_up",
-                "size": round_price(gap_size),
-                "from_price": round_price(prev_high),
-                "to_price": round_price(current_low),
-                "timestamp": current_time,
-                "filled": False
-            })
+            gaps.append(
+                {
+                    "type": "gap_up",
+                    "size": round_price(gap_size),
+                    "from_price": round_price(prev_high),
+                    "to_price": round_price(current_low),
+                    "timestamp": current_time,
+                    "filled": False,
+                }
+            )
 
         # Gap down: current high < previous low
         elif current_high < prev_low:
             gap_size = prev_low - current_high
-            gaps.append({
-                "type": "gap_down",
-                "size": round_price(gap_size),
-                "from_price": round_price(prev_low),
-                "to_price": round_price(current_high),
-                "timestamp": current_time,
-                "filled": False
-            })
+            gaps.append(
+                {
+                    "type": "gap_down",
+                    "size": round_price(gap_size),
+                    "from_price": round_price(prev_low),
+                    "to_price": round_price(current_high),
+                    "timestamp": current_time,
+                    "filled": False,
+                }
+            )
 
     return gaps
 
 
-def identify_swing_points(ohlcv_data: Dict[str, Any], lookback: int = 5) -> Dict[str, Any]:
+def identify_swing_points(
+    ohlcv_data: Dict[str, Any], lookback: int = 5
+) -> Dict[str, Any]:
     """
     Identify swing highs and swing lows.
 
@@ -231,29 +245,29 @@ def identify_swing_points(ohlcv_data: Dict[str, Any], lookback: int = 5) -> Dict
 
     for i in range(lookback, len(candles) - lookback):
         # Check if it's a swing high
-        is_swing_high = all(highs[i] > highs[i-j] for j in range(1, lookback + 1))
-        is_swing_high = is_swing_high and all(highs[i] > highs[i+j] for j in range(1, lookback + 1))
+        is_swing_high = all(highs[i] > highs[i - j] for j in range(1, lookback + 1))
+        is_swing_high = is_swing_high and all(
+            highs[i] > highs[i + j] for j in range(1, lookback + 1)
+        )
 
         if is_swing_high:
-            swing_highs.append({
-                "price": round_price(highs[i]),
-                "index": i,
-                "timestamp": candles[i][0]
-            })
+            swing_highs.append(
+                {"price": round_price(highs[i]), "index": i, "timestamp": candles[i][0]}
+            )
 
         # Check if it's a swing low
-        is_swing_low = all(lows[i] < lows[i-j] for j in range(1, lookback + 1))
-        is_swing_low = is_swing_low and all(lows[i] < lows[i+j] for j in range(1, lookback + 1))
+        is_swing_low = all(lows[i] < lows[i - j] for j in range(1, lookback + 1))
+        is_swing_low = is_swing_low and all(
+            lows[i] < lows[i + j] for j in range(1, lookback + 1)
+        )
 
         if is_swing_low:
-            swing_lows.append({
-                "price": round_price(lows[i]),
-                "index": i,
-                "timestamp": candles[i][0]
-            })
+            swing_lows.append(
+                {"price": round_price(lows[i]), "index": i, "timestamp": candles[i][0]}
+            )
 
     return {
         "swing_highs": swing_highs[:5],  # Most recent 5
-        "swing_lows": swing_lows[:5],    # Most recent 5
-        "interpretation": "Swing points represent local trend reversals"
+        "swing_lows": swing_lows[:5],  # Most recent 5
+        "interpretation": "Swing points represent local trend reversals",
     }

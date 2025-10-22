@@ -6,10 +6,10 @@ Fetches and caches Pine Script documentation from TradingView.
 
 from __future__ import annotations
 
-import time
-from typing import Optional, Dict, List
-from dataclasses import dataclass
 import re
+import time
+from dataclasses import dataclass
+from typing import Dict, List, Optional
 
 from .signatures import FunctionSignatureDB
 
@@ -17,6 +17,7 @@ from .signatures import FunctionSignatureDB
 @dataclass
 class DocEntry:
     """Documentation entry"""
+
     title: str
     content: str
     url: str
@@ -103,12 +104,14 @@ class PineDocumentation:
                 or query_lower in doc.content.lower()
                 or query_lower in doc.title.lower()
             ):
-                results.append({
-                    "name": func_name,
-                    "title": doc.title,
-                    "preview": doc.content[:200] + "...",
-                    "url": doc.url,
-                })
+                results.append(
+                    {
+                        "name": func_name,
+                        "title": doc.title,
+                        "preview": doc.content[:200] + "...",
+                        "url": doc.url,
+                    }
+                )
 
         return results
 
@@ -252,10 +255,10 @@ Pine Script has a strong type system with several built-in types.
         end = cursor_position
 
         # Find word boundaries
-        while start > 0 and (code[start - 1].isalnum() or code[start - 1] in '._'):
+        while start > 0 and (code[start - 1].isalnum() or code[start - 1] in "._"):
             start -= 1
 
-        while end < len(code) and (code[end].isalnum() or code[end] in '._'):
+        while end < len(code) and (code[end].isalnum() or code[end] in "._"):
             end += 1
 
         word = code[start:end]
@@ -266,7 +269,9 @@ Pine Script has a strong type system with several built-in types.
         # Try to get function documentation
         return self.get_function_docs(word)
 
-    def get_all_functions(self, namespace: Optional[str] = None, version: int = 5) -> List[str]:
+    def get_all_functions(
+        self, namespace: Optional[str] = None, version: int = 5
+    ) -> List[str]:
         """
         Get list of all available functions.
 

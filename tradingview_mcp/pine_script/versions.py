@@ -8,16 +8,17 @@ Supports Pine Script v1-v6.
 from __future__ import annotations
 
 import re
-from typing import Optional, List, Dict, Tuple
 from dataclasses import dataclass
+from typing import Dict, List, Optional, Tuple
 
-from .parser import parse_pine_script, Program
 from .lexer import PineScriptLexer
+from .parser import Program, parse_pine_script
 
 
 @dataclass
 class VersionInfo:
     """Information about detected Pine Script version"""
+
     version: int
     detected_from: str  # 'directive', 'syntax', 'functions'
     confidence: float  # 0.0 to 1.0
@@ -38,67 +39,75 @@ class VersionDetector:
 
     # Version-specific features
     V6_ONLY_FEATURES = {
-        'struct', 'enum',
+        "struct",
+        "enum",
     }
 
     V5_ONLY_FEATURES = {
-        'import', 'export', 'method', 'type',
-        'request.security', 'indicator', 'library',
+        "import",
+        "export",
+        "method",
+        "type",
+        "request.security",
+        "indicator",
+        "library",
     }
 
     V4_FEATURES = {
-        'var', 'varip',
+        "var",
+        "varip",
     }
 
     V3_DEPRECATED = {
-        'study', 'security',
+        "study",
+        "security",
     }
 
     # Function name changes across versions
     FUNCTION_RENAMES = {
         # v4 -> v5
-        'study': 'indicator',
-        'security': 'request.security',
-        'rsi': 'ta.rsi',
-        'sma': 'ta.sma',
-        'ema': 'ta.ema',
-        'rma': 'ta.rma',
-        'wma': 'ta.wma',
-        'vwma': 'ta.vwma',
-        'macd': 'ta.macd',
-        'stoch': 'ta.stoch',
-        'bb': 'ta.bb',
-        'atr': 'ta.atr',
-        'highest': 'ta.highest',
-        'lowest': 'ta.lowest',
-        'stdev': 'ta.stdev',
-        'correlation': 'ta.correlation',
-        'change': 'ta.change',
-        'cross': 'ta.cross',
-        'crossover': 'ta.crossover',
-        'crossunder': 'ta.crossunder',
-        'valuewhen': 'ta.valuewhen',
-        'barssince': 'ta.barssince',
-        'abs': 'math.abs',
-        'acos': 'math.acos',
-        'asin': 'math.asin',
-        'atan': 'math.atan',
-        'ceil': 'math.ceil',
-        'cos': 'math.cos',
-        'exp': 'math.exp',
-        'floor': 'math.floor',
-        'log': 'math.log',
-        'log10': 'math.log10',
-        'max': 'math.max',
-        'min': 'math.min',
-        'pow': 'math.pow',
-        'round': 'math.round',
-        'sign': 'math.sign',
-        'sin': 'math.sin',
-        'sqrt': 'math.sqrt',
-        'tan': 'math.tan',
-        'tostring': 'str.tostring',
-        'tonumber': 'str.tonumber',
+        "study": "indicator",
+        "security": "request.security",
+        "rsi": "ta.rsi",
+        "sma": "ta.sma",
+        "ema": "ta.ema",
+        "rma": "ta.rma",
+        "wma": "ta.wma",
+        "vwma": "ta.vwma",
+        "macd": "ta.macd",
+        "stoch": "ta.stoch",
+        "bb": "ta.bb",
+        "atr": "ta.atr",
+        "highest": "ta.highest",
+        "lowest": "ta.lowest",
+        "stdev": "ta.stdev",
+        "correlation": "ta.correlation",
+        "change": "ta.change",
+        "cross": "ta.cross",
+        "crossover": "ta.crossover",
+        "crossunder": "ta.crossunder",
+        "valuewhen": "ta.valuewhen",
+        "barssince": "ta.barssince",
+        "abs": "math.abs",
+        "acos": "math.acos",
+        "asin": "math.asin",
+        "atan": "math.atan",
+        "ceil": "math.ceil",
+        "cos": "math.cos",
+        "exp": "math.exp",
+        "floor": "math.floor",
+        "log": "math.log",
+        "log10": "math.log10",
+        "max": "math.max",
+        "min": "math.min",
+        "pow": "math.pow",
+        "round": "math.round",
+        "sign": "math.sign",
+        "sin": "math.sin",
+        "sqrt": "math.sqrt",
+        "tan": "math.tan",
+        "tostring": "str.tostring",
+        "tonumber": "str.tonumber",
     }
 
     def __init__(self):
@@ -119,10 +128,12 @@ class VersionDetector:
         if version_directive:
             return VersionInfo(
                 version=version_directive,
-                detected_from='directive',
+                detected_from="directive",
                 confidence=1.0,
                 compatibility_issues=[],
-                deprecated_features=self._find_deprecated_features(code, version_directive),
+                deprecated_features=self._find_deprecated_features(
+                    code, version_directive
+                ),
                 suggestions=self._generate_suggestions(code, version_directive),
             )
 
@@ -133,14 +144,16 @@ class VersionDetector:
             version=detected_version,
             detected_from=evidence,
             confidence=confidence,
-            compatibility_issues=self._find_compatibility_issues(code, detected_version),
+            compatibility_issues=self._find_compatibility_issues(
+                code, detected_version
+            ),
             deprecated_features=self._find_deprecated_features(code, detected_version),
             suggestions=self._generate_suggestions(code, detected_version),
         )
 
     def _extract_version_directive(self, code: str) -> Optional[int]:
         """Extract version from //@version= directive"""
-        match = re.search(r'//\s*@version\s*=\s*(\d+)', code, re.IGNORECASE)
+        match = re.search(r"//\s*@version\s*=\s*(\d+)", code, re.IGNORECASE)
         if match:
             return int(match.group(1))
         return None
@@ -157,45 +170,45 @@ class VersionDetector:
         # Check for v6 features
         v6_score = 0
         for feature in self.V6_ONLY_FEATURES:
-            if re.search(rf'\b{re.escape(feature)}\b', code_lower):
+            if re.search(rf"\b{re.escape(feature)}\b", code_lower):
                 v6_score += 1
 
         if v6_score >= 1:
-            return (6, 0.95, 'syntax')
+            return (6, 0.95, "syntax")
 
         # Check for v5 features
         v5_score = 0
         for feature in self.V5_ONLY_FEATURES:
-            if re.search(rf'\b{re.escape(feature)}\b', code_lower):
+            if re.search(rf"\b{re.escape(feature)}\b", code_lower):
                 v5_score += 1
 
         # Check for namespaced functions (v5)
-        if re.search(r'\b(ta|math|str|array|matrix|request)\.\w+', code):
+        if re.search(r"\b(ta|math|str|array|matrix|request)\.\w+", code):
             v5_score += 2
 
         if v5_score >= 2:
-            return (5, 0.9, 'syntax')
+            return (5, 0.9, "syntax")
 
         # Check for v4 features
         v4_score = 0
         for feature in self.V4_FEATURES:
-            if re.search(rf'\b{re.escape(feature)}\b', code_lower):
+            if re.search(rf"\b{re.escape(feature)}\b", code_lower):
                 v4_score += 1
 
         if v4_score >= 1:
-            return (4, 0.8, 'syntax')
+            return (4, 0.8, "syntax")
 
         # Check for deprecated v3 syntax
         v3_score = 0
         for feature in self.V3_DEPRECATED:
-            if re.search(rf'\b{re.escape(feature)}\b', code_lower):
+            if re.search(rf"\b{re.escape(feature)}\b", code_lower):
                 v3_score += 1
 
         if v3_score >= 1:
-            return (3, 0.7, 'functions')
+            return (3, 0.7, "functions")
 
         # Default to v6 if no clear indicators (v6 is latest)
-        return (6, 0.5, 'default')
+        return (6, 0.5, "default")
 
     def _find_compatibility_issues(self, code: str, target_version: int) -> List[str]:
         """Find compatibility issues for the detected version"""
@@ -204,14 +217,14 @@ class VersionDetector:
         if target_version >= 5:
             # Check for deprecated v4 function names
             for old_name, new_name in self.FUNCTION_RENAMES.items():
-                if re.search(rf'\b{re.escape(old_name)}\s*\(', code):
+                if re.search(rf"\b{re.escape(old_name)}\s*\(", code):
                     issues.append(
                         f"Function '{old_name}()' is deprecated in v5. Use '{new_name}()' instead."
                     )
 
         if target_version >= 4:
             # Check for v3 issues
-            if re.search(r'\bstudy\s*\(', code):
+            if re.search(r"\bstudy\s*\(", code):
                 issues.append(
                     "Function 'study()' should be replaced with 'indicator()' in v4+."
                 )
@@ -225,12 +238,12 @@ class VersionDetector:
         if version >= 5:
             # v5 deprecations
             deprecated_patterns = {
-                'security': "Use 'request.security' instead",
-                'study': "Use 'indicator' instead",
+                "security": "Use 'request.security' instead",
+                "study": "Use 'indicator' instead",
             }
 
             for pattern, message in deprecated_patterns.items():
-                if re.search(rf'\b{re.escape(pattern)}\s*\(', code):
+                if re.search(rf"\b{re.escape(pattern)}\s*\(", code):
                     deprecated.append(f"'{pattern}()' is deprecated. {message}.")
 
         return deprecated
@@ -254,7 +267,7 @@ class VersionDetector:
             # Count functions that should be namespaced
             non_namespaced = 0
             for old_name in self.FUNCTION_RENAMES.keys():
-                if re.search(rf'\b{re.escape(old_name)}\s*\(', code):
+                if re.search(rf"\b{re.escape(old_name)}\s*\(", code):
                     non_namespaced += 1
 
             if non_namespaced > 3:
@@ -265,11 +278,13 @@ class VersionDetector:
 
         if version >= 5:
             # Check if still using old syntax
-            if re.search(r'\bstudy\s*\(', code):
+            if re.search(r"\bstudy\s*\(", code):
                 suggestions.append("Replace 'study()' with 'indicator()' for v5+.")
 
-            if re.search(r'\bsecurity\s*\(', code):
-                suggestions.append("Replace 'security()' with 'request.security()' for v5+.")
+            if re.search(r"\bsecurity\s*\(", code):
+                suggestions.append(
+                    "Replace 'security()' with 'request.security()' for v5+."
+                )
 
         if version == 6:
             suggestions.append(
@@ -321,32 +336,38 @@ class VersionConverter:
         converted_code = code
 
         # Handle version directive
-        if not re.search(r'//\s*@version\s*=', converted_code):
+        if not re.search(r"//\s*@version\s*=", converted_code):
             # Add version directive
             converted_code = f"//@version={target_version}\n{converted_code}"
             changes.append(f"Added version directive: //@version={target_version}")
         else:
             # Update existing version directive
             converted_code = re.sub(
-                r'//\s*@version\s*=\s*\d+',
-                f'//@version={target_version}',
+                r"//\s*@version\s*=\s*\d+",
+                f"//@version={target_version}",
                 converted_code,
             )
             changes.append(f"Updated version directive to: //@version={target_version}")
 
         # Perform version-specific conversions
         if source_version < 6 and target_version >= 6:
-            converted_code, v6_changes, v6_warnings = self._convert_to_v6(converted_code)
+            converted_code, v6_changes, v6_warnings = self._convert_to_v6(
+                converted_code
+            )
             changes.extend(v6_changes)
             warnings.extend(v6_warnings)
 
         if source_version < 5 and target_version >= 5:
-            converted_code, v5_changes, v5_warnings = self._convert_to_v5(converted_code)
+            converted_code, v5_changes, v5_warnings = self._convert_to_v5(
+                converted_code
+            )
             changes.extend(v5_changes)
             warnings.extend(v5_warnings)
 
         if source_version < 4 and target_version >= 4:
-            converted_code, v4_changes, v4_warnings = self._convert_to_v4(converted_code)
+            converted_code, v4_changes, v4_warnings = self._convert_to_v4(
+                converted_code
+            )
             changes.extend(v4_changes)
             warnings.extend(v4_warnings)
 
@@ -361,18 +382,18 @@ class VersionConverter:
 
         # Replace function names
         for old_name, new_name in VersionDetector.FUNCTION_RENAMES.items():
-            pattern = rf'\b{re.escape(old_name)}\s*\('
+            pattern = rf"\b{re.escape(old_name)}\s*\("
             if re.search(pattern, converted):
-                converted = re.sub(pattern, f'{new_name}(', converted)
+                converted = re.sub(pattern, f"{new_name}(", converted)
                 changes.append(f"Renamed '{old_name}()' to '{new_name}()'")
 
         # Replace study() with indicator()
-        if 'study(' in converted:
-            converted = converted.replace('study(', 'indicator(')
+        if "study(" in converted:
+            converted = converted.replace("study(", "indicator(")
             changes.append("Replaced 'study()' with 'indicator()'")
 
         # Check for potential issues
-        if 'security(' in converted and 'request.security(' not in converted:
+        if "security(" in converted and "request.security(" not in converted:
             warnings.append(
                 "Manual review needed: 'security()' usage detected. "
                 "Ensure all parameters are correct for 'request.security()'."
@@ -391,7 +412,7 @@ class VersionConverter:
         # Main additions are new features (type, enum, map) rather than breaking changes
 
         # Add informational changes
-        if converted and not any(kw in converted for kw in ['type ', 'enum ', 'map.']):
+        if converted and not any(kw in converted for kw in ["type ", "enum ", "map."]):
             warnings.append(
                 "Pine Script v6 adds support for 'type' (structs), 'enum', and 'map' collections. "
                 "Consider using these new features for better code organization."
@@ -408,7 +429,7 @@ class VersionConverter:
 
         # v3 to v4 conversions
         # Replace 'input' with proper input functions
-        if re.search(r'\binput\s*\(\s*\d+', converted):
+        if re.search(r"\binput\s*\(\s*\d+", converted):
             warnings.append(
                 "Manual review needed: 'input()' usage detected. "
                 "Consider using 'input.int()', 'input.float()', etc. in v4."

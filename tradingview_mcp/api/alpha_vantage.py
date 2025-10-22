@@ -1,28 +1,28 @@
 """Alpha Vantage API client with rate limiting, caching, and retry logic."""
 
+import logging
 import os
 import time
-import logging
-from typing import Dict, Any, Optional
 from collections import deque
 from datetime import datetime
+from typing import Any, Dict, Optional
 
 import requests
-from requests.exceptions import RequestException, Timeout, ConnectionError
+from requests.exceptions import ConnectionError, RequestException, Timeout
 
 from ..config import (
     API_REQUEST_TIMEOUT,
-    CACHE_TTL_QUOTES,
     CACHE_TTL_HISTORICAL,
-    RATE_LIMIT_CALLS_PER_MINUTE,
-    TIMEFRAME_MAP,
-    ERROR_RATE_LIMIT,
-    ERROR_NO_DATA,
+    CACHE_TTL_QUOTES,
     ERROR_API_KEY_MISSING,
     ERROR_NETWORK,
+    ERROR_NO_DATA,
+    ERROR_RATE_LIMIT,
+    RATE_LIMIT_CALLS_PER_MINUTE,
+    TIMEFRAME_MAP,
 )
-from ..utils.formatters import format_error_response, safe_float
 from ..utils.asset_detector import format_pair_for_alpha_vantage
+from ..utils.formatters import format_error_response, safe_float
 from .cache import ResponseCache
 
 logger = logging.getLogger(__name__)
@@ -36,6 +36,7 @@ def retry_with_exponential_backoff(max_retries: int = 3, base_delay: float = 1.0
         max_retries: Maximum number of retry attempts
         base_delay: Base delay in seconds (doubles each retry)
     """
+
     def decorator(func):
         def wrapper(*args, **kwargs):
             retries = 0
@@ -45,7 +46,9 @@ def retry_with_exponential_backoff(max_retries: int = 3, base_delay: float = 1.0
                 except (Timeout, ConnectionError) as e:
                     retries += 1
                     if retries >= max_retries:
-                        logger.error(f"Max retries ({max_retries}) reached for {func.__name__}")
+                        logger.error(
+                            f"Max retries ({max_retries}) reached for {func.__name__}"
+                        )
                         raise
 
                     delay = base_delay * (2 ** (retries - 1))
@@ -59,7 +62,9 @@ def retry_with_exponential_backoff(max_retries: int = 3, base_delay: float = 1.0
                     logger.error(f"Request failed with non-retryable error: {e}")
                     raise
             return func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -129,8 +134,7 @@ class AlphaVantageClient:
         self.base_url = "https://www.alphavantage.co/query"
         self.cache = ResponseCache()
         self.rate_limiter = RateLimiter(
-            max_calls=RATE_LIMIT_CALLS_PER_MINUTE,
-            time_window=60
+            max_calls=RATE_LIMIT_CALLS_PER_MINUTE, time_window=60
         )
         self._total_calls = 0
 
@@ -154,18 +158,18 @@ class AlphaVantageClient:
             logger.warning(f"Rate limit reached. Need to wait {wait_time:.1f}s")
             return format_error_response(
                 ERROR_RATE_LIMIT,
-                suggestion=f"Wait {int(wait_time) + 1} seconds before retrying"
+                suggestion=f"Wait {int(wait_time) + 1} seconds before retrying",
             )
 
         # Add API key to params
         params["apikey"] = self.api_key
 
         try:
-            logger.debug(f"API request: {params.get('function')} for {params.get('symbol', 'N/A')}")
+            logger.debug(
+                f"API request: {params.get('function')} for {params.get('symbol', 'N/A')}"
+            )
             response = requests.get(
-                self.base_url,
-                params=params,
-                timeout=API_REQUEST_TIMEOUT
+                self.base_url, params=params, timeout=API_REQUEST_TIMEOUT
             )
             response.raise_for_status()
 
@@ -179,16 +183,12 @@ class AlphaVantageClient:
             if "Error Message" in data:
                 logger.error(f"API error: {data['Error Message']}")
                 return format_error_response(
-                    data["Error Message"],
-                    suggestion="Check if the symbol is valid"
+                    data["Error Message"], suggestion="Check if the symbol is valid"
                 )
 
             if "Note" in data:
                 logger.warning("API rate limit message received")
-                return format_error_response(
-                    ERROR_RATE_LIMIT,
-                    details=data["Note"]
-                )
+                return format_error_response(ERROR_RATE_LIMIT, details=data["Note"])
 
             return data
 
@@ -196,20 +196,14 @@ class AlphaVantageClient:
             logger.error("API request timeout")
             return format_error_response(
                 "Request timeout",
-                suggestion="Try again or check your network connection"
+                suggestion="Try again or check your network connection",
             )
         except requests.RequestException as e:
             logger.error(f"Network error: {str(e)}")
-            return format_error_response(
-                ERROR_NETWORK,
-                details=str(e)
-            )
+            return format_error_response(ERROR_NETWORK, details=str(e))
         except Exception as e:
             logger.error(f"Unexpected error: {str(e)}")
-            return format_error_response(
-                "Unexpected error occurred",
-                details=str(e)
-            )
+            return format_error_response("Unexpected error occurred", details=str(e))
 
     def get_forex_quote(self, pair: str) -> Dict[str, Any]:
         """
@@ -248,10 +242,14 @@ class AlphaVantageClient:
                 "symbol": pair,
                 "asset_type": "forex",
                 "price": safe_float(rate_data.get("5. Exchange Rate", 0)),
-                "bid": safe_float(rate_data.get("8. Bid Price", rate_data.get("5. Exchange Rate", 0))),
-                "ask": safe_float(rate_data.get("9. Ask Price", rate_data.get("5. Exchange Rate", 0))),
+                "bid": safe_float(
+                    rate_data.get("8. Bid Price", rate_data.get("5. Exchange Rate", 0))
+                ),
+                "ask": safe_float(
+                    rate_data.get("9. Ask Price", rate_data.get("5. Exchange Rate", 0))
+                ),
                 "timestamp": rate_data.get("6. Last Refreshed", ""),
-                "timezone": rate_data.get("7. Time Zone", "UTC")
+                "timezone": rate_data.get("7. Time Zone", "UTC"),
             }
             self.cache.set(cache_key, result, CACHE_TTL_QUOTES)
             return result
@@ -274,7 +272,7 @@ class AlphaVantageClient:
             return cached
 
         # Remove USD suffix if present
-        crypto_base = symbol.replace('USD', '') if symbol.endswith('USD') else symbol
+        crypto_base = symbol.replace("USD", "") if symbol.endswith("USD") else symbol
 
         params = {
             "function": "CURRENCY_EXCHANGE_RATE",
@@ -291,7 +289,10 @@ class AlphaVantageClient:
             rate_data = data["Realtime Currency Exchange Rate"]
             price = safe_float(rate_data.get("5. Exchange Rate", 0))
 
-            from ..config import CRYPTO_SPREAD_MULTIPLIER_BID, CRYPTO_SPREAD_MULTIPLIER_ASK
+            from ..config import (
+                CRYPTO_SPREAD_MULTIPLIER_ASK,
+                CRYPTO_SPREAD_MULTIPLIER_BID,
+            )
 
             result = {
                 "symbol": symbol,
@@ -300,7 +301,7 @@ class AlphaVantageClient:
                 "bid": price * CRYPTO_SPREAD_MULTIPLIER_BID,
                 "ask": price * CRYPTO_SPREAD_MULTIPLIER_ASK,
                 "timestamp": rate_data.get("6. Last Refreshed", ""),
-                "timezone": rate_data.get("7. Time Zone", "UTC")
+                "timezone": rate_data.get("7. Time Zone", "UTC"),
             }
             self.cache.set(cache_key, result, CACHE_TTL_QUOTES)
             return result
@@ -357,10 +358,7 @@ class AlphaVantageClient:
         return format_error_response(ERROR_NO_DATA, symbol=symbol)
 
     def get_historical_data_forex(
-        self,
-        pair: str,
-        timeframe: str = "1h",
-        outputsize: str = "compact"
+        self, pair: str, timeframe: str = "1h", outputsize: str = "compact"
     ) -> Dict[str, Any]:
         """Get historical forex data."""
         cache_key = f"forex_hist_{pair}_{timeframe}_{outputsize}"
@@ -411,10 +409,7 @@ class AlphaVantageClient:
         return format_error_response(ERROR_NO_DATA, symbol=pair)
 
     def get_historical_data_stock(
-        self,
-        symbol: str,
-        timeframe: str = "1h",
-        outputsize: str = "compact"
+        self, symbol: str, timeframe: str = "1h", outputsize: str = "compact"
     ) -> Dict[str, Any]:
         """
         Get historical stock data.
@@ -468,10 +463,7 @@ class AlphaVantageClient:
         return format_error_response(ERROR_NO_DATA, symbol=symbol)
 
     def get_historical_data_crypto(
-        self,
-        symbol: str,
-        timeframe: str = "1h",
-        outputsize: str = "compact"
+        self, symbol: str, timeframe: str = "1h", outputsize: str = "compact"
     ) -> Dict[str, Any]:
         """
         Get historical crypto data.
@@ -490,7 +482,7 @@ class AlphaVantageClient:
             return cached
 
         # Remove USD suffix if present
-        crypto_base = symbol.replace('USD', '') if symbol.endswith('USD') else symbol
+        crypto_base = symbol.replace("USD", "") if symbol.endswith("USD") else symbol
 
         interval = TIMEFRAME_MAP.get(timeframe, "60min")
 
@@ -536,6 +528,6 @@ class AlphaVantageClient:
             "rate_limit": {
                 "max_per_minute": RATE_LIMIT_CALLS_PER_MINUTE,
                 "current_window_calls": len(self.rate_limiter.calls),
-                "wait_time_seconds": self.rate_limiter.wait_time()
-            }
+                "wait_time_seconds": self.rate_limiter.wait_time(),
+            },
         }

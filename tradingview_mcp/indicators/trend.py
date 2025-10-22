@@ -1,22 +1,22 @@
 """Trend-following technical indicators."""
 
-from typing import Dict, Any, List
 import logging
+from typing import Any, Dict, List
 
 from ..config import (
-    MA_PERIODS,
-    MACD_FAST_PERIOD,
-    MACD_SLOW_PERIOD,
-    MACD_SIGNAL_PERIOD,
     ADX_PERIOD,
     ADX_STRONG_TREND,
     ADX_WEAK_TREND,
-    ICHIMOKU_TENKAN_PERIOD,
+    ERROR_INSUFFICIENT_DATA,
     ICHIMOKU_KIJUN_PERIOD,
     ICHIMOKU_SENKOU_B_PERIOD,
-    ERROR_INSUFFICIENT_DATA,
+    ICHIMOKU_TENKAN_PERIOD,
+    MA_PERIODS,
+    MACD_FAST_PERIOD,
+    MACD_SIGNAL_PERIOD,
+    MACD_SLOW_PERIOD,
 )
-from ..utils.formatters import safe_float, round_price
+from ..utils.formatters import round_price, safe_float
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ def calculate_moving_averages(ohlcv_data: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         Dictionary with SMAs for different periods
     """
-    candles = list(ohlcv_data.items())[:max(MA_PERIODS) + 10]
+    candles = list(ohlcv_data.items())[: max(MA_PERIODS) + 10]
 
     if not candles:
         return {"error": ERROR_INSUFFICIENT_DATA}
@@ -72,7 +72,7 @@ def calculate_moving_averages(ohlcv_data: Dict[str, Any]) -> Dict[str, Any]:
             result[f"sma_{period}"] = round_price(sma)
 
             # Calculate EMA as well
-            ema = calculate_ema(closes[:period * 2], period)
+            ema = calculate_ema(closes[: period * 2], period)
             result[f"ema_{period}"] = round_price(ema)
 
     return result
@@ -107,13 +107,17 @@ def calculate_macd(ohlcv_data: Dict[str, Any]) -> Dict[str, Any]:
     # For proper signal line, we'd need MACD history, simplified here
     macd_values = []
     for i in range(min(MACD_SIGNAL_PERIOD * 2, len(closes) - MACD_SLOW_PERIOD)):
-        temp_closes = closes[i:i + MACD_SLOW_PERIOD + 10]
+        temp_closes = closes[i : i + MACD_SLOW_PERIOD + 10]
         if len(temp_closes) >= MACD_SLOW_PERIOD:
             temp_ema12 = calculate_ema(temp_closes, MACD_FAST_PERIOD)
             temp_ema26 = calculate_ema(temp_closes, MACD_SLOW_PERIOD)
             macd_values.append(temp_ema12 - temp_ema26)
 
-    signal_line = calculate_ema(macd_values, MACD_SIGNAL_PERIOD) if macd_values else macd_line * 0.9
+    signal_line = (
+        calculate_ema(macd_values, MACD_SIGNAL_PERIOD)
+        if macd_values
+        else macd_line * 0.9
+    )
 
     histogram = macd_line - signal_line
 
@@ -121,11 +125,13 @@ def calculate_macd(ohlcv_data: Dict[str, Any]) -> Dict[str, Any]:
         "macd_line": round_price(macd_line),
         "signal_line": round_price(signal_line),
         "histogram": round_price(histogram),
-        "signal": "BULLISH" if histogram > 0 else "BEARISH"
+        "signal": "BULLISH" if histogram > 0 else "BEARISH",
     }
 
 
-def calculate_adx(ohlcv_data: Dict[str, Any], period: int = ADX_PERIOD) -> Dict[str, Any]:
+def calculate_adx(
+    ohlcv_data: Dict[str, Any], period: int = ADX_PERIOD
+) -> Dict[str, Any]:
     """
     Calculate ADX (Average Directional Index) properly.
 
@@ -136,7 +142,7 @@ def calculate_adx(ohlcv_data: Dict[str, Any], period: int = ADX_PERIOD) -> Dict[
     Returns:
         ADX value, +DI, -DI, and trend strength
     """
-    candles = list(ohlcv_data.items())[:period * 3]
+    candles = list(ohlcv_data.items())[: period * 3]
 
     if len(candles) < period + 1:
         return {"error": ERROR_INSUFFICIENT_DATA}
@@ -155,11 +161,7 @@ def calculate_adx(ohlcv_data: Dict[str, Any], period: int = ADX_PERIOD) -> Dict[
         prev_close = safe_float(candles[i + 1][1].get("4. close", 0))
 
         # True Range
-        tr = max(
-            high - low,
-            abs(high - prev_close),
-            abs(low - prev_close)
-        )
+        tr = max(high - low, abs(high - prev_close), abs(low - prev_close))
         tr_values.append(tr)
 
         # Directional Movement
@@ -201,7 +203,7 @@ def calculate_adx(ohlcv_data: Dict[str, Any], period: int = ADX_PERIOD) -> Dict[
         "di_plus": round(di_plus, 2),
         "di_minus": round(di_minus, 2),
         "trend_strength": strength,
-        "trend_direction": "BULLISH" if di_plus > di_minus else "BEARISH"
+        "trend_direction": "BULLISH" if di_plus > di_minus else "BEARISH",
     }
 
 
@@ -215,7 +217,7 @@ def calculate_ichimoku(ohlcv_data: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         Ichimoku lines and cloud interpretation
     """
-    candles = list(ohlcv_data.items())[:ICHIMOKU_SENKOU_B_PERIOD + 10]
+    candles = list(ohlcv_data.items())[: ICHIMOKU_SENKOU_B_PERIOD + 10]
 
     if len(candles) < ICHIMOKU_SENKOU_B_PERIOD:
         return {"error": ERROR_INSUFFICIENT_DATA}
@@ -229,8 +231,8 @@ def calculate_ichimoku(ohlcv_data: Dict[str, Any]) -> Dict[str, Any]:
 
     # Calculate lines
     tenkan_sen = midpoint(ICHIMOKU_TENKAN_PERIOD)  # Conversion Line
-    kijun_sen = midpoint(ICHIMOKU_KIJUN_PERIOD)    # Base Line
-    senkou_span_a = (tenkan_sen + kijun_sen) / 2   # Leading Span A
+    kijun_sen = midpoint(ICHIMOKU_KIJUN_PERIOD)  # Base Line
+    senkou_span_a = (tenkan_sen + kijun_sen) / 2  # Leading Span A
     senkou_span_b = midpoint(ICHIMOKU_SENKOU_B_PERIOD)  # Leading Span B
 
     current_price = safe_float(candles[0][1].get("4. close", 0))
@@ -259,5 +261,5 @@ def calculate_ichimoku(ohlcv_data: Dict[str, Any]) -> Dict[str, Any]:
         "cloud_bottom": round_price(cloud_bottom),
         "current_price": current_price,
         "signal": signal,
-        "interpretation": interpretation
+        "interpretation": interpretation,
     }

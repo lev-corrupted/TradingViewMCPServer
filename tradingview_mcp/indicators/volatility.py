@@ -1,24 +1,17 @@
 """Volatility technical indicators."""
 
-from typing import Dict, Any
 import logging
 import math
+from typing import Any, Dict
 
-from ..config import (
-    BB_PERIOD,
-    BB_STD_DEV,
-    ATR_PERIOD,
-    ERROR_INSUFFICIENT_DATA,
-)
-from ..utils.formatters import safe_float, round_price
+from ..config import ATR_PERIOD, BB_PERIOD, BB_STD_DEV, ERROR_INSUFFICIENT_DATA
+from ..utils.formatters import round_price, safe_float
 
 logger = logging.getLogger(__name__)
 
 
 def calculate_bollinger_bands(
-    ohlcv_data: Dict[str, Any],
-    period: int = BB_PERIOD,
-    std_dev: int = BB_STD_DEV
+    ohlcv_data: Dict[str, Any], period: int = BB_PERIOD, std_dev: int = BB_STD_DEV
 ) -> Dict[str, Any]:
     """
     Calculate Bollinger Bands.
@@ -35,7 +28,7 @@ def calculate_bollinger_bands(
     Returns:
         Upper, middle, lower bands and %B indicator
     """
-    candles = list(ohlcv_data.items())[:period + 10]
+    candles = list(ohlcv_data.items())[: period + 10]
 
     if len(candles) < period:
         return {"error": ERROR_INSUFFICIENT_DATA}
@@ -80,13 +73,12 @@ def calculate_bollinger_bands(
         "bandwidth": round_price(bandwidth),
         "percent_b": round(percent_b, 3),
         "signal": signal,
-        "interpretation": f"Price at {percent_b * 100:.1f}% of band width - {signal}"
+        "interpretation": f"Price at {percent_b * 100:.1f}% of band width - {signal}",
     }
 
 
 def calculate_atr(
-    ohlcv_data: Dict[str, Any],
-    period: int = ATR_PERIOD
+    ohlcv_data: Dict[str, Any], period: int = ATR_PERIOD
 ) -> Dict[str, Any]:
     """
     Calculate Average True Range (ATR).
@@ -101,7 +93,7 @@ def calculate_atr(
     Returns:
         ATR value and percentage
     """
-    candles = list(ohlcv_data.items())[:period + 10]
+    candles = list(ohlcv_data.items())[: period + 10]
 
     if len(candles) < period + 1:
         return {"error": ERROR_INSUFFICIENT_DATA}
@@ -113,11 +105,7 @@ def calculate_atr(
         low = safe_float(candles[i][1].get("3. low", 0))
         prev_close = safe_float(candles[i + 1][1].get("4. close", 0))
 
-        tr = max(
-            high - low,
-            abs(high - prev_close),
-            abs(low - prev_close)
-        )
+        tr = max(high - low, abs(high - prev_close), abs(low - prev_close))
         true_ranges.append(tr)
 
     # Calculate ATR (average of true ranges)
@@ -138,14 +126,12 @@ def calculate_atr(
         "atr": round_price(atr),
         "atr_percent": round(atr_percent, 2),
         "volatility": volatility,
-        "interpretation": f"ATR shows {atr_percent:.2f}% volatility ({volatility}) - use for stop loss and position sizing"
+        "interpretation": f"ATR shows {atr_percent:.2f}% volatility ({volatility}) - use for stop loss and position sizing",
     }
 
 
 def calculate_keltner_channels(
-    ohlcv_data: Dict[str, Any],
-    period: int = 20,
-    atr_multiplier: float = 2.0
+    ohlcv_data: Dict[str, Any], period: int = 20, atr_multiplier: float = 2.0
 ) -> Dict[str, Any]:
     """
     Calculate Keltner Channels.
@@ -162,7 +148,7 @@ def calculate_keltner_channels(
     Returns:
         Upper, middle, lower channels
     """
-    candles = list(ohlcv_data.items())[:period * 2]
+    candles = list(ohlcv_data.items())[: period * 2]
 
     if len(candles) < period + 10:
         return {"error": ERROR_INSUFFICIENT_DATA}
@@ -171,6 +157,7 @@ def calculate_keltner_channels(
 
     # Calculate EMA for middle line
     from .trend import calculate_ema
+
     ema = calculate_ema(closes, period)
 
     # Calculate ATR
@@ -191,5 +178,5 @@ def calculate_keltner_channels(
         "middle_line": round_price(ema),
         "lower_channel": round_price(lower_channel),
         "current_price": round_price(current_price),
-        "width": round_price(upper_channel - lower_channel)
+        "width": round_price(upper_channel - lower_channel),
     }

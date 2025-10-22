@@ -1,7 +1,7 @@
 """Response formatting utilities."""
 
-from typing import Dict, Any, Optional
 import logging
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -10,7 +10,7 @@ def format_error_response(
     error: str,
     symbol: Optional[str] = None,
     details: Optional[str] = None,
-    suggestion: Optional[str] = None
+    suggestion: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Format a standardized error response.
@@ -32,10 +32,7 @@ def format_error_response(
         ... )
         {'error': 'API rate limit reached', 'symbol': 'AAPL', 'suggestion': '...'}
     """
-    response: Dict[str, Any] = {
-        "error": error,
-        "success": False
-    }
+    response: Dict[str, Any] = {"error": error, "success": False}
 
     if symbol:
         response["symbol"] = symbol
@@ -61,11 +58,7 @@ def format_success_response(data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
     Returns:
         Standardized success dictionary with success=True flag
     """
-    response = {
-        "success": True,
-        **data,
-        **kwargs
-    }
+    response = {"success": True, **data, **kwargs}
     return response
 
 

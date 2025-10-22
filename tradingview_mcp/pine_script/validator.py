@@ -7,10 +7,10 @@ Validates Pine Script code for syntax errors, type errors, and semantic issues.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 from .lexer import PineScriptLexer
-from .parser import parse_pine_script, ParseError, FunctionCall, Identifier
+from .parser import FunctionCall, Identifier, ParseError, parse_pine_script
 from .signatures import FunctionSignatureDB
 from .versions import VersionDetector
 
@@ -18,6 +18,7 @@ from .versions import VersionDetector
 @dataclass
 class ValidationError:
     """Represents a validation error"""
+
     line: int
     column: int
     severity: str  # 'error', 'warning', 'info'
@@ -29,6 +30,7 @@ class ValidationError:
 @dataclass
 class ValidationResult:
     """Result of code validation"""
+
     valid: bool
     errors: List[ValidationError]
     warnings: List[ValidationError]
@@ -52,7 +54,9 @@ class PineScriptValidator:
         self.sig_db = FunctionSignatureDB()
         self.version_detector = VersionDetector()
 
-    def validate(self, code: str, target_version: Optional[int] = None) -> ValidationResult:
+    def validate(
+        self, code: str, target_version: Optional[int] = None
+    ) -> ValidationResult:
         """
         Validate Pine Script code.
 
@@ -75,26 +79,30 @@ class PineScriptValidator:
             target_version = detected_version
 
         # Add version info
-        if version_info.detected_from != 'directive':
-            info.append(ValidationError(
-                line=1,
-                column=1,
-                severity='info',
-                message=f"Pine Script version detected as v{detected_version} "
-                        f"(confidence: {version_info.confidence:.0%}, from: {version_info.detected_from})",
-                code='I001',
-                suggestion="Add '//@version=5' directive at the top for explicit version.",
-            ))
+        if version_info.detected_from != "directive":
+            info.append(
+                ValidationError(
+                    line=1,
+                    column=1,
+                    severity="info",
+                    message=f"Pine Script version detected as v{detected_version} "
+                    f"(confidence: {version_info.confidence:.0%}, from: {version_info.detected_from})",
+                    code="I001",
+                    suggestion="Add '//@version=5' directive at the top for explicit version.",
+                )
+            )
 
         # Add compatibility warnings
         for issue in version_info.compatibility_issues:
-            warnings.append(ValidationError(
-                line=1,
-                column=1,
-                severity='warning',
-                message=issue,
-                code='W001',
-            ))
+            warnings.append(
+                ValidationError(
+                    line=1,
+                    column=1,
+                    severity="warning",
+                    message=issue,
+                    code="W001",
+                )
+            )
 
         # Parse code
         try:
@@ -114,37 +122,44 @@ class PineScriptValidator:
             errors.extend(ast_errors)
 
         except ParseError as e:
-            errors.append(ValidationError(
-                line=e.line,
-                column=e.column,
-                severity='error',
-                message=str(e),
-                code='E001',
-            ))
+            errors.append(
+                ValidationError(
+                    line=e.line,
+                    column=e.column,
+                    severity="error",
+                    message=str(e),
+                    code="E001",
+                )
+            )
         except SyntaxError as e:
             # Extract line/column if available
             error_msg = str(e)
             line, col = 1, 1
-            if 'line' in error_msg:
+            if "line" in error_msg:
                 import re
-                match = re.search(r'line (\d+)', error_msg)
+
+                match = re.search(r"line (\d+)", error_msg)
                 if match:
                     line = int(match.group(1))
-            errors.append(ValidationError(
-                line=line,
-                column=col,
-                severity='error',
-                message=error_msg,
-                code='E002',
-            ))
+            errors.append(
+                ValidationError(
+                    line=line,
+                    column=col,
+                    severity="error",
+                    message=error_msg,
+                    code="E002",
+                )
+            )
         except Exception as e:
-            errors.append(ValidationError(
-                line=1,
-                column=1,
-                severity='error',
-                message=f"Validation error: {str(e)}",
-                code='E999',
-            ))
+            errors.append(
+                ValidationError(
+                    line=1,
+                    column=1,
+                    severity="error",
+                    message=f"Validation error: {str(e)}",
+                    code="E999",
+                )
+            )
 
         return ValidationResult(
             valid=len(errors) == 0,
@@ -170,40 +185,56 @@ class PineScriptValidator:
             func_sig = self.sig_db.get_function(node.name)
 
             if not func_sig:
-                errors.append(ValidationError(
-                    line=node.line,
-                    column=node.column,
-                    severity='error',
-                    message=f"Unknown function: '{node.name}'",
-                    code='E101',
-                    suggestion=self._suggest_similar_function(node.name),
-                ))
+                errors.append(
+                    ValidationError(
+                        line=node.line,
+                        column=node.column,
+                        severity="error",
+                        message=f"Unknown function: '{node.name}'",
+                        code="E101",
+                        suggestion=self._suggest_similar_function(node.name),
+                    )
+                )
             else:
                 # Check if function is available in target version
                 if func_sig.version > version:
-                    errors.append(ValidationError(
-                        line=node.line,
-                        column=node.column,
-                        severity='error',
-                        message=f"Function '{node.name}' requires Pine Script v{func_sig.version}, "
-                                f"but target version is v{version}",
-                        code='E102',
-                    ))
+                    errors.append(
+                        ValidationError(
+                            line=node.line,
+                            column=node.column,
+                            severity="error",
+                            message=f"Function '{node.name}' requires Pine Script v{func_sig.version}, "
+                            f"but target version is v{version}",
+                            code="E102",
+                        )
+                    )
 
                 # Check if function is deprecated
                 if func_sig.deprecated:
-                    errors.append(ValidationError(
-                        line=node.line,
-                        column=node.column,
-                        severity='warning',
-                        message=f"Function '{node.name}' is deprecated",
-                        code='W101',
-                        suggestion=f"Use '{func_sig.replacement}' instead" if func_sig.replacement else None,
-                    ))
+                    errors.append(
+                        ValidationError(
+                            line=node.line,
+                            column=node.column,
+                            severity="warning",
+                            message=f"Function '{node.name}' is deprecated",
+                            code="W101",
+                            suggestion=(
+                                f"Use '{func_sig.replacement}' instead"
+                                if func_sig.replacement
+                                else None
+                            ),
+                        )
+                    )
 
                 # Validate arguments
-                positional_args = [arg.value for arg in node.arguments if arg.name is None]
-                named_args = {arg.name: arg.value for arg in node.arguments if arg.name is not None}
+                positional_args = [
+                    arg.value for arg in node.arguments if arg.name is None
+                ]
+                named_args = {
+                    arg.name: arg.value
+                    for arg in node.arguments
+                    if arg.name is not None
+                }
 
                 valid, arg_errors = self.sig_db.validate_call(
                     node.name,
@@ -212,22 +243,24 @@ class PineScriptValidator:
                 )
 
                 for error_msg in arg_errors:
-                    errors.append(ValidationError(
-                        line=node.line,
-                        column=node.column,
-                        severity='error',
-                        message=error_msg,
-                        code='E103',
-                    ))
+                    errors.append(
+                        ValidationError(
+                            line=node.line,
+                            column=node.column,
+                            severity="error",
+                            message=error_msg,
+                            code="E103",
+                        )
+                    )
 
         # Recursively walk child nodes
-        if hasattr(node, '__dict__'):
+        if hasattr(node, "__dict__"):
             for attr_value in node.__dict__.values():
                 if isinstance(attr_value, list):
                     for item in attr_value:
-                        if hasattr(item, 'line'):  # AST node
+                        if hasattr(item, "line"):  # AST node
                             self._walk_ast(item, errors, version)
-                elif hasattr(attr_value, 'line'):  # AST node
+                elif hasattr(attr_value, "line"):  # AST node
                     self._walk_ast(attr_value, errors, version)
 
     def _suggest_similar_function(self, function_name: str) -> Optional[str]:
@@ -237,7 +270,10 @@ class PineScriptValidator:
         # Simple similarity check
         similar = []
         for func in all_funcs:
-            if function_name.lower() in func.lower() or func.lower() in function_name.lower():
+            if (
+                function_name.lower() in func.lower()
+                or func.lower() in function_name.lower()
+            ):
                 similar.append(func)
 
         if similar:

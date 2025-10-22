@@ -4,11 +4,13 @@ Input validation utilities for TradingView MCP Server.
 
 import re
 from typing import Optional, Tuple
-from ..config import TIMEFRAME_MAP, FOREX_PAIRS, POPULAR_STOCKS, CRYPTO_SYMBOLS
+
+from ..config import CRYPTO_SYMBOLS, FOREX_PAIRS, POPULAR_STOCKS, TIMEFRAME_MAP
 
 
 class ValidationError(Exception):
     """Custom validation error exception."""
+
     pass
 
 
@@ -28,7 +30,10 @@ def validate_timeframe(timeframe: str) -> Tuple[bool, Optional[str]]:
     valid_timeframes = list(TIMEFRAME_MAP.keys())
 
     if timeframe not in valid_timeframes:
-        return False, f"Invalid timeframe '{timeframe}'. Valid options: {', '.join(valid_timeframes)}"
+        return (
+            False,
+            f"Invalid timeframe '{timeframe}'. Valid options: {', '.join(valid_timeframes)}",
+        )
 
     return True, None
 
@@ -50,15 +55,20 @@ def validate_symbol(symbol: str) -> Tuple[bool, Optional[str]]:
     cleaned_symbol = symbol.upper().replace("/", "").replace("_", "").replace(" ", "")
 
     # Check if it's a valid symbol format (alphanumeric, 2-12 characters)
-    if not re.match(r'^[A-Z0-9]{2,12}$', cleaned_symbol):
-        return False, f"Invalid symbol format '{symbol}'. Use alphanumeric characters only (2-12 chars)"
+    if not re.match(r"^[A-Z0-9]{2,12}$", cleaned_symbol):
+        return (
+            False,
+            f"Invalid symbol format '{symbol}'. Use alphanumeric characters only (2-12 chars)",
+        )
 
     # We allow any symbol - just validate format
     # The API will return an error if the symbol doesn't exist
     return True, None
 
 
-def validate_period(period: int, min_val: int = 1, max_val: int = 500) -> Tuple[bool, Optional[str]]:
+def validate_period(
+    period: int, min_val: int = 1, max_val: int = 500
+) -> Tuple[bool, Optional[str]]:
     """
     Validate period parameter for indicators.
 
@@ -79,7 +89,9 @@ def validate_period(period: int, min_val: int = 1, max_val: int = 500) -> Tuple[
     return True, None
 
 
-def validate_positive_number(value: float, name: str = "value") -> Tuple[bool, Optional[str]]:
+def validate_positive_number(
+    value: float, name: str = "value"
+) -> Tuple[bool, Optional[str]]:
     """
     Validate that a number is positive.
 
@@ -116,7 +128,7 @@ def validate_api_key(api_key: str) -> Tuple[bool, Optional[str]]:
     if len(api_key) < 8:
         return False, "API key appears to be too short"
 
-    if not re.match(r'^[A-Z0-9]+$', api_key.upper()):
+    if not re.match(r"^[A-Z0-9]+$", api_key.upper()):
         return False, "API key should contain only alphanumeric characters"
 
     return True, None

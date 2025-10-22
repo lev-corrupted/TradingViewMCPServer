@@ -6,17 +6,18 @@ Provides intelligent autocomplete suggestions for Pine Script code.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import List, Optional
-import re
 
-from .signatures import FunctionSignatureDB, FunctionSignature
-from .lexer import KEYWORDS, BUILTIN_FUNCTIONS, TYPE_QUALIFIERS
+from .lexer import BUILTIN_FUNCTIONS, KEYWORDS, TYPE_QUALIFIERS
+from .signatures import FunctionSignature, FunctionSignatureDB
 
 
 @dataclass
 class AutocompleteItem:
     """Autocomplete suggestion item"""
+
     label: str
     kind: str  # 'function', 'keyword', 'variable', 'type'
     detail: str
@@ -89,7 +90,11 @@ class PineAutocomplete:
         start = cursor_position
 
         # Find start of word
-        while start > 0 and start <= len(code) and (code[start - 1].isalnum() or code[start - 1] in '_.'):
+        while (
+            start > 0
+            and start <= len(code)
+            and (code[start - 1].isalnum() or code[start - 1] in "_.")
+        ):
             start -= 1
 
         return code[start:cursor_position].lower()
@@ -103,14 +108,14 @@ class PineAutocomplete:
 
         # Look backwards for dot
         i = cursor_position - 1
-        while i >= 0 and i < len(code) and code[i] in ' \t':
+        while i >= 0 and i < len(code) and code[i] in " \t":
             i -= 1
 
         if i >= 0 and i < len(code) and code[i].isalnum():
             # Continue backwards through identifier
-            while i >= 0 and i < len(code) and (code[i].isalnum() or code[i] == '_'):
+            while i >= 0 and i < len(code) and (code[i].isalnum() or code[i] == "_"):
                 i -= 1
-            if i >= 0 and i < len(code) and code[i] == '.':
+            if i >= 0 and i < len(code) and code[i] == ".":
                 return True
 
         return False
@@ -124,23 +129,23 @@ class PineAutocomplete:
 
         # Look backwards for identifier.
         i = cursor_position - 1
-        while i >= 0 and i < len(code) and code[i] in ' \t':
+        while i >= 0 and i < len(code) and code[i] in " \t":
             i -= 1
 
         # Extract current partial word after dot
         while i >= 0 and i < len(code) and code[i].isalnum():
             i -= 1
 
-        if i < 0 or i >= len(code) or code[i] != '.':
+        if i < 0 or i >= len(code) or code[i] != ".":
             return None
 
         # Extract namespace before dot
         dot_pos = i
         i -= 1
-        while i >= 0 and i < len(code) and (code[i].isalnum() or code[i] == '_'):
+        while i >= 0 and i < len(code) and (code[i].isalnum() or code[i] == "_"):
             i -= 1
 
-        namespace = code[i + 1:dot_pos]
+        namespace = code[i + 1 : dot_pos]
         return namespace if namespace else None
 
     def _get_namespace_completions(
@@ -187,20 +192,22 @@ class PineAutocomplete:
             if prefix and not keyword.startswith(prefix):
                 continue
 
-            suggestions.append(AutocompleteItem(
-                label=keyword,
-                kind='keyword',
-                detail='keyword',
-                documentation=f"Pine Script keyword: {keyword}",
-                insert_text=keyword,
-                score=0.7,
-            ))
+            suggestions.append(
+                AutocompleteItem(
+                    label=keyword,
+                    kind="keyword",
+                    detail="keyword",
+                    documentation=f"Pine Script keyword: {keyword}",
+                    insert_text=keyword,
+                    score=0.7,
+                )
+            )
 
         return suggestions
 
     def _get_builtin_completions(self, prefix: str) -> List[AutocompleteItem]:
         """Get built-in variable completions"""
-        builtins = ['close', 'open', 'high', 'low', 'volume', 'time', 'bar_index']
+        builtins = ["close", "open", "high", "low", "volume", "time", "bar_index"]
 
         suggestions = []
 
@@ -208,14 +215,16 @@ class PineAutocomplete:
             if prefix and not builtin.startswith(prefix):
                 continue
 
-            suggestions.append(AutocompleteItem(
-                label=builtin,
-                kind='variable',
-                detail='built-in variable',
-                documentation=f"Built-in Pine Script variable: {builtin}",
-                insert_text=builtin,
-                score=0.8,
-            ))
+            suggestions.append(
+                AutocompleteItem(
+                    label=builtin,
+                    kind="variable",
+                    detail="built-in variable",
+                    documentation=f"Built-in Pine Script variable: {builtin}",
+                    insert_text=builtin,
+                    score=0.8,
+                )
+            )
 
         return suggestions
 
@@ -245,7 +254,7 @@ class PineAutocomplete:
 
         return AutocompleteItem(
             label=func_sig.full_name,
-            kind='function',
+            kind="function",
             detail=f"({param_list}) → {func_sig.return_type.value}",
             documentation=func_sig.description,
             insert_text=insert_text,
@@ -287,21 +296,25 @@ class PineAutocomplete:
         i = cursor_position - 1
 
         while i >= 0 and i < len(code):
-            if code[i] == ')':
+            if code[i] == ")":
                 paren_count += 1
-            elif code[i] == '(':
+            elif code[i] == "(":
                 if paren_count == 0:
                     # Found the opening paren, now find function name
                     i -= 1
-                    while i >= 0 and i < len(code) and code[i] in ' \t':
+                    while i >= 0 and i < len(code) and code[i] in " \t":
                         i -= 1
 
                     # Extract function name
                     end = i + 1
-                    while i >= 0 and i < len(code) and (code[i].isalnum() or code[i] in '_.'):
+                    while (
+                        i >= 0
+                        and i < len(code)
+                        and (code[i].isalnum() or code[i] in "_.")
+                    ):
                         i -= 1
 
-                    func_name = code[i + 1:end]
+                    func_name = code[i + 1 : end]
                     return func_name if func_name else None
                 else:
                     paren_count -= 1

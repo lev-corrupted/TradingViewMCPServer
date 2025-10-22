@@ -1,10 +1,10 @@
 """Simple in-memory cache with TTL and LRU eviction support."""
 
-import time
 import logging
-from typing import Optional, Any, Dict
-from dataclasses import dataclass
+import time
 from collections import OrderedDict
+from dataclasses import dataclass
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class CacheEntry:
     """Cache entry with value and expiration time."""
+
     value: Any
     expires_at: float
 
@@ -113,8 +114,7 @@ class ResponseCache:
         """
         current_time = time.time()
         expired_keys = [
-            key for key, entry in self._cache.items()
-            if current_time > entry.expires_at
+            key for key, entry in self._cache.items() if current_time > entry.expires_at
         ]
 
         for key in expired_keys:
@@ -142,5 +142,5 @@ class ResponseCache:
             "misses": self._misses,
             "evictions": self._evictions,
             "hit_rate": f"{hit_rate:.1f}%",
-            "utilization": f"{len(self._cache) / self._max_size * 100:.1f}%"
+            "utilization": f"{len(self._cache) / self._max_size * 100:.1f}%",
         }

@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import List, Optional, Iterator
+from typing import Iterator, List, Optional
 
 
 class TokenType(Enum):
@@ -72,6 +72,7 @@ class TokenType(Enum):
 @dataclass
 class Token:
     """Represents a single token in Pine Script code"""
+
     type: TokenType
     value: str
     line: int
@@ -84,47 +85,105 @@ class Token:
 # Pine Script keywords across all versions
 KEYWORDS = {
     # v1-v6 common keywords
-    'if', 'else', 'for', 'while', 'break', 'continue',
-    'true', 'false', 'na', 'and', 'or', 'not',
-
+    "if",
+    "else",
+    "for",
+    "while",
+    "break",
+    "continue",
+    "true",
+    "false",
+    "na",
+    "and",
+    "or",
+    "not",
     # Type declarations (v4+)
-    'var', 'varip',
-
+    "var",
+    "varip",
     # Function/method keywords
-    'method', 'export',
-
+    "method",
+    "export",
     # Import/library (v5+)
-    'import', 'as',
-
+    "import",
+    "as",
     # Type keywords (v5+)
-    'type',
-
+    "type",
     # Control flow
-    'switch', 'return',
-
+    "switch",
+    "return",
     # v6 keywords
-    'struct', 'enum',
+    "struct",
+    "enum",
 }
 
 # Built-in functions and types
 BUILTIN_FUNCTIONS = {
-    'plot', 'plotshape', 'plotchar', 'plotarrow', 'plotbar', 'plotcandle',
-    'hline', 'fill', 'bgcolor',
-    'strategy', 'study', 'indicator', 'library',
-    'security', 'request.security',
-    'close', 'open', 'high', 'low', 'volume', 'time', 'bar_index',
-    'ta.sma', 'ta.ema', 'ta.rsi', 'ta.macd', 'ta.stoch',
-    'math.abs', 'math.max', 'math.min', 'math.round', 'math.floor', 'math.ceil',
-    'str.tostring', 'str.tonumber', 'str.length',
-    'array.new', 'array.size', 'array.push', 'array.pop', 'array.get', 'array.set',
-    'input', 'input.int', 'input.float', 'input.string', 'input.bool',
+    "plot",
+    "plotshape",
+    "plotchar",
+    "plotarrow",
+    "plotbar",
+    "plotcandle",
+    "hline",
+    "fill",
+    "bgcolor",
+    "strategy",
+    "study",
+    "indicator",
+    "library",
+    "security",
+    "request.security",
+    "close",
+    "open",
+    "high",
+    "low",
+    "volume",
+    "time",
+    "bar_index",
+    "ta.sma",
+    "ta.ema",
+    "ta.rsi",
+    "ta.macd",
+    "ta.stoch",
+    "math.abs",
+    "math.max",
+    "math.min",
+    "math.round",
+    "math.floor",
+    "math.ceil",
+    "str.tostring",
+    "str.tonumber",
+    "str.length",
+    "array.new",
+    "array.size",
+    "array.push",
+    "array.pop",
+    "array.get",
+    "array.set",
+    "input",
+    "input.int",
+    "input.float",
+    "input.string",
+    "input.bool",
 }
 
 # Type qualifiers
 TYPE_QUALIFIERS = {
-    'series', 'simple', 'const', 'input',
-    'int', 'float', 'bool', 'color', 'string',
-    'line', 'label', 'box', 'table', 'array', 'matrix',
+    "series",
+    "simple",
+    "const",
+    "input",
+    "int",
+    "float",
+    "bool",
+    "color",
+    "string",
+    "line",
+    "label",
+    "box",
+    "table",
+    "array",
+    "matrix",
 }
 
 
@@ -137,7 +196,7 @@ class PineScriptLexer:
 
     def __init__(self, code: str):
         self.code = code
-        self.lines = code.split('\n')
+        self.lines = code.split("\n")
         self.pos = 0
         self.line = 1
         self.column = 1
@@ -145,7 +204,9 @@ class PineScriptLexer:
 
     def error(self, message: str) -> Exception:
         """Create a lexer error with position information"""
-        return SyntaxError(f"Lexer error at line {self.line}, column {self.column}: {message}")
+        return SyntaxError(
+            f"Lexer error at line {self.line}, column {self.column}: {message}"
+        )
 
     def peek(self, offset: int = 0) -> Optional[str]:
         """Look ahead in the source code"""
@@ -162,7 +223,7 @@ class PineScriptLexer:
         char = self.code[self.pos]
         self.pos += 1
 
-        if char == '\n':
+        if char == "\n":
             self.line += 1
             self.column = 1
         else:
@@ -172,27 +233,27 @@ class PineScriptLexer:
 
     def skip_whitespace(self):
         """Skip whitespace except newlines"""
-        while self.peek() and self.peek() in ' \t\r':
+        while self.peek() and self.peek() in " \t\r":
             self.advance()
 
     def read_number(self) -> Token:
         """Read a numeric literal"""
         start_line = self.line
         start_col = self.column
-        num_str = ''
+        num_str = ""
 
         # Handle negative numbers
-        if self.peek() == '-':
+        if self.peek() == "-":
             num_str += self.advance()
 
         # Read digits and decimal point
-        while self.peek() and (self.peek().isdigit() or self.peek() == '.'):
+        while self.peek() and (self.peek().isdigit() or self.peek() == "."):
             num_str += self.advance()
 
         # Handle scientific notation
-        if self.peek() and self.peek() in 'eE':
+        if self.peek() and self.peek() in "eE":
             num_str += self.advance()
-            if self.peek() and self.peek() in '+-':
+            if self.peek() and self.peek() in "+-":
                 num_str += self.advance()
             while self.peek() and self.peek().isdigit():
                 num_str += self.advance()
@@ -205,7 +266,7 @@ class PineScriptLexer:
         start_col = self.column
         self.advance()  # Skip opening quote
 
-        string_val = ''
+        string_val = ""
         while True:
             char = self.peek()
 
@@ -216,13 +277,13 @@ class PineScriptLexer:
                 self.advance()  # Skip closing quote
                 break
 
-            if char == '\\':
+            if char == "\\":
                 self.advance()
                 next_char = self.advance()
-                if next_char in 'nrt\\"\'\n':
-                    string_val += '\\' + (next_char or '')
+                if next_char in "nrt\\\"'\n":
+                    string_val += "\\" + (next_char or "")
                 else:
-                    string_val += next_char or ''
+                    string_val += next_char or ""
             else:
                 string_val += self.advance()
 
@@ -232,17 +293,17 @@ class PineScriptLexer:
         """Read an identifier or keyword"""
         start_line = self.line
         start_col = self.column
-        ident = ''
+        ident = ""
 
         # Read identifier characters (alphanumeric + underscore + dot for namespaces)
-        while self.peek() and (self.peek().isalnum() or self.peek() in '_.'):
+        while self.peek() and (self.peek().isalnum() or self.peek() in "_."):
             ident += self.advance()
 
         # Check for boolean literals first
-        if ident in ('true', 'false'):
+        if ident in ("true", "false"):
             token_type = TokenType.BOOL
         # Check for na (special value, treat as identifier not keyword)
-        elif ident == 'na':
+        elif ident == "na":
             token_type = TokenType.IDENTIFIER
         # Check if it's a keyword
         elif ident in KEYWORDS:
@@ -256,14 +317,14 @@ class PineScriptLexer:
         """Read a comment"""
         start_line = self.line
         start_col = self.column
-        comment = ''
+        comment = ""
 
         # Single-line comment
-        if self.peek() == '/' and self.peek(1) == '/':
+        if self.peek() == "/" and self.peek(1) == "/":
             self.advance()  # First /
             self.advance()  # Second /
 
-            while self.peek() and self.peek() != '\n':
+            while self.peek() and self.peek() != "\n":
                 comment += self.advance()
 
             return Token(TokenType.COMMENT, comment.strip(), start_line, start_col)
@@ -272,15 +333,17 @@ class PineScriptLexer:
 
     def read_version_directive(self) -> Optional[Token]:
         """Read Pine Script version directive (e.g., //@version=5)"""
-        if self.peek() == '/' and self.peek(1) == '/' and self.peek(2) == '@':
+        if self.peek() == "/" and self.peek(1) == "/" and self.peek(2) == "@":
             start_line = self.line
             start_col = self.column
-            directive = ''
+            directive = ""
 
-            while self.peek() and self.peek() != '\n':
+            while self.peek() and self.peek() != "\n":
                 directive += self.advance()
 
-            return Token(TokenType.VERSION_DIRECTIVE, directive.strip(), start_line, start_col)
+            return Token(
+                TokenType.VERSION_DIRECTIVE, directive.strip(), start_line, start_col
+            )
 
         return None
 
@@ -297,14 +360,14 @@ class PineScriptLexer:
                 break
 
             # Newlines
-            if char == '\n':
-                token = Token(TokenType.NEWLINE, '\\n', self.line, self.column)
+            if char == "\n":
+                token = Token(TokenType.NEWLINE, "\\n", self.line, self.column)
                 self.tokens.append(token)
                 self.advance()
                 continue
 
             # Version directive or comment
-            if char == '/':
+            if char == "/":
                 version_token = self.read_version_directive()
                 if version_token:
                     self.tokens.append(version_token)
@@ -316,17 +379,19 @@ class PineScriptLexer:
                     continue
 
             # Numbers
-            if char.isdigit() or (char == '-' and self.peek(1) and self.peek(1).isdigit()):
+            if char.isdigit() or (
+                char == "-" and self.peek(1) and self.peek(1).isdigit()
+            ):
                 self.tokens.append(self.read_number())
                 continue
 
             # Strings
-            if char in '"\'':
+            if char in "\"'":
                 self.tokens.append(self.read_string(char))
                 continue
 
             # Identifiers and keywords
-            if char.isalpha() or char == '_':
+            if char.isalpha() or char == "_":
                 self.tokens.append(self.read_identifier())
                 continue
 
@@ -335,97 +400,123 @@ class PineScriptLexer:
             start_col = self.column
 
             # Two-character operators
-            two_char = char + (self.peek(1) or '')
+            two_char = char + (self.peek(1) or "")
 
-            if two_char == '==':
+            if two_char == "==":
                 self.advance()
                 self.advance()
-                self.tokens.append(Token(TokenType.EQUALS, '==', start_line, start_col))
-            elif two_char == '!=':
+                self.tokens.append(Token(TokenType.EQUALS, "==", start_line, start_col))
+            elif two_char == "!=":
                 self.advance()
                 self.advance()
-                self.tokens.append(Token(TokenType.NOT_EQUALS, '!=', start_line, start_col))
-            elif two_char == '<=':
+                self.tokens.append(
+                    Token(TokenType.NOT_EQUALS, "!=", start_line, start_col)
+                )
+            elif two_char == "<=":
                 self.advance()
                 self.advance()
-                self.tokens.append(Token(TokenType.LESS_EQUAL, '<=', start_line, start_col))
-            elif two_char == '>=':
+                self.tokens.append(
+                    Token(TokenType.LESS_EQUAL, "<=", start_line, start_col)
+                )
+            elif two_char == ">=":
                 self.advance()
                 self.advance()
-                self.tokens.append(Token(TokenType.GREATER_EQUAL, '>=', start_line, start_col))
-            elif two_char == '=>':
+                self.tokens.append(
+                    Token(TokenType.GREATER_EQUAL, ">=", start_line, start_col)
+                )
+            elif two_char == "=>":
                 self.advance()
                 self.advance()
-                self.tokens.append(Token(TokenType.ARROW, '=>', start_line, start_col))
-            elif two_char == '+=':
+                self.tokens.append(Token(TokenType.ARROW, "=>", start_line, start_col))
+            elif two_char == "+=":
                 self.advance()
                 self.advance()
-                self.tokens.append(Token(TokenType.PLUS_ASSIGN, '+=', start_line, start_col))
-            elif two_char == '-=':
+                self.tokens.append(
+                    Token(TokenType.PLUS_ASSIGN, "+=", start_line, start_col)
+                )
+            elif two_char == "-=":
                 self.advance()
                 self.advance()
-                self.tokens.append(Token(TokenType.MINUS_ASSIGN, '-=', start_line, start_col))
-            elif two_char == '*=':
+                self.tokens.append(
+                    Token(TokenType.MINUS_ASSIGN, "-=", start_line, start_col)
+                )
+            elif two_char == "*=":
                 self.advance()
                 self.advance()
-                self.tokens.append(Token(TokenType.MULTIPLY_ASSIGN, '*=', start_line, start_col))
-            elif two_char == '/=':
+                self.tokens.append(
+                    Token(TokenType.MULTIPLY_ASSIGN, "*=", start_line, start_col)
+                )
+            elif two_char == "/=":
                 self.advance()
                 self.advance()
-                self.tokens.append(Token(TokenType.DIVIDE_ASSIGN, '/=', start_line, start_col))
+                self.tokens.append(
+                    Token(TokenType.DIVIDE_ASSIGN, "/=", start_line, start_col)
+                )
             # Single-character operators
-            elif char == '+':
+            elif char == "+":
                 self.advance()
-                self.tokens.append(Token(TokenType.PLUS, '+', start_line, start_col))
-            elif char == '-':
+                self.tokens.append(Token(TokenType.PLUS, "+", start_line, start_col))
+            elif char == "-":
                 self.advance()
-                self.tokens.append(Token(TokenType.MINUS, '-', start_line, start_col))
-            elif char == '*':
+                self.tokens.append(Token(TokenType.MINUS, "-", start_line, start_col))
+            elif char == "*":
                 self.advance()
-                self.tokens.append(Token(TokenType.MULTIPLY, '*', start_line, start_col))
-            elif char == '/':
+                self.tokens.append(
+                    Token(TokenType.MULTIPLY, "*", start_line, start_col)
+                )
+            elif char == "/":
                 self.advance()
-                self.tokens.append(Token(TokenType.DIVIDE, '/', start_line, start_col))
-            elif char == '%':
+                self.tokens.append(Token(TokenType.DIVIDE, "/", start_line, start_col))
+            elif char == "%":
                 self.advance()
-                self.tokens.append(Token(TokenType.MODULO, '%', start_line, start_col))
-            elif char == '=':
+                self.tokens.append(Token(TokenType.MODULO, "%", start_line, start_col))
+            elif char == "=":
                 self.advance()
-                self.tokens.append(Token(TokenType.ASSIGN, '=', start_line, start_col))
-            elif char == '<':
+                self.tokens.append(Token(TokenType.ASSIGN, "=", start_line, start_col))
+            elif char == "<":
                 self.advance()
-                self.tokens.append(Token(TokenType.LESS_THAN, '<', start_line, start_col))
-            elif char == '>':
+                self.tokens.append(
+                    Token(TokenType.LESS_THAN, "<", start_line, start_col)
+                )
+            elif char == ">":
                 self.advance()
-                self.tokens.append(Token(TokenType.GREATER_THAN, '>', start_line, start_col))
-            elif char == '?':
+                self.tokens.append(
+                    Token(TokenType.GREATER_THAN, ">", start_line, start_col)
+                )
+            elif char == "?":
                 self.advance()
-                self.tokens.append(Token(TokenType.QUESTION, '?', start_line, start_col))
-            elif char == ':':
+                self.tokens.append(
+                    Token(TokenType.QUESTION, "?", start_line, start_col)
+                )
+            elif char == ":":
                 self.advance()
-                self.tokens.append(Token(TokenType.COLON, ':', start_line, start_col))
-            elif char == '(':
+                self.tokens.append(Token(TokenType.COLON, ":", start_line, start_col))
+            elif char == "(":
                 self.advance()
-                self.tokens.append(Token(TokenType.LPAREN, '(', start_line, start_col))
-            elif char == ')':
+                self.tokens.append(Token(TokenType.LPAREN, "(", start_line, start_col))
+            elif char == ")":
                 self.advance()
-                self.tokens.append(Token(TokenType.RPAREN, ')', start_line, start_col))
-            elif char == '[':
+                self.tokens.append(Token(TokenType.RPAREN, ")", start_line, start_col))
+            elif char == "[":
                 self.advance()
-                self.tokens.append(Token(TokenType.LBRACKET, '[', start_line, start_col))
-            elif char == ']':
+                self.tokens.append(
+                    Token(TokenType.LBRACKET, "[", start_line, start_col)
+                )
+            elif char == "]":
                 self.advance()
-                self.tokens.append(Token(TokenType.RBRACKET, ']', start_line, start_col))
-            elif char == ',':
+                self.tokens.append(
+                    Token(TokenType.RBRACKET, "]", start_line, start_col)
+                )
+            elif char == ",":
                 self.advance()
-                self.tokens.append(Token(TokenType.COMMA, ',', start_line, start_col))
-            elif char == '.':
+                self.tokens.append(Token(TokenType.COMMA, ",", start_line, start_col))
+            elif char == ".":
                 self.advance()
-                self.tokens.append(Token(TokenType.DOT, '.', start_line, start_col))
+                self.tokens.append(Token(TokenType.DOT, ".", start_line, start_col))
             else:
                 raise self.error(f"Unexpected character: {char!r}")
 
         # Add EOF token
-        self.tokens.append(Token(TokenType.EOF, '', self.line, self.column))
+        self.tokens.append(Token(TokenType.EOF, "", self.line, self.column))
 
         return self.tokens

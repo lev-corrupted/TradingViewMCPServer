@@ -1,17 +1,17 @@
 """Momentum technical indicators."""
 
-from typing import Dict, Any, List
 import logging
+from typing import Any, Dict, List
 
 from ..config import (
-    STOCHASTIC_K_PERIOD,
+    ERROR_INSUFFICIENT_DATA,
+    FIBONACCI_LEVELS,
     STOCHASTIC_D_PERIOD,
+    STOCHASTIC_K_PERIOD,
     STOCHASTIC_OVERBOUGHT,
     STOCHASTIC_OVERSOLD,
-    FIBONACCI_LEVELS,
-    ERROR_INSUFFICIENT_DATA,
 )
-from ..utils.formatters import safe_float, round_price
+from ..utils.formatters import round_price, safe_float
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 def calculate_stochastic(
     ohlcv_data: Dict[str, Any],
     k_period: int = STOCHASTIC_K_PERIOD,
-    d_period: int = STOCHASTIC_D_PERIOD
+    d_period: int = STOCHASTIC_D_PERIOD,
 ) -> Dict[str, Any]:
     """
     Calculate Stochastic Oscillator properly.
@@ -35,7 +35,7 @@ def calculate_stochastic(
     Returns:
         %K, %D values and signal
     """
-    candles = list(ohlcv_data.items())[:k_period + d_period]
+    candles = list(ohlcv_data.items())[: k_period + d_period]
 
     if len(candles) < k_period + d_period:
         return {"error": ERROR_INSUFFICIENT_DATA}
@@ -44,7 +44,7 @@ def calculate_stochastic(
     k_values = []
 
     for i in range(d_period):
-        period_candles = candles[i:i + k_period]
+        period_candles = candles[i : i + k_period]
         highs = [safe_float(c[1].get("2. high", 0)) for c in period_candles]
         lows = [safe_float(c[1].get("3. low", 0)) for c in period_candles]
         current_close = safe_float(period_candles[0][1].get("4. close", 0))
@@ -77,7 +77,7 @@ def calculate_stochastic(
         "percent_k": round(percent_k, 2),
         "percent_d": round(percent_d, 2),
         "signal": signal,
-        "interpretation": f"K={percent_k:.1f}% {'above' if percent_k > percent_d else 'below'} D={percent_d:.1f}%"
+        "interpretation": f"K={percent_k:.1f}% {'above' if percent_k > percent_d else 'below'} D={percent_d:.1f}%",
     }
 
 
@@ -140,7 +140,7 @@ def calculate_rsi(ohlcv_data: Dict[str, Any], period: int = 14) -> Dict[str, Any
     Returns:
         RSI value and signal
     """
-    candles = list(ohlcv_data.items())[:period + 10]
+    candles = list(ohlcv_data.items())[: period + 10]
 
     if len(candles) < period + 1:
         return {"error": ERROR_INSUFFICIENT_DATA}
@@ -182,7 +182,7 @@ def calculate_rsi(ohlcv_data: Dict[str, Any], period: int = 14) -> Dict[str, Any
     return {
         "rsi": round(rsi, 2),
         "signal": signal,
-        "interpretation": f"RSI at {rsi:.1f} - {signal}"
+        "interpretation": f"RSI at {rsi:.1f} - {signal}",
     }
 
 
@@ -200,7 +200,7 @@ def calculate_cci(ohlcv_data: Dict[str, Any], period: int = 20) -> Dict[str, Any
     Returns:
         CCI value and signal
     """
-    candles = list(ohlcv_data.items())[:period + 10]
+    candles = list(ohlcv_data.items())[: period + 10]
 
     if len(candles) < period:
         return {"error": ERROR_INSUFFICIENT_DATA}
@@ -239,11 +239,13 @@ def calculate_cci(ohlcv_data: Dict[str, Any], period: int = 20) -> Dict[str, Any
     return {
         "cci": round(cci, 2),
         "signal": signal,
-        "interpretation": f"CCI at {cci:.1f} - {signal} (>100 overbought, <-100 oversold)"
+        "interpretation": f"CCI at {cci:.1f} - {signal} (>100 overbought, <-100 oversold)",
     }
 
 
-def calculate_williams_r(ohlcv_data: Dict[str, Any], period: int = 14) -> Dict[str, Any]:
+def calculate_williams_r(
+    ohlcv_data: Dict[str, Any], period: int = 14
+) -> Dict[str, Any]:
     """
     Calculate Williams %R.
 
@@ -273,7 +275,9 @@ def calculate_williams_r(ohlcv_data: Dict[str, Any], period: int = 14) -> Dict[s
     if highest_high == lowest_low:
         williams_r = -50
     else:
-        williams_r = ((highest_high - current_close) / (highest_high - lowest_low)) * -100
+        williams_r = (
+            (highest_high - current_close) / (highest_high - lowest_low)
+        ) * -100
 
     # Determine signal
     if williams_r > -20:
@@ -286,5 +290,5 @@ def calculate_williams_r(ohlcv_data: Dict[str, Any], period: int = 14) -> Dict[s
     return {
         "williams_r": round(williams_r, 2),
         "signal": signal,
-        "interpretation": f"Williams %R at {williams_r:.1f}% - {signal} (>-20 overbought, <-80 oversold)"
+        "interpretation": f"Williams %R at {williams_r:.1f}% - {signal} (>-20 overbought, <-80 oversold)",
     }

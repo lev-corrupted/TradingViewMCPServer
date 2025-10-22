@@ -8,16 +8,17 @@ Supports Pine Script v1-v5 syntax.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional, Any, Union
 from enum import Enum
+from typing import Any, List, Optional, Union
 
-from .lexer import Token, TokenType, PineScriptLexer
+from .lexer import PineScriptLexer, Token, TokenType
 
 
 # AST Node Types
 @dataclass
 class ASTNode:
     """Base class for all AST nodes"""
+
     line: int
     column: int
 
@@ -25,6 +26,7 @@ class ASTNode:
 @dataclass
 class Program(ASTNode):
     """Root node of the AST"""
+
     version: Optional[int] = None
     statements: List[ASTNode] = None
 
@@ -36,12 +38,14 @@ class Program(ASTNode):
 @dataclass
 class VersionDirective(ASTNode):
     """Version directive node (//@version=5)"""
+
     version: int
 
 
 @dataclass
 class FunctionDecl(ASTNode):
     """Function declaration"""
+
     name: str
     parameters: List[Parameter]
     return_type: Optional[str]
@@ -52,6 +56,7 @@ class FunctionDecl(ASTNode):
 @dataclass
 class Parameter(ASTNode):
     """Function parameter"""
+
     name: str
     type_qualifier: Optional[str] = None
     default_value: Optional[ASTNode] = None
@@ -60,6 +65,7 @@ class Parameter(ASTNode):
 @dataclass
 class VariableDecl(ASTNode):
     """Variable declaration"""
+
     name: str
     value: Optional[ASTNode]
     is_var: bool = False  # var keyword
@@ -70,6 +76,7 @@ class VariableDecl(ASTNode):
 @dataclass
 class Assignment(ASTNode):
     """Assignment statement"""
+
     target: str
     operator: str  # =, +=, -=, *=, /=
     value: ASTNode
@@ -78,6 +85,7 @@ class Assignment(ASTNode):
 @dataclass
 class IfStatement(ASTNode):
     """If statement"""
+
     condition: ASTNode
     then_branch: List[ASTNode]
     else_branch: Optional[List[ASTNode]] = None
@@ -86,6 +94,7 @@ class IfStatement(ASTNode):
 @dataclass
 class ForLoop(ASTNode):
     """For loop"""
+
     variable: str
     start: ASTNode
     end: ASTNode
@@ -96,6 +105,7 @@ class ForLoop(ASTNode):
 @dataclass
 class WhileLoop(ASTNode):
     """While loop"""
+
     condition: ASTNode
     body: List[ASTNode]
 
@@ -103,6 +113,7 @@ class WhileLoop(ASTNode):
 @dataclass
 class FunctionCall(ASTNode):
     """Function call"""
+
     name: str
     arguments: List[Argument]
 
@@ -110,6 +121,7 @@ class FunctionCall(ASTNode):
 @dataclass
 class Argument:
     """Function argument"""
+
     name: Optional[str]  # Named argument
     value: ASTNode
 
@@ -117,6 +129,7 @@ class Argument:
 @dataclass
 class BinaryOp(ASTNode):
     """Binary operation"""
+
     left: ASTNode
     operator: str
     right: ASTNode
@@ -125,6 +138,7 @@ class BinaryOp(ASTNode):
 @dataclass
 class UnaryOp(ASTNode):
     """Unary operation"""
+
     operator: str
     operand: ASTNode
 
@@ -132,6 +146,7 @@ class UnaryOp(ASTNode):
 @dataclass
 class TernaryOp(ASTNode):
     """Ternary conditional (condition ? true_val : false_val)"""
+
     condition: ASTNode
     true_value: ASTNode
     false_value: ASTNode
@@ -140,6 +155,7 @@ class TernaryOp(ASTNode):
 @dataclass
 class Literal(ASTNode):
     """Literal value (number, string, boolean)"""
+
     value: Any
     type: str  # 'number', 'string', 'bool', 'color'
 
@@ -147,12 +163,14 @@ class Literal(ASTNode):
 @dataclass
 class Identifier(ASTNode):
     """Identifier (variable or function reference)"""
+
     name: str
 
 
 @dataclass
 class ArrayAccess(ASTNode):
     """Array access (arr[index])"""
+
     array: ASTNode
     index: ASTNode
 
@@ -160,12 +178,14 @@ class ArrayAccess(ASTNode):
 @dataclass
 class MemberAccess(ASTNode):
     """Member access (obj.member)"""
+
     object: ASTNode
     member: str
 
 
 class ParseError(Exception):
     """Parser error with line and column information"""
+
     def __init__(self, message: str, line: int, column: int):
         super().__init__(f"Parse error at {line}:{column}: {message}")
         self.line = line
@@ -187,7 +207,9 @@ class PineScriptParser:
     def error(self, message: str) -> ParseError:
         """Create a parse error at current position"""
         if self.current_token:
-            return ParseError(message, self.current_token.line, self.current_token.column)
+            return ParseError(
+                message, self.current_token.line, self.current_token.column
+            )
         return ParseError(message, 0, 0)
 
     def peek(self, offset: int = 0) -> Optional[Token]:
@@ -210,7 +232,9 @@ class PineScriptParser:
     def expect(self, token_type: TokenType) -> Token:
         """Expect a specific token type"""
         if not self.current_token or self.current_token.type != token_type:
-            raise self.error(f"Expected {token_type.name}, got {self.current_token.type.name if self.current_token else 'EOF'}")
+            raise self.error(
+                f"Expected {token_type.name}, got {self.current_token.type.name if self.current_token else 'EOF'}"
+            )
         return self.advance()
 
     def skip_newlines(self):
@@ -223,11 +247,15 @@ class PineScriptParser:
         program = Program(line=1, column=1)
 
         # Check for version directive
-        if self.current_token and self.current_token.type == TokenType.VERSION_DIRECTIVE:
+        if (
+            self.current_token
+            and self.current_token.type == TokenType.VERSION_DIRECTIVE
+        ):
             version_str = self.current_token.value
             # Extract version number from //@version=5
             import re
-            match = re.search(r'version\s*=\s*(\d+)', version_str)
+
+            match = re.search(r"version\s*=\s*(\d+)", version_str)
             if match:
                 program.version = int(match.group(1))
             self.advance()
@@ -257,19 +285,19 @@ class PineScriptParser:
             return None
 
         # Variable declarations (var, varip)
-        if token.type == TokenType.KEYWORD and token.value in ('var', 'varip'):
+        if token.type == TokenType.KEYWORD and token.value in ("var", "varip"):
             return self.parse_variable_decl()
 
         # If statement
-        if token.type == TokenType.KEYWORD and token.value == 'if':
+        if token.type == TokenType.KEYWORD and token.value == "if":
             return self.parse_if_statement()
 
         # For loop
-        if token.type == TokenType.KEYWORD and token.value == 'for':
+        if token.type == TokenType.KEYWORD and token.value == "for":
             return self.parse_for_loop()
 
         # While loop
-        if token.type == TokenType.KEYWORD and token.value == 'while':
+        if token.type == TokenType.KEYWORD and token.value == "while":
             return self.parse_while_loop()
 
         # Try to parse as expression statement or assignment
@@ -307,8 +335,8 @@ class PineScriptParser:
         token = self.current_token
         line, col = token.line, token.column
 
-        is_var = token.value == 'var'
-        is_varip = token.value == 'varip'
+        is_var = token.value == "var"
+        is_varip = token.value == "varip"
         self.advance()
 
         # Get variable name
@@ -356,7 +384,11 @@ class PineScriptParser:
 
         # Parse else branch
         else_branch = None
-        if self.current_token and self.current_token.type == TokenType.KEYWORD and self.current_token.value == 'else':
+        if (
+            self.current_token
+            and self.current_token.type == TokenType.KEYWORD
+            and self.current_token.value == "else"
+        ):
             self.advance()  # Skip 'else'
             self.skip_newlines()
             else_branch = []
@@ -388,7 +420,7 @@ class PineScriptParser:
         start = self.parse_expression()
 
         # 'to' keyword
-        if not self.current_token or self.current_token.value != 'to':
+        if not self.current_token or self.current_token.value != "to":
             raise self.error("Expected 'to' in for loop")
         self.advance()
 
@@ -397,7 +429,7 @@ class PineScriptParser:
 
         # Optional step
         step = None
-        if self.current_token and self.current_token.value == 'by':
+        if self.current_token and self.current_token.value == "by":
             self.advance()
             step = self.parse_expression()
 
@@ -474,13 +506,17 @@ class PineScriptParser:
         """Parse logical OR"""
         left = self.parse_logical_and()
 
-        while self.current_token and self.current_token.type == TokenType.KEYWORD and self.current_token.value == 'or':
+        while (
+            self.current_token
+            and self.current_token.type == TokenType.KEYWORD
+            and self.current_token.value == "or"
+        ):
             op_token = self.current_token
             self.advance()
             right = self.parse_logical_and()
             left = BinaryOp(
                 left=left,
-                operator='or',
+                operator="or",
                 right=right,
                 line=op_token.line,
                 column=op_token.column,
@@ -492,13 +528,17 @@ class PineScriptParser:
         """Parse logical AND"""
         left = self.parse_equality()
 
-        while self.current_token and self.current_token.type == TokenType.KEYWORD and self.current_token.value == 'and':
+        while (
+            self.current_token
+            and self.current_token.type == TokenType.KEYWORD
+            and self.current_token.value == "and"
+        ):
             op_token = self.current_token
             self.advance()
             right = self.parse_equality()
             left = BinaryOp(
                 left=left,
-                operator='and',
+                operator="and",
                 right=right,
                 line=op_token.line,
                 column=op_token.column,
@@ -510,7 +550,10 @@ class PineScriptParser:
         """Parse equality operators (==, !=)"""
         left = self.parse_comparison()
 
-        while self.current_token and self.current_token.type in (TokenType.EQUALS, TokenType.NOT_EQUALS):
+        while self.current_token and self.current_token.type in (
+            TokenType.EQUALS,
+            TokenType.NOT_EQUALS,
+        ):
             op_token = self.current_token
             operator = op_token.value
             self.advance()
@@ -553,7 +596,10 @@ class PineScriptParser:
         """Parse addition and subtraction"""
         left = self.parse_multiplication()
 
-        while self.current_token and self.current_token.type in (TokenType.PLUS, TokenType.MINUS):
+        while self.current_token and self.current_token.type in (
+            TokenType.PLUS,
+            TokenType.MINUS,
+        ):
             op_token = self.current_token
             operator = op_token.value
             self.advance()
@@ -572,7 +618,11 @@ class PineScriptParser:
         """Parse multiplication, division, modulo"""
         left = self.parse_unary()
 
-        while self.current_token and self.current_token.type in (TokenType.MULTIPLY, TokenType.DIVIDE, TokenType.MODULO):
+        while self.current_token and self.current_token.type in (
+            TokenType.MULTIPLY,
+            TokenType.DIVIDE,
+            TokenType.MODULO,
+        ):
             op_token = self.current_token
             operator = op_token.value
             self.advance()
@@ -591,7 +641,10 @@ class PineScriptParser:
         """Parse unary operators (-, not)"""
         if self.current_token and (
             self.current_token.type == TokenType.MINUS
-            or (self.current_token.type == TokenType.KEYWORD and self.current_token.value == 'not')
+            or (
+                self.current_token.type == TokenType.KEYWORD
+                and self.current_token.value == "not"
+            )
         ):
             op_token = self.current_token
             operator = op_token.value
@@ -706,8 +759,8 @@ class PineScriptParser:
         if token.type == TokenType.NUMBER:
             self.advance()
             return Literal(
-                value=float(token.value) if '.' in token.value else int(token.value),
-                type='number',
+                value=float(token.value) if "." in token.value else int(token.value),
+                type="number",
                 line=token.line,
                 column=token.column,
             )
@@ -717,7 +770,7 @@ class PineScriptParser:
             self.advance()
             return Literal(
                 value=token.value,
-                type='string',
+                type="string",
                 line=token.line,
                 column=token.column,
             )
@@ -726,8 +779,8 @@ class PineScriptParser:
         if token.type == TokenType.BOOL:
             self.advance()
             return Literal(
-                value=token.value == 'true',
-                type='bool',
+                value=token.value == "true",
+                type="bool",
                 line=token.line,
                 column=token.column,
             )
