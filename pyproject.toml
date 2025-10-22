@@ -19,6 +19,14 @@ where = ["."]
 [tool.setuptools.package-data]
 tradingview_mcp = ["*.py"]
 
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.black]
+line-length = 88
+target-version = ["py310", "py311", "py312"]
+
 [tool.uv]
 dev-dependencies = []
 package = true
