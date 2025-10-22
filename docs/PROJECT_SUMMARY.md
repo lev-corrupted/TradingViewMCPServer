@@ -303,7 +303,7 @@ flake8 tradingview_mcp/   # Lint
 - **Version Detection**: See [PINE_SCRIPT.md](PINE_SCRIPT.md)
 - **Error Explanations**: Use `explain_pine_error()` tool
 - **API Rate Limits**: Check cache settings in code
-- **Installation Issues**: Verify Python 3.9+ and virtual environment
+- **Installation Issues**: Verify Python 3.10+ and virtual environment
 
 ---
 

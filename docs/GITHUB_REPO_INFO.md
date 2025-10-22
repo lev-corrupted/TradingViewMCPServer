@@ -42,7 +42,7 @@ Add these to the top of README.md (already added):
 
 ```markdown
 [![Tests](https://github.com/lev-corrupted/TradingViewMCPServer/workflows/Tests%20and%20Code%20Quality/badge.svg)](https://github.com/lev-corrupted/TradingViewMCPServer/actions)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://hub.docker.com)
 [![Version](https://img.shields.io/badge/version-3.4.0-green.svg)](https://github.com/lev-corrupted/TradingViewMCPServer/releases)

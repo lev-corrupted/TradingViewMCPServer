@@ -42,7 +42,7 @@ This release transforms TradingViewMCPServer into a **production-grade, enterpri
 
 - **CI/CD Pipeline**: GitHub Actions workflow
   - Automated testing on push/PR
-  - Multi-version testing (Python 3.9, 3.10, 3.11, 3.12)
+  - Multi-version testing (Python 3.10, 3.11, 3.12)
   - Code quality checks (black, isort, flake8, mypy)
   - Coverage reporting with Codecov integration
 

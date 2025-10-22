@@ -163,7 +163,7 @@ This guide documents all MCP servers configured for optimal development workflow
 
 **Use Cases:**
 ```
-"Remember that we're using Python 3.9+ for this project"
+"Remember that we're using Python 3.10+ for this project"
 "What did we decide about the architecture?"
 "Recall our discussion about Pine Script v6"
 "Store this pattern for future reference"
@@ -326,7 +326,7 @@ Expected response should list:
 
 **Memory:**
 ```
-"Remember that this project uses Python 3.9+"
+"Remember that this project uses Python 3.10+"
 ```
 
 **Git:**

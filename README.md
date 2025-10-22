@@ -3,7 +3,7 @@
 > **Production-ready multi-asset trading assistant and Pine Script development server for Claude Desktop**
 
 [![Tests](https://github.com/lev-corrupted/TradingViewMCPServer/workflows/Tests%20and%20Code%20Quality/badge.svg)](https://github.com/lev-corrupted/TradingViewMCPServer/actions)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://hub.docker.com)
 [![Version](https://img.shields.io/badge/version-3.4.0-green.svg)](https://github.com/lev-corrupted/TradingViewMCPServer/releases)
@@ -18,7 +18,7 @@ Professional trading assistant supporting **Forex, Stocks, and Crypto** with **2
 - **🔄 Auto-Retry Logic**: Exponential backoff for network failures (3 retries: 2s, 4s, 8s)
 - **⚡ LRU Cache**: Memory-bounded cache (1000 entries) with automatic eviction
 - **🐳 Docker Support**: Production-ready containerization with Docker Compose
-- **🚀 CI/CD Pipeline**: Automated testing across Python 3.9-3.12
+- **🚀 CI/CD Pipeline**: Automated testing across Python 3.10-3.12
 - **✅ 100% Test Coverage**: 44/44 tests passing
 
 ### 📊 Trading & Market Analysis
@@ -45,7 +45,7 @@ Professional trading assistant supporting **Forex, Stocks, and Crypto** with **2
 
 ### Prerequisites
 
-- Python 3.9+ or Docker
+- Python 3.10+ or Docker
 - Claude Desktop
 - Alpha Vantage API key ([Get free key](https://www.alphavantage.co/support/#api-key))
 
@@ -325,7 +325,7 @@ This version included major improvements and refactoring:
 - **Test Suite**: pytest-based testing framework included
 
 ### Development
-- **Lower Python Requirement**: Now works with Python 3.9+ (was 3.13+)
+- **Lower Python Requirement**: Now works with Python 3.10+ (was 3.13+)
 - **Development Tools**: Added black, mypy, pytest, and other dev dependencies
 - **Better Documentation**: Improved docstrings and code comments
 
