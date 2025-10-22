@@ -376,6 +376,44 @@ source .venv/bin/activate
 pip install -e .
 ```
 
+## 📁 Repository Structure
+
+```
+TradingViewMCPServer/
+├── tradingview_mcp/          # Core Python package
+│   ├── server.py            # MCP server implementation
+│   ├── config.py            # Configuration management
+│   ├── api/                 # Alpha Vantage API client
+│   ├── indicators/          # Technical indicators (25+)
+│   ├── pine_script/         # Pine Script development tools
+│   └── utils/               # Utilities (cache, retry, etc.)
+├── tests/                    # Test suite (44/44 passing)
+├── docs/                     # Documentation
+│   ├── ARCHITECTURE.md      # System architecture
+│   ├── CONTRIBUTING.md      # Contribution guidelines
+│   ├── PROJECT_SUMMARY.md   # Project overview
+│   ├── GITHUB_REPO_INFO.md  # GitHub repo metadata
+│   ├── guides/              # Usage guides
+│   └── releases/            # Release notes & checklists
+├── examples/                 # Example code
+│   └── pine-scripts/        # Pine Script examples & templates
+├── .github/                  # GitHub Actions CI/CD
+├── logs/                     # Application logs
+├── README.md                 # This file
+├── CHANGELOG.md              # Complete version history
+├── pyproject.toml            # Project metadata
+├── requirements.txt          # Dependencies
+└── Dockerfile                # Docker configuration
+```
+
+### Key Directories
+
+- **[tradingview_mcp/](tradingview_mcp/)** - Main Python package with all server logic
+- **[tests/](tests/)** - Comprehensive test suite with 100% coverage
+- **[docs/](docs/)** - All documentation, guides, and architecture docs
+- **[examples/pine-scripts/](examples/pine-scripts/)** - Pine Script examples, strategies, and templates
+- **[.github/](.github/)** - CI/CD workflows and issue templates
+
 ## License
 
 MIT License - see LICENSE file for details
