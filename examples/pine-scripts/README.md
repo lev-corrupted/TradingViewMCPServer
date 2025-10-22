@@ -5,7 +5,7 @@ This folder contains Pine Script strategies, indicators, and overlays developed 
 ## 📁 Folder Structure
 
 ```
-TradingViewPineStrats/
+examples/pine-scripts/
 ├── indicators/      # Technical indicators
 ├── strategies/      # Trading strategies
 ├── overlays/        # Chart overlays (S/R, patterns, etc.)

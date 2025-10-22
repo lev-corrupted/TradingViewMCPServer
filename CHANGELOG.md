@@ -92,7 +92,7 @@ This release transforms TradingViewMCPServer into a **production-grade, enterpri
 - `docker-compose.yml` - Docker Compose config
 - `.dockerignore` - Build optimization
 - `.github/workflows/test.yml` - CI/CD pipeline
-- `IMPROVEMENTS_v3.4.0.md` - Detailed release notes
+- `docs/releases/IMPROVEMENTS_v3.4.0.md` - Detailed release notes
 
 ### ⚠️ Breaking Changes
 
@@ -211,7 +211,7 @@ This release adds **complete Pine Script v6 support** with all features verified
 - **docs/** folder created for better organization
 - **MCP_SETUP_GUIDE.md** - Comprehensive MCP configuration guide
 - **V6_VERIFIED_FEATURES.md** - Official TradingView docs verification
-- **TradingViewPineStrats/** folder for organizing strategies
+- **examples/pine-scripts/** folder for organizing strategies
   - indicators/
   - strategies/
   - overlays/
@@ -258,7 +258,7 @@ This release adds **complete Pine Script v6 support** with all features verified
 - **docs/MCP_SETUP.md** - MCP server configuration guide
 - **docs/QUICK_START.md** - Project quick start guide
 - **V6_VERIFIED_FEATURES.md** - Detailed v6 verification report
-- **TradingViewPineStrats/README.md** - Strategy organization guide
+- **examples/pine-scripts/README.md** - Strategy organization guide
 
 #### Removed Files (Consolidated)
 - ❌ FIXES_SUMMARY.md → Merged into CHANGELOG.md

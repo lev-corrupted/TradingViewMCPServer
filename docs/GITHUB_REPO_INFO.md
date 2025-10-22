@@ -136,9 +136,9 @@ pip install -e .
 ```
 
 ### Documentation
-- [README.md](README.md) - Main documentation
-- [IMPROVEMENTS_v3.4.0.md](IMPROVEMENTS_v3.4.0.md) - Detailed improvements
-- [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Architecture guide
+- [README.md](../README.md) - Main documentation
+- [IMPROVEMENTS_v3.4.0.md](releases/IMPROVEMENTS_v3.4.0.md) - Detailed improvements
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Architecture guide
 ```
 
 ## GitHub Actions Badge URLs

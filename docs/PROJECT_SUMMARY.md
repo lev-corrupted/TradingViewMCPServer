@@ -19,29 +19,31 @@
 ```
 TradingViewMCPServer/
 ├── README.md                    # Main documentation - Start here!
-├── PINE_SCRIPT.md              # Pine Script tools guide
-├── ARCHITECTURE.md             # Architecture details
 ├── CHANGELOG.md                # Version history (consolidated)
-├── V3.1_IMPROVEMENTS.md        # Latest improvements summary
-├── CONTRIBUTING.md             # How to contribute
-└── TradingViewPineStrats/      # Your Pine Script strategies
-    ├── README.md               # Strategy folder guide
-    ├── indicators/             # Custom indicators
-    ├── strategies/             # Trading strategies
-    ├── overlays/               # Chart overlays
-    └── examples/               # Example scripts
+├── docs/                       # Documentation
+│   ├── ARCHITECTURE.md         # Architecture details
+│   ├── CONTRIBUTING.md         # How to contribute
+│   ├── guides/                 # Usage guides
+│   └── releases/               # Release notes
+└── examples/                   # Example code
+    └── pine-scripts/           # Pine Script strategies
+        ├── README.md           # Strategy folder guide
+        ├── indicators/         # Custom indicators
+        ├── strategies/         # Trading strategies
+        ├── overlays/           # Chart overlays
+        └── examples/           # Example scripts
 ```
 
 ### Key Documentation
 
 | Document | Purpose | When to Use |
 |----------|---------|-------------|
-| [README.md](README.md) | Main documentation, features, installation | First time setup, feature overview |
-| [PINE_SCRIPT.md](PINE_SCRIPT.md) | Pine Script tools guide | Developing Pine Script code |
+| [README.md](../README.md) | Main documentation, features, installation | First time setup, feature overview |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Project structure, design | Understanding codebase, contributing |
-| [CHANGELOG.md](CHANGELOG.md) | Version history | See what's new, migration |
-| [V3.1_IMPROVEMENTS.md](V3.1_IMPROVEMENTS.md) | Latest changes detail | Understanding v3.1 updates |
-| [TradingViewPineStrats/README.md](TradingViewPineStrats/README.md) | Strategy organization | Storing your Pine Script code |
+| [CHANGELOG.md](../CHANGELOG.md) | Version history | See what's new, migration |
+| [guides/PINE_SCRIPT.md](guides/PINE_SCRIPT.md) | Pine Script tools guide | Developing Pine Script code |
+| [releases/](releases/) | Version release notes | Understanding specific version updates |
+| [examples/pine-scripts/README.md](../examples/pine-scripts/README.md) | Strategy organization | Storing your Pine Script code |
 
 ---
 
@@ -119,11 +121,12 @@ TradingViewMCPServer/
 │       ├── versions.py           # Version tools
 │       └── autocomplete.py       # Code completion
 │
-├── TradingViewPineStrats/        # Your Pine Script strategies
-│   ├── indicators/
-│   ├── strategies/
-│   ├── overlays/
-│   └── examples/
+├── examples/                     # Example code
+│   └── pine-scripts/            # Pine Script strategies
+│       ├── indicators/
+│       ├── strategies/
+│       ├── overlays/
+│       └── examples/
 │
 ├── tests/                        # Test suite
 │   ├── test_cache.py
