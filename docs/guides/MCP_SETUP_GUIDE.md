@@ -85,8 +85,8 @@ This guide documents all MCP servers configured for optimal development workflow
 - Monitor file changes
 
 **Allowed Directories:**
-- `/Users/levtheswag/VSCodestuff` (your main projects)
-- `/Users/levtheswag/Github Forking` (forked repositories)
+- `/path/to/your/projects` (your main projects)
+- `/path/to/your/forks` (forked repositories)
 
 **Use Cases:**
 ```
@@ -103,8 +103,8 @@ This guide documents all MCP servers configured for optimal development workflow
     "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "/Users/levtheswag/VSCodestuff",
-        "/Users/levtheswag/Github Forking"
+        "/path/to/your/projects",
+        "/path/to/your/forks"
     ]
 }
 ```
@@ -197,7 +197,7 @@ This guide documents all MCP servers configured for optimal development workflow
 - Blame analysis
 
 **Configured Repository:**
-- `/Users/levtheswag/VSCodestuff/TradingViewMCPServer`
+- `/path/to/TradingViewMCPServer`
 
 **Use Cases:**
 ```
@@ -216,7 +216,7 @@ This guide documents all MCP servers configured for optimal development workflow
         "-y",
         "@modelcontextprotocol/server-git",
         "--repository",
-        "/Users/levtheswag/VSCodestuff/TradingViewMCPServer"
+        "/path/to/TradingViewMCPServer"
     ]
 }
 ```
@@ -240,7 +240,7 @@ This guide documents all MCP servers configured for optimal development workflow
 - Data migrations
 
 **Allowed Directory:**
-- `/Users/levtheswag/VSCodestuff` (can access any .db files here)
+- `/path/to/your/projects` (can access any .db files here)
 
 **Use Cases:**
 ```
@@ -257,7 +257,7 @@ This guide documents all MCP servers configured for optimal development workflow
     "args": [
         "-y",
         "@modelcontextprotocol/server-sqlite",
-        "/Users/levtheswag/VSCodestuff"
+        "/path/to/your/projects"
     ]
 }
 ```
@@ -515,11 +515,11 @@ Total MCP Servers: 7
 ✅ SQLite        - Local database queries
 
 Allowed Directories:
-- /Users/levtheswag/VSCodestuff
-- /Users/levtheswag/Github Forking
+- /path/to/your/projects
+- /path/to/your/forks
 
 Git Repository:
-- /Users/levtheswag/VSCodestuff/TradingViewMCPServer
+- /path/to/TradingViewMCPServer
 ```
 
 ---
